@@ -1,0 +1,20 @@
+import { LoginRequestDTO, LoginResponseDTO } from "../dto/auth.dto";
+
+// TODO: replace with real API call once the backend is ready.
+// For now this fakes a network round-trip with a short delay and
+// always resolves with a 200 response.
+export async function login(
+  dto: LoginRequestDTO,
+): Promise<LoginResponseDTO> {
+  await new Promise((resolve) => setTimeout(resolve, 800));
+
+  return {
+    status: 200,
+    message: "OK",
+    data: {
+      userId: "user_fake_1",
+      username: dto.username,
+      token: "fake-jwt-token",
+    },
+  };
+}
