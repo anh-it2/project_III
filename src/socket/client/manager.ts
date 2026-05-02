@@ -1,8 +1,8 @@
 import { Manager, Socket } from "socket.io-client";
 
 let manager: Manager | null = null;
-//nsp and socket coresponse
 let sockets = new Map<string, Socket>();
+let listenersBound = false;
 
 function getManager() {
   if (manager) return manager;
@@ -23,7 +23,7 @@ export function getNamespaceSocket<S extends Socket>(
   auth: Record<string, unknown>,
 ): S {
   const existing = sockets.get(nsp);
-  if (existing) return sockets.get(nsp) as S;
+  if (existing) return existing as S;
 
   const socket = getManager().socket(nsp, { auth });
   sockets.set(nsp, socket);
@@ -35,14 +35,19 @@ export function disposeAll() {
   sockets.forEach((socket) => socket.close());
   sockets.clear();
   manager = null;
+  listenersBound = false;
 }
 
 export function connectManager() {
   const m = getManager();
-  console.log("[manager] connectManager called, engine readyState =", m.engine?.readyState);
-  m.on("open",  () => console.log("[manager] engine OPEN"));
-  m.on("close", (reason) => console.log("[manager] engine CLOSE:", reason));
-  m.on("error", (err) => console.log("[manager] engine ERROR:", err));
-  m.on("reconnect_attempt", (n) => console.log("[manager] reconnect attempt", n));
+  if (!listenersBound) {
+    m.on("open", () => console.log("[manager] engine OPEN"));
+    m.on("close", (reason) => console.log("[manager] engine CLOSE:", reason));
+    m.on("error", (err) => console.log("[manager] engine ERROR:", err));
+    m.on("reconnect_attempt", (n) =>
+      console.log("[manager] reconnect attempt", n),
+    );
+    listenersBound = true;
+  }
   m.connect();
 }

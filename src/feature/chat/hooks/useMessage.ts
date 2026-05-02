@@ -15,9 +15,8 @@ export function useMessages(conversationId: string) {
   const chatSocket = getChatSocket();
   const { isConnected } = useChat(conversationId);
   const queryClient = useQueryClient();
-  const { removeOptimisticMessage, updateStatus } = useChatStore.getState();
+  const { removeOptimisticMessage } = useChatStore.getState();
 
-  //use useCallback to increase performance
   const fetchHistoryMessage = useCallback(
     (cursor?: number): Promise<HistoryMessagePage> => {
       return new Promise((resolve, reject) => {
@@ -28,8 +27,8 @@ export function useMessages(conversationId: string) {
           "chat:history",
           {
             conversationId,
-            cursor: cursor,
-            limit: 30,
+            cursor: cursor as unknown as string,
+            limit: 30 as unknown as string,
           },
           (ack: ChatHistoryResponseDTO) => {
             const messageData = toMessages(ack.messages);
@@ -52,27 +51,13 @@ export function useMessages(conversationId: string) {
                 msg.status !== "read"
               ) {
                 changed = true;
-                return {
-                  ...msg,
-                  status: "read" as const,
-                };
+                return { ...msg, status: "read" as const };
               }
               return msg;
             });
 
-            //do such as this to decrease how many react re render
-            //react re render base on ref
-            if (!changed) {
-              resolve({
-                messages: messageData,
-                nextCursor: ack.nextCurosr,
-                hasMore: ack.hasMore,
-              });
-              return;
-            }
-
             resolve({
-              messages: messages,
+              messages: changed ? messages : messageData,
               nextCursor: ack.nextCurosr,
               hasMore: ack.hasMore,
             });
@@ -80,7 +65,7 @@ export function useMessages(conversationId: string) {
         );
       });
     },
-    [conversationId],
+    [conversationId, chatSocket, isConnected],
   );
 
   const {
@@ -90,20 +75,19 @@ export function useMessages(conversationId: string) {
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: [conversationId, "chat:messages"],
+    queryKey: ["chat:messages", conversationId],
     queryFn: ({ pageParam }) => fetchHistoryMessage(pageParam),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) =>
       lastPage.hasMore ? lastPage.nextCursor : undefined,
-    enabled: isConnected,
+    enabled: isConnected && !!conversationId,
 
-    //tranform raw data into history data array
-    //this only work when the ref change => prevent rework between re render
+    // flatten newest-first: page[0] is newest, within a page newest-first too
     select: (raw): ChatMessage[] => {
       const seen = new Set<string>();
       const flat: ChatMessage[] = [];
-      for (let i = raw.pages.length - 1; i >= 0; i--) {
-        for (const msg of raw.pages[i].messages) {
+      for (const page of raw.pages) {
+        for (const msg of page.messages) {
           if (msg.id) {
             if (seen.has(msg.id)) continue;
             seen.add(msg.id);
@@ -121,64 +105,61 @@ export function useMessages(conversationId: string) {
     const handleMessage = (messageDTO: ChatMessageDTO) => {
       if (messageDTO.conversationId !== conversationId) return;
 
+      const message = toMessage(messageDTO);
+
+      // sender side: drop optimistic copy
       if (messageDTO.tempId) {
         removeOptimisticMessage(conversationId, {
           tempId: messageDTO.tempId,
           id: messageDTO.id,
         });
+      }
 
-        let message = toMessage(messageDTO);
+      const cur = useChatStore.getState().getReadCursor(conversationId);
+      if (
+        message.seq !== undefined &&
+        message.seq <= cur &&
+        message.status !== "read"
+      ) {
+        message.status = "read";
+      }
 
-        const cur = useChatStore.getState().getReadCursor(conversationId);
-        if (
-          message.seq !== undefined &&
-          message.seq <= cur &&
-          message.status !== "read"
-        ) {
-          message.status = "read";
-        }
-
-        queryClient.setQueryData<HistoryInfinteData>(
-          [conversationId, "chat:messages"],
-          (old) => {
-            if (!old || old.pages.length === 0) {
-              return {
-                pages: [
-                  {
-                    messages: [message],
-                    nextCursor: undefined,
-                    hasMore: false,
-                  },
-                ],
-                pageParams: [undefined],
-              };
-            }
-
-            const firstPage = old.pages[0];
-            if (firstPage.messages.some((msg) => msg.id === message.id))
-              return old;
-
-            const newMessageArray = [message, ...firstPage.messages];
-
+      queryClient.setQueryData<HistoryInfinteData>(
+        ["chat:messages", conversationId],
+        (old) => {
+          if (!old || old.pages.length === 0) {
             return {
-              ...old,
               pages: [
                 {
-                  ...firstPage,
-                  messages: newMessageArray,
+                  messages: [message],
+                  nextCursor: undefined,
+                  hasMore: false,
                 },
-                ...old.pages.slice(1),
               ],
+              pageParams: [undefined],
             };
-          },
-        );
-      }
+          }
+
+          const firstPage = old.pages[0];
+          if (firstPage.messages.some((msg) => msg.id === message.id))
+            return old;
+
+          return {
+            ...old,
+            pages: [
+              { ...firstPage, messages: [message, ...firstPage.messages] },
+              ...old.pages.slice(1),
+            ],
+          };
+        },
+      );
     };
+
     const handleRead = (dto: ReadReceiptDto) => {
       if (dto.conversationId !== conversationId) return;
 
       queryClient.setQueryData<HistoryInfinteData>(
-        [conversationId, "chat:messages"],
+        ["chat:messages", conversationId],
         (old) => {
           if (!old) return old;
 
@@ -219,31 +200,34 @@ export function useMessages(conversationId: string) {
     };
   }, [chatSocket, conversationId, isConnected, queryClient]);
 
-  const optimisticMessages = useChatStore((state) => state.optimisticMessages);
+  // per-conversation selector — avoid re-render on unrelated conv changes
+  const optimisticForConv = useChatStore(
+    (state) => state.optimisticMessages[conversationId],
+  );
 
-  const conbine = useMemo(() => {
-    if (!optimisticMessages || optimisticMessages[conversationId].length === 0)
-      return historical;
+  const combined = useMemo(() => {
+    const base = historical || [];
+    if (!optimisticForConv || optimisticForConv.length === 0) return base;
 
     const historicalIds = new Set<string>();
-
-    for (const m of historical || []) {
-      if (m.id) {
-        historicalIds.add(m.id);
-      }
+    for (const m of base) {
+      if (m.id) historicalIds.add(m.id);
     }
 
-    const liveOptimistics = optimisticMessages[conversationId].filter(
-      (message) => message.id && historicalIds.has(message.id),
+    // keep optimistics NOT yet in historical (still pending or just acked)
+    const liveOptimistics = optimisticForConv.filter(
+      (m) => !m.id || !historicalIds.has(m.id),
     );
 
-    if (liveOptimistics.length === 0) return historical || [];
+    if (liveOptimistics.length === 0) return base;
 
-    return [...(historical || []), ...liveOptimistics];
-  }, [optimisticMessages, historical]);
+    // historical is newest-first; optimistics are oldest-of-pending → newest
+    // prepend optimistics so newest pending sits at top
+    return [...liveOptimistics.reverse(), ...base];
+  }, [optimisticForConv, historical]);
 
   return {
-    messages: conbine,
+    messages: combined,
     fetchNextPage,
     hasNextPage: hasNextPage ?? false,
     isFetchingNextPage,

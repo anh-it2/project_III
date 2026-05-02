@@ -6,7 +6,7 @@ export interface ChatState {
   readCursors: Record<string, number>;
 
   addOptimisticMessage: (conversationId: string, message: ChatMessage) => void;
-  reconclieAck: (
+  reconcileAck: (
     conversationId: string,
     tempId: string,
     server: {
@@ -28,7 +28,7 @@ export interface ChatState {
   getReadCursor: (conversationId: string) => number;
   removeOptimisticMessage: (
     conversationId: string,
-    item: { tempId: string; id: string },
+    item: { tempId?: string; id?: string },
   ) => void;
   getOptimisticMessages: (conversationId: string) => ChatMessage[];
   getPending: (conversationId: string) => ChatMessage[];
@@ -43,10 +43,10 @@ export interface ChatState {
 
 export function match(
   message: ChatMessage,
-  messageDTO: { id: string; tempId: string },
+  target: { id?: string; tempId?: string },
 ) {
-  if (message.tempId === message.tempId) return true;
-  if (message.id === messageDTO.id) return true;
-
+  if (target.tempId !== undefined && message.tempId === target.tempId)
+    return true;
+  if (target.id !== undefined && message.id === target.id) return true;
   return false;
 }

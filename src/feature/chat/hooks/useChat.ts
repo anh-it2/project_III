@@ -9,17 +9,19 @@ import { ChatMessage } from "../types";
 export function useChat(conversationId: string) {
   const { isLoggined, userId: senderId, userName: senderName } = useAuthStore();
   const chatSocket = getChatSocket();
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [isConnected, setIsConnected] = useState<boolean>(
+    chatSocket?.connected ?? false,
+  );
   const {
     getPending,
     getOptimisticMessages,
-    reconclieAck,
+    reconcileAck,
     addOptimisticMessage,
+    markFailed,
   } = useChatStore.getState();
 
   const checkCondition = () => !isLoggined || !conversationId || !chatSocket;
 
-  //checking the state of connection
   useEffect(() => {
     if (checkCondition()) return;
 
@@ -35,20 +37,24 @@ export function useChat(conversationId: string) {
     };
   }, [isLoggined, conversationId, chatSocket]);
 
-  //join and leave room
+  // join on connect, re-join on every reconnect
   useEffect(() => {
     if (checkCondition()) return;
 
-    chatSocket.emit("chat:join", conversationId);
+    const join = () => chatSocket.emit("chat:join", conversationId);
+
+    if (chatSocket.connected) join();
+    chatSocket.on("connect", join);
 
     return () => {
-      chatSocket.emit("chat:leave", conversationId);
+      chatSocket.off("connect", join);
+      if (chatSocket.connected) chatSocket.emit("chat:leave", conversationId);
     };
-  }, [conversationId, isConnected, chatSocket]);
+  }, [conversationId, chatSocket, isLoggined]);
 
-  //flush pending message
+  // flush pending after connect
   useEffect(() => {
-    if (checkCondition()) return;
+    if (checkCondition() || !isConnected) return;
 
     const pending = getPending(conversationId);
 
@@ -57,7 +63,7 @@ export function useChat(conversationId: string) {
         "chat:message",
         toSendMessageDto(conversationId, p.tempId, p.content, p.type),
         (ack: ChatMessageDTO) => {
-          reconclieAck(conversationId, p.tempId, {
+          reconcileAck(conversationId, p.tempId, {
             id: ack.id,
             timestamp: ack.timestamp,
           });
@@ -80,6 +86,7 @@ export function useChat(conversationId: string) {
           senderId,
           senderName,
           conversationId,
+          status: "pending",
         };
 
         addOptimisticMessage(conversationId, optimisticMessage);
@@ -97,7 +104,7 @@ export function useChat(conversationId: string) {
             optimisticMessage.type,
           ),
           (ack: ChatMessageDTO) => {
-            reconclieAck(conversationId, optimisticMessage.tempId, {
+            reconcileAck(conversationId, optimisticMessage.tempId, {
               id: ack.id,
               timestamp: ack.timestamp,
             });
@@ -112,27 +119,30 @@ export function useChat(conversationId: string) {
 
   const retryMessage = useCallback(
     (tempId: string) => {
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         const msg = getOptimisticMessages(conversationId).find(
           (item) => item.tempId === tempId,
         );
 
-        if (!chatSocket || !isConnected) {
-          return reject(new Error("Not connected — message queued"));
+        if (!msg) {
+          return reject(new Error("Message not found"));
         }
 
-        if (!msg) {
-          return reject(new Error("doesn't exist message"));
+        if (!chatSocket || !isConnected) {
+          markFailed(conversationId, tempId);
+          return reject(new Error("Not connected — message queued"));
         }
 
         chatSocket.emit(
           "chat:message",
           toSendMessageDto(conversationId, msg.tempId, msg.content, msg.type),
-          (ack: ChatMessageDTO) =>
-            reconclieAck(conversationId, msg.tempId, {
+          (ack: ChatMessageDTO) => {
+            reconcileAck(conversationId, msg.tempId, {
               id: ack.id,
               timestamp: ack.timestamp,
-            }),
+            });
+            resolve();
+          },
         );
       });
     },

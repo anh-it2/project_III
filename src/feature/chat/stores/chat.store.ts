@@ -15,18 +15,19 @@ export const useChatStore = create<ChatState>()(
             ...state.optimisticMessages,
             [conversationId]: [
               ...(state.optimisticMessages[conversationId] || []),
-              message,
+              { ...message, status: message.status ?? "pending" },
             ],
           },
         }));
       },
 
-      reconclieAck: (conversationId, tempId, server) => {
-        set((state) => ({
-          optimisticMessages: {
-            ...state.optimisticMessages,
-            [conversationId]: state.optimisticMessages[conversationId].map(
-              (item) =>
+      reconcileAck: (conversationId, tempId, server) => {
+        set((state) => {
+          const list = state.optimisticMessages[conversationId] || [];
+          return {
+            optimisticMessages: {
+              ...state.optimisticMessages,
+              [conversationId]: list.map((item) =>
                 item.tempId === tempId
                   ? {
                       ...item,
@@ -35,32 +36,38 @@ export const useChatStore = create<ChatState>()(
                       status: "sent",
                     }
                   : item,
-            ),
-          },
-        }));
+              ),
+            },
+          };
+        });
       },
 
       updateStatus: (conversationId, target, status) => {
-        set((state) => ({
-          optimisticMessages: {
-            ...state.optimisticMessages,
-            [conversationId]: state.optimisticMessages[conversationId].map(
-              (item) => (match(item, target) ? { ...item, status } : item),
-            ),
-          },
-        }));
+        set((state) => {
+          const list = state.optimisticMessages[conversationId] || [];
+          return {
+            optimisticMessages: {
+              ...state.optimisticMessages,
+              [conversationId]: list.map((item) =>
+                match(item, target) ? { ...item, status } : item,
+              ),
+            },
+          };
+        });
       },
 
       markFailed: (conversationId, tempId) => {
-        set((state) => ({
-          optimisticMessages: {
-            ...state.optimisticMessages,
-            [conversationId]: state.optimisticMessages[conversationId].map(
-              (item) =>
+        set((state) => {
+          const list = state.optimisticMessages[conversationId] || [];
+          return {
+            optimisticMessages: {
+              ...state.optimisticMessages,
+              [conversationId]: list.map((item) =>
                 item.tempId === tempId ? { ...item, status: "failed" } : item,
-            ),
-          },
-        }));
+              ),
+            },
+          };
+        });
       },
 
       markReadUpTo: (conversationId, upToSeq) =>
@@ -93,41 +100,44 @@ export const useChatStore = create<ChatState>()(
             },
           };
         }),
+
       setReadCursor: (conversationId, upToSeq) => {
         set((state) => {
-          const cur = state.readCursors[conversationId];
-
+          const cur = state.readCursors[conversationId] ?? -1;
           if (upToSeq <= cur) return state;
-
           return {
             readCursors: {
+              ...state.readCursors,
               [conversationId]: upToSeq,
             },
           };
         });
       },
+
       getReadCursor: (conversationId) => {
-        return get().readCursors[conversationId] || -1;
+        return get().readCursors[conversationId] ?? -1;
       },
 
       getOptimisticMessages: (conversationId) => {
-        return get().optimisticMessages[conversationId];
+        return get().optimisticMessages[conversationId] || [];
       },
 
       getPending: (conversationId) => {
-        return get().optimisticMessages[conversationId].filter(
+        return (get().optimisticMessages[conversationId] || []).filter(
           (message) => message.status === "pending",
         );
       },
-      removeOptimisticMessage: (conversationId, message) => {
-        set((state) => ({
-          optimisticMessages: {
-            ...state.optimisticMessages,
-            [conversationId]: state.optimisticMessages[conversationId].filter(
-              (item) => !match(item, message),
-            ),
-          },
-        }));
+
+      removeOptimisticMessage: (conversationId, target) => {
+        set((state) => {
+          const list = state.optimisticMessages[conversationId] || [];
+          return {
+            optimisticMessages: {
+              ...state.optimisticMessages,
+              [conversationId]: list.filter((item) => !match(item, target)),
+            },
+          };
+        });
       },
 
       setTyping: (
@@ -164,9 +174,9 @@ export const useChatStore = create<ChatState>()(
       name: "chat-storage",
       storage: createJSONStorage(() => localStorage),
 
-      //set what will be saved in storage
       partialize: (state) => ({
         optimisticMessages: state.optimisticMessages,
+        readCursors: state.readCursors,
       }),
     },
   ),

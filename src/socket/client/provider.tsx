@@ -27,7 +27,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       unsub();
-      disposeAll();
     };
   }, []);
 

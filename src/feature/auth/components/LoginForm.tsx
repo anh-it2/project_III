@@ -4,9 +4,10 @@ import { FormEvent, useState } from "react";
 import { toAuthSession, toLoginRequestDto } from "../dto/auth.mapper";
 import { login } from "../services/auth.service";
 import { useAuthStore } from "../stores/auth.store";
-import { OnlineUserList } from "@/feature/presence/components/OnlineUserList";
+import { useRouter } from "@/i18n/navigation";
 
 export function LoginForm() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,6 +31,7 @@ export function LoginForm() {
           userName: session?.username || "",
         });
         setSuccess(`Welcome, ${session?.username ?? "user"}!`);
+        router.push("/chat");
       } else {
         setError(res.message || "Login failed");
       }
@@ -87,7 +89,6 @@ export function LoginForm() {
       >
         {loading ? "Signing in…" : "Sign in"}
       </button>
-      <OnlineUserList />
     </form>
   );
 }

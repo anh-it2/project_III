@@ -1,43 +1,48 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { User } from "@/shared/type";
 import { ChatMessage } from "../types";
+import { OnlineUserList } from "@/feature/presence/components/OnlineUserList";
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { useRouter } from "@/i18n/navigation";
 
 interface ChatRoomProps {
   users: User[];
 }
 
 export function ChatRoom({ users }: ChatRoomProps) {
+  const router = useRouter();
+  const removeLogginedUser = useAuthStore((s) => s.removeLogginedUser);
+  const userName = useAuthStore((s) => s.userName);
+
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [messagesByUser, setMessagesByUser] = useState<
     Record<string, ChatMessage[]>
   >({});
   const [draft, setDraft] = useState("");
 
-  useEffect(() => {
-    if (!selectedUser && users.length > 0) {
-      setSelectedUser(users[0]);
-      return;
-    }
-    if (selectedUser && !users.some((u) => u.id === selectedUser.id)) {
-      setSelectedUser(users[0] ?? null);
-    }
-  }, [users, selectedUser]);
-
   const messages = selectedUser ? (messagesByUser[selectedUser.id] ?? []) : [];
+
+  function handleLogout() {
+    removeLogginedUser();
+    router.push("/login");
+  }
 
   function handleSend(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!selectedUser || !draft.trim()) return;
 
+    const tempId = crypto.randomUUID().slice(0, 10);
     const msg: ChatMessage = {
       id: crypto.randomUUID(),
+      tempId,
       conversationId: selectedUser.id,
       senderId: "me",
       senderName: "Me",
       content: draft.trim(),
       timestamp: Date.now(),
+      queueAt: Date.now(),
       type: "text",
     };
 
@@ -51,12 +56,26 @@ export function ChatRoom({ users }: ChatRoomProps) {
   return (
     <div className="flex h-screen w-full bg-white dark:bg-zinc-950">
       <aside className="flex w-72 flex-col border-r border-black/10 dark:border-white/10">
-        <div className="border-b border-black/10 px-4 py-3 text-sm font-semibold text-zinc-900 dark:border-white/10 dark:text-zinc-50">
-          Online users
+        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3 dark:border-white/10">
+          <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+            {userName || "Online users"}
+          </span>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="text-xs text-red-500 hover:underline"
+          >
+            Logout
+          </button>
         </div>
-        <ul className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto px-2 py-2 text-sm text-zinc-700 dark:text-zinc-300">
+          <OnlineUserList />
+        </div>
+        <ul className="border-t border-black/10 dark:border-white/10">
           {users.length === 0 && (
-            <li className="px-4 py-3 text-sm text-zinc-500">No users online</li>
+            <li className="px-4 py-3 text-sm text-zinc-500">
+              No conversations yet
+            </li>
           )}
           {users.map((u) => {
             const active = selectedUser?.id === u.id;
@@ -100,7 +119,7 @@ export function ChatRoom({ users }: ChatRoomProps) {
                   const mine = m.senderId === "me";
                   return (
                     <li
-                      key={m.id}
+                      key={m.id ?? m.tempId}
                       className={`flex ${mine ? "justify-end" : "justify-start"}`}
                     >
                       <div

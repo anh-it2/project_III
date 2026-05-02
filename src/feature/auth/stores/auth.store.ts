@@ -12,7 +12,7 @@ export const useAuthStore = create<AuthState>()(
 
       saveLoginnedUser: ({ userName, userId }: { userName: string; userId: string }): void => {
         set({
-          userId: `${userId} - ${crypto.randomUUID().slice(0, 8)}`,
+          userId,
           userName,
           isLoggined: true
         });
