@@ -1,0 +1,34 @@
+"use client";
+
+import { MessageOutlined } from "@ant-design/icons";
+import { Flex, Typography } from "antd";
+
+const { Title, Text } = Typography;
+
+export function EmptyChat() {
+  return (
+    <Flex
+      vertical
+      align="center"
+      justify="center"
+      gap={16}
+      className="flex-1 bg-[#fafbfc] dark:bg-[#0a0a0a]"
+    >
+      <div
+        className="flex h-20 w-20 items-center justify-center rounded-full"
+        style={{
+          background:
+            "linear-gradient(135deg, var(--color-primary), var(--color-primary-light))",
+        }}
+      >
+        <MessageOutlined className="!text-[36px] !text-white" />
+      </div>
+      <Title level={4} className="!m-0 !text-[var(--color-text)]">
+        Your messages
+      </Title>
+      <Text className="!max-w-[320px] !text-center !text-[14px] !text-[var(--color-text-muted)]">
+        Pick someone from the sidebar to start a conversation.
+      </Text>
+    </Flex>
+  );
+}

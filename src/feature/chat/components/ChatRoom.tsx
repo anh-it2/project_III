@@ -1,173 +1,63 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { User } from "@/shared/type";
-import { ChatMessage } from "../types";
-import { OnlineUserList } from "@/feature/presence/components/OnlineUserList";
+import { Layout } from "antd";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
+import { getPresenceSocket } from "@/feature/presence/socket";
 import { useRouter } from "@/i18n/navigation";
+import { ChatMain } from "./main/ChatMain";
+import { ChatRightPanel } from "./right/ChatRightPanel";
+import { ChatSidebar } from "./sidebar/ChatSidebar";
 
-interface ChatRoomProps {
-  users: User[];
-}
-
-export function ChatRoom({ users }: ChatRoomProps) {
+export function ChatRoom() {
   const router = useRouter();
-  const removeLogginedUser = useAuthStore((s) => s.removeLogginedUser);
-  const userName = useAuthStore((s) => s.userName);
+  const { isLoggined, userName, removeLogginedUser } = useAuthStore();
 
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [messagesByUser, setMessagesByUser] = useState<
-    Record<string, ChatMessage[]>
-  >({});
-  const [draft, setDraft] = useState("");
+  const [users, setUsers] = useState<OnlineUserDto[]>([]);
+  const [selected, setSelected] = useState<OnlineUserDto | null>(null);
 
-  const messages = selectedUser ? (messagesByUser[selectedUser.id] ?? []) : [];
+  useEffect(() => {
+    if (!isLoggined) return;
+    const socket = getPresenceSocket();
+
+    const onJoined = (u: OnlineUserDto) =>
+      setUsers((prev) =>
+        prev.some((x) => x.id === u.id) ? prev : [...prev, u],
+      );
+
+    const onLeft = (id: string) =>
+      setUsers((prev) => prev.filter((x) => x.id !== id));
+
+    socket.on("presence:user-joined", onJoined);
+    socket.on("presence:user-left", onLeft);
+
+    socket.emit("presence:get-online-users", (list) => setUsers(list));
+
+    return () => {
+      socket.off("presence:user-joined", onJoined);
+      socket.off("presence:user-left", onLeft);
+    };
+  }, [isLoggined]);
 
   function handleLogout() {
     removeLogginedUser();
     router.push("/login");
   }
 
-  function handleSend(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!selectedUser || !draft.trim()) return;
-
-    const tempId = crypto.randomUUID().slice(0, 10);
-    const msg: ChatMessage = {
-      id: crypto.randomUUID(),
-      tempId,
-      conversationId: selectedUser.id,
-      senderId: "me",
-      senderName: "Me",
-      content: draft.trim(),
-      timestamp: Date.now(),
-      queueAt: Date.now(),
-      type: "text",
-    };
-
-    setMessagesByUser((prev) => ({
-      ...prev,
-      [selectedUser.id]: [...(prev[selectedUser.id] ?? []), msg],
-    }));
-    setDraft("");
-  }
-
   return (
-    <div className="flex h-screen w-full bg-white dark:bg-zinc-950">
-      <aside className="flex w-72 flex-col border-r border-black/10 dark:border-white/10">
-        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3 dark:border-white/10">
-          <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-            {userName || "Online users"}
-          </span>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="text-xs text-red-500 hover:underline"
-          >
-            Logout
-          </button>
-        </div>
-        <div className="flex-1 overflow-y-auto px-2 py-2 text-sm text-zinc-700 dark:text-zinc-300">
-          <OnlineUserList />
-        </div>
-        <ul className="border-t border-black/10 dark:border-white/10">
-          {users.length === 0 && (
-            <li className="px-4 py-3 text-sm text-zinc-500">
-              No conversations yet
-            </li>
-          )}
-          {users.map((u) => {
-            const active = selectedUser?.id === u.id;
-            return (
-              <li key={u.id}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedUser(u)}
-                  className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm transition hover:bg-black/5 dark:hover:bg-white/5 ${
-                    active ? "bg-black/5 dark:bg-white/10" : ""
-                  }`}
-                >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
-                    {u.name.charAt(0)}
-                  </span>
-                  <span className="text-zinc-900 dark:text-zinc-50">
-                    {u.name}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      </aside>
-
-      <section className="flex flex-1 flex-col">
-        {selectedUser ? (
-          <>
-            <header className="flex items-center gap-3 border-b border-black/10 px-4 py-3 dark:border-white/10">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
-                {selectedUser.name.charAt(0)}
-              </span>
-              <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-                {selectedUser.name}
-              </span>
-            </header>
-
-            <div className="flex-1 overflow-y-auto px-4 py-4">
-              <ul className="flex flex-col gap-2">
-                {messages.map((m) => {
-                  const mine = m.senderId === "me";
-                  return (
-                    <li
-                      key={m.id ?? m.tempId}
-                      className={`flex ${mine ? "justify-end" : "justify-start"}`}
-                    >
-                      <div
-                        className={`max-w-[70%] rounded-2xl px-4 py-2 text-sm ${
-                          mine
-                            ? "bg-blue-600 text-white"
-                            : "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50"
-                        }`}
-                      >
-                        {m.content}
-                      </div>
-                    </li>
-                  );
-                })}
-                {messages.length === 0 && (
-                  <li className="text-center text-sm text-zinc-500">
-                    No messages yet. Say hi!
-                  </li>
-                )}
-              </ul>
-            </div>
-
-            <form
-              onSubmit={handleSend}
-              className="flex gap-2 border-t border-black/10 px-4 py-3 dark:border-white/10"
-            >
-              <input
-                type="text"
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                placeholder={`Message ${selectedUser.name}`}
-                className="h-10 flex-1 rounded-lg border border-black/10 bg-transparent px-3 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-white/10 dark:text-zinc-50"
-              />
-              <button
-                type="submit"
-                disabled={!draft.trim()}
-                className="h-10 rounded-lg bg-zinc-900 px-4 text-sm font-medium text-zinc-50 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900"
-              >
-                Send
-              </button>
-            </form>
-          </>
-        ) : (
-          <div className="flex flex-1 items-center justify-center text-sm text-zinc-500">
-            Select a user to start chatting
-          </div>
-        )}
-      </section>
-    </div>
+    <Layout className="!h-screen !min-h-screen !bg-[#fafbfc] dark:!bg-[#0a0a0a]">
+      <ChatSidebar
+        users={users}
+        selectedUserId={selected?.id ?? null}
+        currentUserName={userName}
+        onSelect={setSelected}
+        onLogout={handleLogout}
+      />
+      <Layout className="!bg-transparent">
+        <ChatMain user={selected} />
+      </Layout>
+      <ChatRightPanel user={selected} />
+    </Layout>
   );
 }
