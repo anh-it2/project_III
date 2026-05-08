@@ -3,12 +3,12 @@
 import { Badge, Button, Dropdown } from "antd";
 import { useState } from "react";
 import { Icon } from "@/shared/components/Icon";
-import { RECENT_CHATS } from "@/shared/data/chats";
-import { ChatDropdownContent } from "./chat-dropdown/ChatDropdownContent";
+import { RECENT_NOTIFICATIONS } from "@/shared/data/notifications";
+import { NotificationDropdownContent } from "./notification-dropdown/NotificationDropdownContent";
 
-export function ChatNavBtn() {
+export function NotificationNavBtn() {
   const [open, setOpen] = useState(false);
-  const unreadCount = RECENT_CHATS.filter((c) => c.unread).length;
+  const unreadCount = RECENT_NOTIFICATIONS.filter((n) => n.unread).length;
 
   return (
     <Dropdown
@@ -16,7 +16,9 @@ export function ChatNavBtn() {
       onOpenChange={setOpen}
       trigger={["click"]}
       placement="bottomRight"
-      popupRender={() => <ChatDropdownContent onClose={() => setOpen(false)} />}
+      popupRender={() => (
+        <NotificationDropdownContent onClose={() => setOpen(false)} />
+      )}
     >
       <Badge
         count={unreadCount}
@@ -39,7 +41,7 @@ export function ChatNavBtn() {
           className="!flex !h-10 !w-10 !items-center !justify-center !rounded-[10px] !p-0"
           style={{ background: open ? "var(--color-bg-tertiary)" : "transparent" }}
         >
-          <Icon name="chat_bubble" size={22} color="var(--color-text-muted)" />
+          <Icon name="notifications" size={22} color="var(--color-text-muted)" />
         </Button>
       </Badge>
     </Dropdown>

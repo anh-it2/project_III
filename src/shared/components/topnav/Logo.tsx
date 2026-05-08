@@ -1,13 +1,38 @@
 "use client";
 
 import { Flex, Typography } from "antd";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { gradientBg } from "@/shared/utils/gradient";
 
 const { Text } = Typography;
 
 export function Logo() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  function handleClick() {
+    if (pathname === "/") {
+      router.refresh();
+      return;
+    }
+    router.push("/");
+  }
+
   return (
-    <Flex align="center" gap={24}>
+    <Flex
+      align="center"
+      gap={24}
+      onClick={handleClick}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      className="!cursor-pointer"
+    >
       <Flex
         align="center"
         justify="center"

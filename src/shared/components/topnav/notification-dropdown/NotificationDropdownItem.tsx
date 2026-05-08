@@ -1,0 +1,98 @@
+"use client";
+
+import { Flex, Typography } from "antd";
+import { Icon } from "@/shared/components/Icon";
+import {
+  NOTIFICATION_ICON,
+  NOTIFICATION_ICON_COLOR,
+  type NotificationPreview,
+} from "@/shared/data/notifications";
+import { gradientBg } from "@/shared/utils/gradient";
+
+const { Text } = Typography;
+
+interface NotificationDropdownItemProps {
+  notification: NotificationPreview;
+  onClick: () => void;
+}
+
+export function NotificationDropdownItem({
+  notification,
+  onClick,
+}: NotificationDropdownItemProps) {
+  return (
+    <Flex
+      align="center"
+      gap={12}
+      onClick={onClick}
+      className="chat-dd-item !w-full"
+      style={{
+        padding: "8px 12px",
+        borderRadius: 10,
+        cursor: "pointer",
+      }}
+    >
+      <div className="relative shrink-0">
+        <Flex
+          align="center"
+          justify="center"
+          className="!rounded-full"
+          style={{
+            width: 52,
+            height: 52,
+            background: gradientBg([...notification.gradient]),
+          }}
+        >
+          <Icon name="person" size={28} color="#FFFFFF" />
+        </Flex>
+        <span
+          className="absolute"
+          style={{
+            right: -2,
+            bottom: -2,
+            width: 22,
+            height: 22,
+            borderRadius: "50%",
+            background: NOTIFICATION_ICON_COLOR[notification.kind],
+            border: "2px solid var(--color-bg-secondary)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Icon
+            name={NOTIFICATION_ICON[notification.kind]}
+            size={12}
+            color="#FFFFFF"
+          />
+        </span>
+      </div>
+      <Flex vertical gap={2} className="!min-w-0 !flex-1">
+        <Text
+          className="!text-sm"
+          style={{
+            color: "var(--color-text)",
+            fontWeight: notification.unread ? 600 : 400,
+          }}
+        >
+          <span style={{ fontWeight: 700 }}>{notification.actor}</span>{" "}
+          {notification.text}
+        </Text>
+        <Text className="!text-[12px]" style={{ color: "var(--color-text-muted)" }}>
+          {notification.time}
+        </Text>
+      </Flex>
+      {notification.unread ? (
+        <span
+          style={{
+            width: 10,
+            height: 10,
+            borderRadius: "50%",
+            background: "#4096ff",
+            flexShrink: 0,
+          }}
+        />
+      ) : null}
+    </Flex>
+  );
+}

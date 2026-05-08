@@ -3,8 +3,8 @@
 import { Flex } from "antd";
 import { ChatNavBtn } from "./ChatNavBtn";
 import { Logo } from "./Logo";
-import { NavBtn } from "./NavBtn";
 import { NavSearch } from "./NavSearch";
+import { NotificationNavBtn } from "./NotificationNavBtn";
 import { ThemeNavBtn } from "./ThemeNavBtn";
 import { UserAvatarBtn } from "./UserAvatarBtn";
 
@@ -24,9 +24,8 @@ export function TopNav() {
         <NavSearch />
       </Flex>
       <Flex align="center" gap={16}>
-        <NavBtn icon="home" active />
         <ChatNavBtn />
-        <NavBtn icon="notifications" />
+        <NotificationNavBtn />
         <ThemeNavBtn />
         <UserAvatarBtn />
       </Flex>
