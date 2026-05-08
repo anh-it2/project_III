@@ -2,7 +2,8 @@
 
 import { Flex } from "antd";
 import { useRouter } from "@/i18n/navigation";
-import { RECENT_CHATS } from "@/shared/data/chats";
+import { RECENT_CHATS, type ChatPreview } from "@/shared/data/chats";
+import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
 import { ChatDropdownFooter } from "./ChatDropdownFooter";
 import { ChatDropdownHeader } from "./ChatDropdownHeader";
 import { ChatDropdownItem } from "./ChatDropdownItem";
@@ -13,8 +14,14 @@ interface ChatDropdownContentProps {
 
 export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
   const router = useRouter();
+  const openChat = useChatBoxesStore((s) => s.openChat);
 
-  function goChat() {
+  function handleItemClick(chat: ChatPreview) {
+    openChat(chat);
+    onClose();
+  }
+
+  function goSeeAll() {
     router.push("/chat");
     onClose();
   }
@@ -25,7 +32,7 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
       className="!w-[360px]"
       style={{
         background: "var(--color-bg-secondary)",
-        border: "1px solid #2a2a2a",
+        border: "1px solid var(--color-border)",
         borderRadius: 14,
         boxShadow: "0 12px 32px rgba(0,0,0,0.5)",
         overflow: "hidden",
@@ -43,10 +50,14 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
         }}
       >
         {RECENT_CHATS.map((c) => (
-          <ChatDropdownItem key={c.id} chat={c} onClick={goChat} />
+          <ChatDropdownItem
+            key={c.id}
+            chat={c}
+            onClick={() => handleItemClick(c)}
+          />
         ))}
       </Flex>
-      <ChatDropdownFooter onSeeAll={goChat} />
+      <ChatDropdownFooter onSeeAll={goSeeAll} />
     </Flex>
   );
 }
