@@ -15,7 +15,7 @@ export function NavBtn({ icon, active }: NavBtnProps) {
       className="!flex !h-10 !w-10 !items-center !justify-center !rounded-[10px] !p-0"
       style={{ background: active ? "#1f1f1f" : "transparent" }}
     >
-      <Icon name={icon} size={22} color="#a1a1aa" />
+      <Icon name={icon} size={22} color="var(--color-text-muted)" />
     </Button>
   );
 }

@@ -58,7 +58,7 @@ export function ChatDropdownItem({ chat, onClick }: ChatDropdownItemProps) {
           ellipsis
           className="!text-sm"
           style={{
-            color: "#f0f0f0",
+            color: "var(--color-text)",
             fontWeight: chat.unread ? 700 : 500,
           }}
         >
@@ -69,13 +69,13 @@ export function ChatDropdownItem({ chat, onClick }: ChatDropdownItemProps) {
             ellipsis
             className="!text-[13px] !flex-1"
             style={{
-              color: chat.unread ? "#f0f0f0" : "#a1a1aa",
+              color: chat.unread ? "var(--color-text)" : "var(--color-text-muted)",
               fontWeight: chat.unread ? 600 : 400,
             }}
           >
             {chat.lastMessage}
           </Text>
-          <Text className="!text-[12px]" style={{ color: "#71717a" }}>
+          <Text className="!text-[12px]" style={{ color: "var(--color-text-muted)" }}>
             · {chat.time}
           </Text>
         </Flex>

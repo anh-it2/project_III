@@ -23,7 +23,7 @@ export function ComposerActionItem({
       style={{ padding: "8px 12px", borderRadius: 8, cursor: "pointer" }}
     >
       <Icon name={icon} size={20} color={iconColor} />
-      <Text className="!text-[13px] !font-medium" style={{ color: "#a1a1aa" }}>
+      <Text className="!text-[13px] !font-medium" style={{ color: "var(--color-text-muted)" }}>
         {label}
       </Text>
     </Flex>

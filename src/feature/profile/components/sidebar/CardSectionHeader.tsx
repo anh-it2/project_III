@@ -21,12 +21,12 @@ export function CardSectionHeader({
       <Flex vertical gap={2}>
         <Text
           className="!text-[17px] !font-bold !leading-tight"
-          style={gradientText(["#f0f0f0", "#a1a1aa"], 90)}
+          style={{ color: "var(--color-text)" }}
         >
           {title}
         </Text>
         {subtitle ? (
-          <Text className="!text-[13px]" style={{ color: "#71717a" }}>
+          <Text className="!text-[13px]" style={{ color: "var(--color-text-muted)" }}>
             {subtitle}
           </Text>
         ) : null}

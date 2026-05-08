@@ -30,14 +30,14 @@ export function HighlightItem({ item }: HighlightItemProps) {
           style={{
             width: 70,
             height: 70,
-            background: "#1f1f1f",
-            border: "3px solid #0a0a0a",
+            background: "var(--color-bg-tertiary)",
+            border: "3px solid var(--color-bg)",
           }}
         >
-          <Icon name={item.icon} size={28} color="#a1a1aa" />
+          <Icon name={item.icon} size={28} color="var(--color-text-muted)" />
         </Flex>
       </Flex>
-      <Text className="!text-xs !font-medium" style={{ color: "#a1a1aa" }}>
+      <Text className="!text-xs !font-medium" style={{ color: "var(--color-text-muted)" }}>
         {item.label}
       </Text>
     </Flex>

@@ -12,14 +12,21 @@ export default function ProtectedLayout({
   const router = useRouter();
   const isLoggined = useAuthStore((s) => s.isLoggined);
   const [hydrated, setHydrated] = useState(() =>
-    useAuthStore.persist.hasHydrated(),
+    useAuthStore.persist?.hasHydrated() ?? false,
   );
 
   useEffect(() => {
     if (hydrated) return;
-    const unsub = useAuthStore.persist.onFinishHydration(() =>
-      setHydrated(true),
-    );
+    const persistApi = useAuthStore.persist;
+    if (!persistApi) {
+      setHydrated(true);
+      return;
+    }
+    if (persistApi.hasHydrated()) {
+      setHydrated(true);
+      return;
+    }
+    const unsub = persistApi.onFinishHydration(() => setHydrated(true));
     return () => unsub();
   }, [hydrated]);
 

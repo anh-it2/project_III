@@ -12,7 +12,7 @@ export function ChatDropdownFooter({ onSeeAll }: ChatDropdownFooterProps) {
   return (
     <div
       className="w-full border-t"
-      style={{ borderColor: "#1e1e2e", padding: "8px 12px" }}
+      style={{ borderColor: "var(--color-border)", padding: "8px 12px" }}
     >
       <Button
         type="text"

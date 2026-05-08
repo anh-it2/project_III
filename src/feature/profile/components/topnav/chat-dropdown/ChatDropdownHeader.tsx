@@ -13,7 +13,7 @@ export function ChatDropdownHeader() {
       className="!w-full"
       style={{ padding: "12px 16px 8px 16px" }}
     >
-      <Text className="!text-xl !font-bold" style={{ color: "#f0f0f0" }}>
+      <Text className="!text-xl !font-bold" style={{ color: "var(--color-text)" }}>
         Chats
       </Text>
       <Flex align="center" gap={4}>
@@ -21,19 +21,19 @@ export function ChatDropdownHeader() {
           type="text"
           shape="circle"
           className="!flex !h-8 !w-8 !items-center !justify-center !p-0"
-          style={{ background: "#1f1f1f" }}
+          style={{ background: "var(--color-bg-tertiary)" }}
           aria-label="Options"
         >
-          <Icon name="more_horiz" size={18} color="#d4d4d8" />
+          <Icon name="more_horiz" size={18} color="var(--color-text-secondary)" />
         </Button>
         <Button
           type="text"
           shape="circle"
           className="!flex !h-8 !w-8 !items-center !justify-center !p-0"
-          style={{ background: "#1f1f1f" }}
+          style={{ background: "var(--color-bg-tertiary)" }}
           aria-label="New chat"
         >
-          <Icon name="edit_square" size={18} color="#d4d4d8" />
+          <Icon name="edit_square" size={18} color="var(--color-text-secondary)" />
         </Button>
       </Flex>
     </Flex>

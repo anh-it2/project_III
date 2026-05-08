@@ -20,7 +20,7 @@ export function LikeButton({ reaction, onChange }: LikeButtonProps) {
   const [open, setOpen] = useState(false);
   const active = reaction !== null;
   const current = reaction ? REACTION_BY_ID[reaction] : null;
-  const color = current?.color ?? "#a1a1aa";
+  const color = current?.color ?? "var(--color-text-muted)";
   const label = current?.label ?? "Like";
 
   function handleClick() {

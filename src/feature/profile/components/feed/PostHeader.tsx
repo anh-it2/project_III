@@ -24,30 +24,30 @@ export function PostHeader({ post }: PostHeaderProps) {
         <PostAvatar
           size={44}
           gradient={post.author.gradient}
-          iconColor={post.author.gradient ? "#FFFFFF" : "#71717a"}
+          iconColor={post.author.gradient ? "#FFFFFF" : "var(--color-text-muted)"}
         />
         <Flex vertical gap={2}>
           {post.coAuthor ? (
             <Flex align="center" gap={6}>
-              <Text className="!text-[15px] !font-semibold" style={{ color: "#f0f0f0" }}>
+              <Text className="!text-[15px] !font-semibold" style={{ color: "var(--color-text)" }}>
                 {post.author.name}
               </Text>
-              <Icon name="arrow_right" size={18} color="#71717a" />
-              <Text className="!text-[15px] !font-semibold" style={{ color: "#f0f0f0" }}>
+              <Icon name="arrow_right" size={18} color="var(--color-text-muted)" />
+              <Text className="!text-[15px] !font-semibold" style={{ color: "var(--color-text)" }}>
                 {post.coAuthor.name}
               </Text>
             </Flex>
           ) : (
-            <Text className="!text-[15px] !font-semibold" style={{ color: "#f0f0f0" }}>
+            <Text className="!text-[15px] !font-semibold" style={{ color: "var(--color-text)" }}>
               {post.author.name}
             </Text>
           )}
-          <Text className="!text-xs" style={{ color: "#71717a" }}>
+          <Text className="!text-xs" style={{ color: "var(--color-text-muted)" }}>
             {post.time}
           </Text>
         </Flex>
       </Flex>
-      <Icon name="more_horiz" size={20} color="#71717a" />
+      <Icon name="more_horiz" size={20} color="var(--color-text-muted)" />
     </Flex>
   );
 }

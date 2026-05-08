@@ -18,7 +18,7 @@ export function PostBody({ text, hasImage }: PostBodyProps) {
       <Paragraph
         className="!m-0"
         style={{
-          color: "#d4d4d8",
+          color: "var(--color-text-secondary)",
           fontSize: 15,
           lineHeight: 1.55,
         }}

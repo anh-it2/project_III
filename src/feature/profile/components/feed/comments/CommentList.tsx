@@ -13,7 +13,7 @@ interface CommentListProps {
 export function CommentList({ comments }: CommentListProps) {
   if (comments.length === 0) {
     return (
-      <Text className="!text-[13px]" style={{ color: "#71717a" }}>
+      <Text className="!text-[13px]" style={{ color: "var(--color-text-muted)" }}>
         Be the first to comment.
       </Text>
     );

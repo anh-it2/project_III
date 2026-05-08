@@ -15,7 +15,7 @@ export function ReactionPicker({ onPick }: ReactionPickerProps) {
       gap={4}
       className="!rounded-full"
       style={{
-        background: "#1f1f1f",
+        background: "var(--color-bg-tertiary)",
         border: "1px solid #2e2e2e",
         padding: "6px 8px",
         boxShadow: "0 8px 24px rgba(0,0,0,0.5)",

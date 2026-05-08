@@ -16,34 +16,34 @@ export function CommentItem({ comment }: CommentItemProps) {
       <PostAvatar
         size={32}
         gradient={comment.authorGradient}
-        iconColor={comment.authorGradient ? "#FFFFFF" : "#71717a"}
+        iconColor={comment.authorGradient ? "#FFFFFF" : "var(--color-text-muted)"}
       />
       <Flex vertical gap={4} className="!flex-1">
         <Flex
           vertical
           gap={2}
           style={{
-            background: "#1f1f1f",
+            background: "var(--color-bg-tertiary)",
             borderRadius: 16,
             padding: "8px 12px",
             maxWidth: "fit-content",
           }}
         >
-          <Text className="!text-[13px] !font-semibold" style={{ color: "#f0f0f0" }}>
+          <Text className="!text-[13px] !font-semibold" style={{ color: "var(--color-text)" }}>
             {comment.author}
           </Text>
-          <Text className="!text-sm" style={{ color: "#d4d4d8" }}>
+          <Text className="!text-sm" style={{ color: "var(--color-text-secondary)" }}>
             {comment.text}
           </Text>
         </Flex>
         <Flex gap={12} style={{ paddingLeft: 12 }}>
-          <Text className="!text-[11px] !font-semibold" style={{ color: "#71717a", cursor: "pointer" }}>
+          <Text className="!text-[11px] !font-semibold" style={{ color: "var(--color-text-muted)", cursor: "pointer" }}>
             Like
           </Text>
-          <Text className="!text-[11px] !font-semibold" style={{ color: "#71717a", cursor: "pointer" }}>
+          <Text className="!text-[11px] !font-semibold" style={{ color: "var(--color-text-muted)", cursor: "pointer" }}>
             Reply
           </Text>
-          <Text className="!text-[11px]" style={{ color: "#71717a" }}>
+          <Text className="!text-[11px]" style={{ color: "var(--color-text-muted)" }}>
             {comment.time}
           </Text>
         </Flex>

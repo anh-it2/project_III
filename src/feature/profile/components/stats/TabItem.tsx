@@ -27,7 +27,7 @@ export function TabItem({ label, active }: TabItemProps) {
       <Text
         className="!text-[13px]"
         style={{
-          color: active ? "#FFFFFF" : "#a1a1aa",
+          color: active ? "#FFFFFF" : "var(--color-text-muted)",
           fontWeight: active ? 600 : 500,
         }}
       >

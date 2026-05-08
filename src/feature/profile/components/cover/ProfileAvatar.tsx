@@ -24,11 +24,11 @@ export function ProfileAvatar() {
         style={{
           width: 136,
           height: 136,
-          background: "#1a1a2e",
-          border: "4px solid #0a0a0a",
+          background: "var(--color-bg-secondary)",
+          border: "4px solid var(--color-bg)",
         }}
       >
-        <Icon name="person" size={64} color="#a1a1aa" />
+        <Icon name="person" size={64} color="var(--color-text-muted)" />
       </Flex>
     </Flex>
   );

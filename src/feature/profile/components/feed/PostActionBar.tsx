@@ -25,7 +25,7 @@ export function PostActionBar({
     <Flex
       justify="space-around"
       className="!w-full !border-t"
-      style={{ padding: "8px 24px", borderColor: "#1e1e2e" }}
+      style={{ padding: "8px 24px", borderColor: "var(--color-border)" }}
     >
       <LikeButton reaction={reaction} onChange={onReactionChange} />
       <CommentButton onClick={onCommentClick} />

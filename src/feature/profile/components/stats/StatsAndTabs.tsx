@@ -9,7 +9,7 @@ export function StatsAndTabs() {
     <Flex
       vertical
       className="!w-full !shrink-0 !border-b"
-      style={{ background: "#0f0f0f", borderColor: "#1e1e1e" }}
+      style={{ background: "var(--color-bg-secondary)", borderColor: "var(--color-border)" }}
     >
       <StatsRow />
       <TabsRow />

@@ -12,7 +12,7 @@ export function ProfilePage() {
     <Flex
       vertical
       className="!min-h-screen !w-full"
-      style={{ background: "#0a0a0a" }}
+      style={{ background: "var(--color-bg)" }}
     >
       <TopNav />
       <CoverSection />

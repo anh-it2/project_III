@@ -32,21 +32,21 @@ export function PostReactions({
       align="center"
       justify="space-between"
       className="!w-full !border-t"
-      style={{ padding: "12px 24px", borderColor: "#1e1e2e" }}
+      style={{ padding: "12px 24px", borderColor: "var(--color-border)" }}
     >
       <Flex align="center" gap={8}>
-        <Text className="!text-base" style={{ color: "#f0f0f0" }}>
+        <Text className="!text-base" style={{ color: "var(--color-text)" }}>
           {emojiDisplay(reaction, defaultEmojis)}
         </Text>
-        <Text className="!text-[13px]" style={{ color: "#a1a1aa" }}>
+        <Text className="!text-[13px]" style={{ color: "var(--color-text-muted)" }}>
           {formatCount(likeCount)}
         </Text>
       </Flex>
       <Flex align="center" gap={16}>
-        <Text className="!text-[13px]" style={{ color: "#a1a1aa" }}>
+        <Text className="!text-[13px]" style={{ color: "var(--color-text-muted)" }}>
           {formatCount(commentCount)} comments
         </Text>
-        <Text className="!text-[13px]" style={{ color: "#a1a1aa" }}>
+        <Text className="!text-[13px]" style={{ color: "var(--color-text-muted)" }}>
           {formatCount(shareCount)} shares
         </Text>
       </Flex>

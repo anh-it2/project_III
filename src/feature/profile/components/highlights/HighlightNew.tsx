@@ -15,13 +15,13 @@ export function HighlightNew() {
         style={{
           width: 76,
           height: 76,
-          background: "#1f1f1f",
+          background: "var(--color-bg-tertiary)",
           border: "2px dashed #3f3f46",
         }}
       >
-        <Icon name="add" size={32} color="#71717a" />
+        <Icon name="add" size={32} color="var(--color-text-muted)" />
       </Flex>
-      <Text className="!text-xs !font-medium" style={{ color: "#71717a" }}>
+      <Text className="!text-xs !font-medium" style={{ color: "var(--color-text-muted)" }}>
         New
       </Text>
     </Flex>

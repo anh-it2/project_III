@@ -17,8 +17,8 @@ export function StatCard({ item }: StatCardProps) {
       gap={2}
       className="!flex-1"
       style={{
-        background: "#141414",
-        border: "1px solid #1e1e1e",
+        background: "var(--color-bg-secondary)",
+        border: "1px solid var(--color-border)",
         borderRadius: 14,
         padding: "16px 24px",
       }}
@@ -34,7 +34,7 @@ export function StatCard({ item }: StatCardProps) {
       </Text>
       <Text
         className="!text-xs !font-medium"
-        style={{ color: "#71717a", letterSpacing: 0.5 }}
+        style={{ color: "var(--color-text-muted)", letterSpacing: 0.5 }}
       >
         {item.label}
       </Text>

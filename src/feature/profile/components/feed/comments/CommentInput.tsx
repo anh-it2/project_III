@@ -27,7 +27,7 @@ export function CommentInput({ onSubmit }: CommentInputProps) {
         gap={8}
         className="!flex-1"
         style={{
-          background: "#1f1f1f",
+          background: "var(--color-bg-tertiary)",
           borderRadius: 18,
           padding: "0 8px 0 16px",
           minHeight: 36,
@@ -40,7 +40,7 @@ export function CommentInput({ onSubmit }: CommentInputProps) {
           placeholder="Write a comment..."
           variant="borderless"
           className="!flex-1 !p-0 !text-sm"
-          style={{ background: "transparent", color: "#f0f0f0" }}
+          style={{ background: "transparent", color: "var(--color-text)" }}
         />
         <Button
           type="text"
@@ -53,7 +53,7 @@ export function CommentInput({ onSubmit }: CommentInputProps) {
           <Icon
             name="send"
             size={18}
-            color={value.trim() ? "#4096ff" : "#71717a"}
+            color={value.trim() ? "#4096ff" : "var(--color-text-muted)"}
           />
         </Button>
       </Flex>

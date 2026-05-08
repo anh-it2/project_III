@@ -11,12 +11,12 @@ export function ComposerInput() {
       className="!flex-1"
       style={{
         height: 44,
-        background: "#1f1f1f",
+        background: "var(--color-bg-tertiary)",
         borderRadius: 22,
         padding: "0 20px",
       }}
     >
-      <Text className="!text-sm" style={{ color: "#71717a" }}>
+      <Text className="!text-sm" style={{ color: "var(--color-text-muted)" }}>
         What&apos;s on your mind, Sarah?
       </Text>
     </Flex>

@@ -48,8 +48,8 @@ export function PostCard({ post }: PostCardProps) {
       vertical
       className="!w-full !overflow-hidden"
       style={{
-        background: "#111114",
-        border: "1px solid #1e1e2e",
+        background: "var(--color-bg-secondary)",
+        border: "1px solid var(--color-border)",
         borderRadius: 20,
         boxShadow: "0 2px 16px #00000030",
       }}

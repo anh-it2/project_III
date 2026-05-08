@@ -24,7 +24,7 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
       vertical
       className="!w-[360px]"
       style={{
-        background: "#1a1a1a",
+        background: "var(--color-bg-secondary)",
         border: "1px solid #2a2a2a",
         borderRadius: 14,
         boxShadow: "0 12px 32px rgba(0,0,0,0.5)",

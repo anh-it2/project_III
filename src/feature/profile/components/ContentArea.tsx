@@ -9,7 +9,7 @@ export function ContentArea() {
     <Flex
       gap={24}
       className="!w-full"
-      style={{ background: "#0a0a0a", padding: "24px 48px" }}
+      style={{ background: "var(--color-bg)", padding: "24px 48px" }}
     >
       <Sidebar />
       <MainFeed />

@@ -16,7 +16,7 @@ export function CommentSection({ comments, onAdd }: CommentSectionProps) {
       vertical
       gap={16}
       className="!w-full !border-t"
-      style={{ padding: "16px 24px", borderColor: "#1e1e2e" }}
+      style={{ padding: "16px 24px", borderColor: "var(--color-border)" }}
     >
       <CommentList comments={comments} />
       <CommentInput onSubmit={onAdd} />

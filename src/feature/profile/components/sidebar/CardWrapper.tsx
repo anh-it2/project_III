@@ -20,11 +20,11 @@ export function CardWrapper({
       gap={gap}
       className="!w-full"
       style={{
-        background: "#111114",
-        border: "1px solid #1e1e2e",
+        background: "var(--color-bg-secondary)",
+        border: "1px solid var(--color-border)",
         borderRadius: 20,
         padding,
-        boxShadow: "0 2px 16px #00000030",
+        boxShadow: "var(--shadow-md)",
       }}
     >
       {children}

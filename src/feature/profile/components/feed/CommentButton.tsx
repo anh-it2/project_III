@@ -16,8 +16,8 @@ export function CommentButton({ onClick }: CommentButtonProps) {
       onClick={onClick}
       className="!flex !h-auto !items-center !gap-2 !rounded-lg !px-4 !py-2.5"
     >
-      <Icon name="mode_comment" size={20} color="#a1a1aa" />
-      <Text className="!text-sm !font-medium" style={{ color: "#a1a1aa" }}>
+      <Icon name="mode_comment" size={20} color="var(--color-text-muted)" />
+      <Text className="!text-sm !font-medium" style={{ color: "var(--color-text-muted)" }}>
         Comment
       </Text>
     </Button>

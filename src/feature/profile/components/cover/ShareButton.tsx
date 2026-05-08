@@ -11,15 +11,15 @@ export function ShareButton() {
       type="text"
       className="!h-10 !rounded-3xl !px-6"
       style={{
-        background: "#ffffff10",
-        border: "1px solid #ffffff20",
+        background: "rgba(255,255,255,0.18)",
+        border: "1px solid rgba(255,255,255,0.35)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
       }}
     >
       <Flex align="center" gap={8}>
-        <Icon name="share" size={18} color="#d4d4d8" />
-        <Text className="!text-sm !font-medium" style={{ color: "#d4d4d8" }}>
+        <Icon name="share" size={18} color="#ffffff" />
+        <Text className="!text-sm !font-semibold" style={{ color: "#ffffff" }}>
           Share
         </Text>
       </Flex>

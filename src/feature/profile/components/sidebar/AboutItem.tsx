@@ -11,7 +11,7 @@ interface AboutItemProps {
 }
 
 export function AboutItem({ item }: AboutItemProps) {
-  const iconColor = item.muted ? "#71717a" : undefined;
+  const iconColor = item.muted ? "var(--color-text-muted)" : undefined;
   const iconStyle = item.gradient && !item.muted
     ? gradientText([...item.gradient], 135)
     : undefined;
@@ -26,7 +26,7 @@ export function AboutItem({ item }: AboutItemProps) {
       />
       <Text
         className="!text-sm"
-        style={{ color: item.muted ? "#71717a" : "#d4d4d8" }}
+        style={{ color: item.muted ? "var(--color-text-muted)" : "var(--color-text-secondary)" }}
       >
         {item.text}
       </Text>

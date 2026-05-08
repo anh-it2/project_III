@@ -19,13 +19,13 @@ export function FriendItem({ friend }: FriendItemProps) {
         className="!w-full"
         style={{
           height: 96,
-          background: "#1f1f1f",
+          background: "var(--color-bg-tertiary)",
           borderRadius: 12,
         }}
       >
-        <Icon name="person" size={36} color="#71717a" />
+        <Icon name="person" size={36} color="var(--color-text-muted)" />
       </Flex>
-      <Text className="!text-xs !font-medium" style={{ color: "#d4d4d8" }}>
+      <Text className="!text-xs !font-medium" style={{ color: "var(--color-text-secondary)" }}>
         {friend.name}
       </Text>
     </Flex>
