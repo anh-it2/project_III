@@ -4,8 +4,10 @@ import {
   EditOutlined,
   LogoutOutlined,
   MoreOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { Button, Dropdown, Typography } from "antd";
+import { useRouter } from "@/i18n/navigation";
 
 const { Text } = Typography;
 
@@ -17,6 +19,7 @@ interface SidebarHeaderProps {
 }
 
 export function SidebarHeader({ onLogout }: SidebarHeaderProps) {
+  const router = useRouter();
   return (
     <div className="flex h-[72px] items-center justify-between border-b border-[var(--color-border)] px-4">
       <div className="flex items-center gap-2.5">
@@ -43,6 +46,12 @@ export function SidebarHeader({ onLogout }: SidebarHeaderProps) {
           trigger={["click"]}
           menu={{
             items: [
+              {
+                key: "profile",
+                icon: <UserOutlined />,
+                label: "Profile",
+                onClick: () => router.push("/profile"),
+              },
               {
                 key: "logout",
                 icon: <LogoutOutlined />,

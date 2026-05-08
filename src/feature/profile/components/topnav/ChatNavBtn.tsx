@@ -1,0 +1,28 @@
+"use client";
+
+import { Button, Dropdown } from "antd";
+import { useState } from "react";
+import { Icon } from "../Icon";
+import { ChatDropdownContent } from "./chat-dropdown/ChatDropdownContent";
+
+export function ChatNavBtn() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Dropdown
+      open={open}
+      onOpenChange={setOpen}
+      trigger={["click"]}
+      placement="bottomRight"
+      popupRender={() => <ChatDropdownContent onClose={() => setOpen(false)} />}
+    >
+      <Button
+        type="text"
+        className="!flex !h-10 !w-10 !items-center !justify-center !rounded-[10px] !p-0"
+        style={{ background: open ? "#1f1f1f" : "transparent" }}
+      >
+        <Icon name="chat_bubble" size={22} color="#a1a1aa" />
+      </Button>
+    </Dropdown>
+  );
+}

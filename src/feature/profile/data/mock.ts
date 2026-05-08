@@ -1,0 +1,259 @@
+export interface ProfileUser {
+  name: string;
+  bio: string;
+  location: string;
+}
+
+export interface Highlight {
+  id: string;
+  label: string;
+  icon: string;
+  gradient: [string, string] | [string, string, string];
+}
+
+export interface StatItem {
+  id: string;
+  value: string;
+  label: string;
+  gradient: [string, string];
+}
+
+export interface AboutItem {
+  id: string;
+  icon: string;
+  text: string;
+  gradient?: [string, string];
+  muted?: boolean;
+}
+
+export interface Friend {
+  id: string;
+  name: string;
+}
+
+export interface PhotoTile {
+  id: string;
+  url: string;
+}
+
+export interface PostAuthor {
+  name: string;
+  gradient?: [string, string];
+}
+
+export interface Post {
+  id: string;
+  author: PostAuthor;
+  coAuthor?: PostAuthor;
+  time: string;
+  text: string;
+  image?: string;
+  emojis: string;
+  likes: number;
+  comments: number;
+  shares: number;
+  initialReaction?: ReactionId;
+}
+
+export type ReactionId =
+  | "like"
+  | "love"
+  | "care"
+  | "haha"
+  | "wow"
+  | "sad"
+  | "angry";
+
+export interface Reaction {
+  id: ReactionId;
+  emoji: string;
+  label: string;
+  color: string;
+}
+
+export const REACTIONS: Reaction[] = [
+  { id: "like", emoji: "👍", label: "Like", color: "#4096ff" },
+  { id: "love", emoji: "❤️", label: "Love", color: "#ef4444" },
+  { id: "care", emoji: "🥰", label: "Care", color: "#f59e0b" },
+  { id: "haha", emoji: "😂", label: "Haha", color: "#eab308" },
+  { id: "wow", emoji: "😮", label: "Wow", color: "#eab308" },
+  { id: "sad", emoji: "😢", label: "Sad", color: "#eab308" },
+  { id: "angry", emoji: "😡", label: "Angry", color: "#f97316" },
+];
+
+export const REACTION_BY_ID: Record<ReactionId, Reaction> = REACTIONS.reduce(
+  (acc, r) => ({ ...acc, [r.id]: r }),
+  {} as Record<ReactionId, Reaction>,
+);
+
+export interface Comment {
+  id: string;
+  author: string;
+  authorGradient?: [string, string];
+  text: string;
+  time: string;
+}
+
+export const PROFILE: ProfileUser = {
+  name: "Sarah Anderson",
+  bio: "Product Designer at Meta",
+  location: "San Francisco, CA",
+};
+
+export const HIGHLIGHTS: Highlight[] = [
+  { id: "h1", label: "Travel", icon: "flight", gradient: ["#4096ff", "#a855f7", "#ec4899"] },
+  { id: "h2", label: "Design", icon: "palette", gradient: ["#f59e0b", "#ef4444"] },
+  { id: "h3", label: "Food", icon: "restaurant", gradient: ["#22c55e", "#06b6d4"] },
+  { id: "h4", label: "Fitness", icon: "fitness_center", gradient: ["#8b5cf6", "#ec4899"] },
+  { id: "h5", label: "Music", icon: "music_note", gradient: ["#f97316", "#eab308"] },
+  { id: "h6", label: "Photos", icon: "photo_camera", gradient: ["#06b6d4", "#3b82f6"] },
+];
+
+export const STATS: StatItem[] = [
+  { id: "s1", value: "1,247", label: "Posts", gradient: ["#4096ff", "#a855f7"] },
+  { id: "s2", value: "4,832", label: "Friends", gradient: ["#a855f7", "#ec4899"] },
+  { id: "s3", value: "892", label: "Photos", gradient: ["#22c55e", "#06b6d4"] },
+  { id: "s4", value: "12.5K", label: "Likes", gradient: ["#f59e0b", "#ef4444"] },
+];
+
+export const TABS = ["Posts", "About", "Friends", "Photos", "Videos"] as const;
+
+export const ABOUT_ITEMS: AboutItem[] = [
+  { id: "a1", icon: "work", text: "Product Designer at Meta", gradient: ["#4096ff", "#a855f7"] },
+  { id: "a2", icon: "school", text: "Stanford University", gradient: ["#a855f7", "#ec4899"] },
+  { id: "a3", icon: "location_on", text: "San Francisco, California", gradient: ["#f59e0b", "#f97316"] },
+  { id: "a4", icon: "favorite", text: "Single", gradient: ["#ef4444", "#ec4899"] },
+  { id: "a5", icon: "calendar_month", text: "Joined March 2019", muted: true },
+];
+
+export const FRIENDS: Friend[] = [
+  { id: "f1", name: "Alex Chen" },
+  { id: "f2", name: "Mia Lopez" },
+  { id: "f3", name: "James Wu" },
+  { id: "f4", name: "Emma Park" },
+  { id: "f5", name: "David Kim" },
+  { id: "f6", name: "Lily Zhang" },
+];
+
+export const PHOTOS: PhotoTile[] = [
+  {
+    id: "p1",
+    url: "https://images.unsplash.com/photo-1574854985846-97f10ecc922c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+  },
+  {
+    id: "p2",
+    url: "https://images.unsplash.com/photo-1511081692775-05d0f180a065?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+  },
+  {
+    id: "p3",
+    url: "https://images.unsplash.com/photo-1730034374649-924a9507089e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+  },
+  {
+    id: "p4",
+    url: "https://images.unsplash.com/photo-1493238792000-8113da705763?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+  },
+];
+
+export const POSTS: Post[] = [
+  {
+    id: "post-1",
+    author: { name: "Sarah Anderson", gradient: ["#4096ff", "#a855f7"] },
+    time: "2 hours ago  ·  🌍",
+    text: "Just wrapped up an amazing design sprint with the team! 🎨✨ Nothing beats the energy of collaborative creativity. Here's a sneak peek at what we've been working on.",
+    image: "/profile/post-1.png",
+    emojis: "❤️ 👍 😮",
+    likes: 248,
+    comments: 42,
+    shares: 12,
+  },
+  {
+    id: "post-2",
+    author: { name: "Alex Chen" },
+    coAuthor: { name: "Sarah Anderson" },
+    time: "5 hours ago  ·  🌍",
+    text: "Happy birthday Sarah! 🎂🎉 Wishing you an incredible year ahead. Your designs continue to inspire everyone on the team. Here's to many more creative adventures together!",
+    emojis: "🎂 ❤️ 👍",
+    likes: 186,
+    comments: 31,
+    shares: 5,
+    initialReaction: "like",
+  },
+];
+
+export interface ChatPreview {
+  id: string;
+  name: string;
+  lastMessage: string;
+  time: string;
+  unread?: boolean;
+  online?: boolean;
+  gradient: [string, string];
+}
+
+export const RECENT_CHATS: ChatPreview[] = [
+  {
+    id: "ch1",
+    name: "Alex Chen",
+    lastMessage: "Sent the new mockups, take a look 🎨",
+    time: "2m",
+    unread: true,
+    online: true,
+    gradient: ["#4096ff", "#a855f7"],
+  },
+  {
+    id: "ch2",
+    name: "Mia Lopez",
+    lastMessage: "You: Sounds good, see you tomorrow!",
+    time: "23m",
+    online: true,
+    gradient: ["#ec4899", "#8b5cf6"],
+  },
+  {
+    id: "ch3",
+    name: "Design Team",
+    lastMessage: "Emma: Can we sync at 3pm?",
+    time: "1h",
+    unread: true,
+    gradient: ["#f59e0b", "#ef4444"],
+  },
+  {
+    id: "ch4",
+    name: "James Wu",
+    lastMessage: "🔥🔥",
+    time: "3h",
+    gradient: ["#22c55e", "#06b6d4"],
+  },
+  {
+    id: "ch5",
+    name: "Lily Zhang",
+    lastMessage: "Happy birthday Sarah! 🎉",
+    time: "5h",
+    gradient: ["#f97316", "#eab308"],
+  },
+  {
+    id: "ch6",
+    name: "David Kim",
+    lastMessage: "You: Thanks, will review tonight",
+    time: "1d",
+    gradient: ["#06b6d4", "#3b82f6"],
+  },
+];
+
+export function formatCount(n: number): string {
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return String(n);
+}
+
+export function gradientText(stops: string[], deg = 90): React.CSSProperties {
+  return {
+    background: `linear-gradient(${deg}deg, ${stops.map((c, i) => `${c} ${(i / (stops.length - 1)) * 100}%`).join(", ")})`,
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
+    color: "transparent",
+  };
+}
+
+export function gradientBg(stops: string[], deg = 135): string {
+  return `linear-gradient(${deg}deg, ${stops.map((c, i) => `${c} ${(i / (stops.length - 1)) * 100}%`).join(", ")})`;
+}
