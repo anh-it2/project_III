@@ -1,8 +1,8 @@
 "use client";
 
 import { Flex, Typography } from "antd";
-import type { Comment } from "../../../data/mock";
-import { PostAvatar } from "../PostAvatar";
+import type { Comment } from "../../data/reactions";
+import { PostAvatar } from "./PostAvatar";
 
 const { Text } = Typography;
 
@@ -16,6 +16,7 @@ export function CommentItem({ comment }: CommentItemProps) {
       <PostAvatar
         size={32}
         gradient={comment.authorGradient}
+        initial={comment.authorInitial}
         iconColor={comment.authorGradient ? "#FFFFFF" : "var(--color-text-muted)"}
       />
       <Flex vertical gap={4} className="!flex-1">
@@ -29,18 +30,30 @@ export function CommentItem({ comment }: CommentItemProps) {
             maxWidth: "fit-content",
           }}
         >
-          <Text className="!text-[13px] !font-semibold" style={{ color: "var(--color-text)" }}>
+          <Text
+            className="!text-[13px] !font-semibold"
+            style={{ color: "var(--color-text)" }}
+          >
             {comment.author}
           </Text>
-          <Text className="!text-sm" style={{ color: "var(--color-text-secondary)" }}>
+          <Text
+            className="!text-sm"
+            style={{ color: "var(--color-text-secondary)" }}
+          >
             {comment.text}
           </Text>
         </Flex>
         <Flex gap={12} style={{ paddingLeft: 12 }}>
-          <Text className="!text-[11px] !font-semibold" style={{ color: "var(--color-text-muted)", cursor: "pointer" }}>
+          <Text
+            className="!text-[11px] !font-semibold"
+            style={{ color: "var(--color-text-muted)", cursor: "pointer" }}
+          >
             Like
           </Text>
-          <Text className="!text-[11px] !font-semibold" style={{ color: "var(--color-text-muted)", cursor: "pointer" }}>
+          <Text
+            className="!text-[11px] !font-semibold"
+            style={{ color: "var(--color-text-muted)", cursor: "pointer" }}
+          >
             Reply
           </Text>
           <Text className="!text-[11px]" style={{ color: "var(--color-text-muted)" }}>

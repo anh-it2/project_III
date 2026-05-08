@@ -2,11 +2,8 @@
 
 import { Button, Popover, Typography } from "antd";
 import { useState } from "react";
-import { Icon } from "../../Icon";
-import {
-  REACTION_BY_ID,
-  type ReactionId,
-} from "../../../data/mock";
+import { Icon } from "../Icon";
+import { REACTION_BY_ID, type ReactionId } from "../../data/reactions";
 import { ReactionPicker } from "./ReactionPicker";
 
 const { Text } = Typography;
@@ -14,9 +11,10 @@ const { Text } = Typography;
 interface LikeButtonProps {
   reaction: ReactionId | null;
   onChange: (next: ReactionId | null) => void;
+  className?: string;
 }
 
-export function LikeButton({ reaction, onChange }: LikeButtonProps) {
+export function LikeButton({ reaction, onChange, className }: LikeButtonProps) {
   const [open, setOpen] = useState(false);
   const active = reaction !== null;
   const current = reaction ? REACTION_BY_ID[reaction] : null;
@@ -39,20 +37,18 @@ export function LikeButton({ reaction, onChange }: LikeButtonProps) {
       open={open}
       onOpenChange={setOpen}
       placement="top"
+      arrow={false}
       mouseEnterDelay={0.4}
       mouseLeaveDelay={0.2}
-      styles={{
-        container: {
-          padding: 0,
-          background: "transparent",
-          boxShadow: "none",
-        },
-      }}
+      classNames={{ root: "reaction-popover" }}
     >
       <Button
         type="text"
         onClick={handleClick}
-        className="!flex !h-auto !items-center !gap-2 !rounded-lg !px-4 !py-2.5"
+        className={
+          className ??
+          "!flex !h-auto !items-center !gap-2 !rounded-lg !px-4 !py-2.5"
+        }
       >
         {current ? (
           <span style={{ fontSize: 20, lineHeight: 1 }}>{current.emoji}</span>
@@ -61,7 +57,7 @@ export function LikeButton({ reaction, onChange }: LikeButtonProps) {
         )}
         <Text
           className="!text-sm"
-          style={{ color, fontWeight: active ? 600 : 500 }}
+          style={{ color, fontWeight: active ? 700 : 600 }}
         >
           {label}
         </Text>

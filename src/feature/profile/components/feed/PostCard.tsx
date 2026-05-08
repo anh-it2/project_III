@@ -2,8 +2,9 @@
 
 import { Flex } from "antd";
 import { useState } from "react";
-import type { Comment, Post, ReactionId } from "../../data/mock";
-import { CommentSection } from "./comments/CommentSection";
+import type { Comment } from "@/shared/data/reactions";
+import { CommentSection } from "@/shared/components/post/CommentSection";
+import type { Post, ReactionId } from "../../data/mock";
 import { PostActionBar } from "./PostActionBar";
 import { PostBody } from "./PostBody";
 import { PostHeader } from "./PostHeader";

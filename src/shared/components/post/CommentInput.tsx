@@ -2,14 +2,20 @@
 
 import { Button, Flex, Input } from "antd";
 import { useState } from "react";
-import { Icon } from "../../Icon";
-import { PostAvatar } from "../PostAvatar";
+import { Icon } from "../Icon";
+import { PostAvatar } from "./PostAvatar";
 
 interface CommentInputProps {
   onSubmit: (text: string) => void;
+  authorInitial?: string;
+  authorGradient?: [string, string];
 }
 
-export function CommentInput({ onSubmit }: CommentInputProps) {
+export function CommentInput({
+  onSubmit,
+  authorInitial,
+  authorGradient = ["#4096ff", "#a855f7"],
+}: CommentInputProps) {
   const [value, setValue] = useState("");
 
   function handleSend() {
@@ -21,7 +27,7 @@ export function CommentInput({ onSubmit }: CommentInputProps) {
 
   return (
     <Flex gap={8} className="!w-full">
-      <PostAvatar size={32} gradient={["#4096ff", "#a855f7"]} />
+      <PostAvatar size={32} gradient={authorGradient} initial={authorInitial} />
       <Flex
         align="center"
         gap={8}

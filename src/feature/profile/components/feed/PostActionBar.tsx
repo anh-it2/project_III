@@ -1,10 +1,10 @@
 "use client";
 
 import { Flex } from "antd";
+import { CommentButton } from "@/shared/components/post/CommentButton";
+import { LikeButton } from "@/shared/components/post/LikeButton";
+import { ShareMenu } from "@/shared/components/post/ShareMenu";
 import type { ReactionId } from "../../data/mock";
-import { CommentButton } from "./CommentButton";
-import { LikeButton } from "./reactions/LikeButton";
-import { ShareMenu } from "./ShareMenu";
 
 interface PostActionBarProps {
   postId: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import { Flex } from "antd";
-import { REACTIONS, type ReactionId } from "../../../data/mock";
+import { REACTIONS, type ReactionId } from "../../data/reactions";
 import { ReactionItem } from "./ReactionItem";
 
 interface ReactionPickerProps {
@@ -16,7 +16,7 @@ export function ReactionPicker({ onPick }: ReactionPickerProps) {
       className="!rounded-full"
       style={{
         background: "var(--color-bg-tertiary)",
-        border: "1px solid #2e2e2e",
+        border: "1px solid var(--color-border)",
         padding: "6px 8px",
         boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
       }}

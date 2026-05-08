@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Tooltip } from "antd";
-import type { Reaction } from "../../../data/mock";
+import type { Reaction } from "../../data/reactions";
 
 interface ReactionItemProps {
   reaction: Reaction;

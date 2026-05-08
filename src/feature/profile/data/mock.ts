@@ -1,3 +1,15 @@
+import type { ReactionId } from "@/shared/data/reactions";
+
+export {
+  REACTIONS,
+  REACTION_BY_ID,
+  type Reaction,
+  type ReactionId,
+  type Comment,
+} from "@/shared/data/reactions";
+export { formatCount } from "@/shared/utils/format";
+export { gradientBg, gradientText } from "@/shared/utils/gradient";
+
 export interface ProfileUser {
   name: string;
   bio: string;
@@ -53,45 +65,6 @@ export interface Post {
   comments: number;
   shares: number;
   initialReaction?: ReactionId;
-}
-
-export type ReactionId =
-  | "like"
-  | "love"
-  | "care"
-  | "haha"
-  | "wow"
-  | "sad"
-  | "angry";
-
-export interface Reaction {
-  id: ReactionId;
-  emoji: string;
-  label: string;
-  color: string;
-}
-
-export const REACTIONS: Reaction[] = [
-  { id: "like", emoji: "👍", label: "Like", color: "#4096ff" },
-  { id: "love", emoji: "❤️", label: "Love", color: "#ef4444" },
-  { id: "care", emoji: "🥰", label: "Care", color: "#f59e0b" },
-  { id: "haha", emoji: "😂", label: "Haha", color: "#eab308" },
-  { id: "wow", emoji: "😮", label: "Wow", color: "#eab308" },
-  { id: "sad", emoji: "😢", label: "Sad", color: "#eab308" },
-  { id: "angry", emoji: "😡", label: "Angry", color: "#f97316" },
-];
-
-export const REACTION_BY_ID: Record<ReactionId, Reaction> = REACTIONS.reduce(
-  (acc, r) => ({ ...acc, [r.id]: r }),
-  {} as Record<ReactionId, Reaction>,
-);
-
-export interface Comment {
-  id: string;
-  author: string;
-  authorGradient?: [string, string];
-  text: string;
-  time: string;
 }
 
 export const PROFILE: ProfileUser = {
@@ -239,21 +212,3 @@ export const RECENT_CHATS: ChatPreview[] = [
   },
 ];
 
-export function formatCount(n: number): string {
-  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
-  return String(n);
-}
-
-export function gradientText(stops: string[], deg = 90): React.CSSProperties {
-  return {
-    background: `linear-gradient(${deg}deg, ${stops.map((c, i) => `${c} ${(i / (stops.length - 1)) * 100}%`).join(", ")})`,
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-    color: "transparent",
-  };
-}
-
-export function gradientBg(stops: string[], deg = 135): string {
-  return `linear-gradient(${deg}deg, ${stops.map((c, i) => `${c} ${(i / (stops.length - 1)) * 100}%`).join(", ")})`;
-}

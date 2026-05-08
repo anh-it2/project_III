@@ -1,16 +1,23 @@
 "use client";
 
 import { Flex } from "antd";
-import type { Comment } from "../../../data/mock";
+import type { Comment } from "../../data/reactions";
 import { CommentInput } from "./CommentInput";
 import { CommentList } from "./CommentList";
 
 interface CommentSectionProps {
   comments: Comment[];
   onAdd: (text: string) => void;
+  authorInitial?: string;
+  authorGradient?: [string, string];
 }
 
-export function CommentSection({ comments, onAdd }: CommentSectionProps) {
+export function CommentSection({
+  comments,
+  onAdd,
+  authorInitial,
+  authorGradient,
+}: CommentSectionProps) {
   return (
     <Flex
       vertical
@@ -19,7 +26,11 @@ export function CommentSection({ comments, onAdd }: CommentSectionProps) {
       style={{ padding: "16px 24px", borderColor: "var(--color-border)" }}
     >
       <CommentList comments={comments} />
-      <CommentInput onSubmit={onAdd} />
+      <CommentInput
+        onSubmit={onAdd}
+        authorInitial={authorInitial}
+        authorGradient={authorGradient}
+      />
     </Flex>
   );
 }

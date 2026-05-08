@@ -31,7 +31,7 @@ export function LoginForm() {
           userName: session?.username || "",
         });
         setSuccess(`Welcome, ${session?.username ?? "user"}!`);
-        router.push("/chat");
+        router.push("/");
       } else {
         setError(res.message || "Login failed");
       }

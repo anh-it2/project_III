@@ -1,7 +1,7 @@
 "use client";
 
 import { Flex, Typography } from "antd";
-import type { Comment } from "../../../data/mock";
+import type { Comment } from "../../data/reactions";
 import { CommentItem } from "./CommentItem";
 
 const { Text } = Typography;

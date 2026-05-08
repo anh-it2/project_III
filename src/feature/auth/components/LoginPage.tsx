@@ -78,7 +78,7 @@ export function LoginPage() {
           userName: session?.username || "",
         });
         setSubmitSuccess(`Welcome, ${session?.username ?? "user"}!`);
-        router.push("/chat");
+        router.push("/");
       } else {
         setSubmitError(res.message || "Login failed");
       }

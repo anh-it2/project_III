@@ -9,9 +9,10 @@ const { Text } = Typography;
 interface ShareMenuProps {
   postId: string;
   onShared: () => void;
+  className?: string;
 }
 
-export function ShareMenu({ postId, onShared }: ShareMenuProps) {
+export function ShareMenu({ postId, onShared, className }: ShareMenuProps) {
   const [api, contextHolder] = message.useMessage();
 
   function handleAction(action: string) {
@@ -65,10 +66,16 @@ export function ShareMenu({ postId, onShared }: ShareMenuProps) {
       <Dropdown menu={{ items }} trigger={["click"]} placement="topRight">
         <Button
           type="text"
-          className="!flex !h-auto !items-center !gap-2 !rounded-lg !px-4 !py-2.5"
+          className={
+            className ??
+            "!flex !h-auto !items-center !gap-2 !rounded-lg !px-4 !py-2.5"
+          }
         >
           <Icon name="share" size={20} color="var(--color-text-muted)" />
-          <Text className="!text-sm !font-medium" style={{ color: "var(--color-text-muted)" }}>
+          <Text
+            className="!text-sm !font-medium"
+            style={{ color: "var(--color-text-muted)" }}
+          >
             Share
           </Text>
         </Button>
