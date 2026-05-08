@@ -38,9 +38,12 @@ export function NotificationNavBtn() {
       >
         <Button
           type="text"
-          className="!flex !h-10 !w-10 !items-center !justify-center !rounded-[10px] !p-0"
+          className="notif-nav-btn !flex !h-10 !w-10 !items-center !justify-center !rounded-[10px] !p-0"
           style={{ background: open ? "var(--color-bg-tertiary)" : "transparent" }}
         >
+          <style>{`
+            .notif-nav-btn:hover { background: var(--color-bg-tertiary) !important; }
+          `}</style>
           <Icon name="notifications" size={22} color="var(--color-text-muted)" />
         </Button>
       </Badge>

@@ -36,9 +36,12 @@ export function ChatNavBtn() {
       >
         <Button
           type="text"
-          className="!flex !h-10 !w-10 !items-center !justify-center !rounded-[10px] !p-0"
+          className="chat-nav-btn !flex !h-10 !w-10 !items-center !justify-center !rounded-[10px] !p-0"
           style={{ background: open ? "var(--color-bg-tertiary)" : "transparent" }}
         >
+          <style>{`
+            .chat-nav-btn:hover { background: var(--color-bg-tertiary) !important; }
+          `}</style>
           <Icon name="chat_bubble" size={22} color="var(--color-text-muted)" />
         </Button>
       </Badge>

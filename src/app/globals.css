@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 .chat-dd-item:hover {
-  background: #2a2a2a;
+  background: var(--color-bg-tertiary);
 }
 
 .reaction-popover .ant-popover-inner {

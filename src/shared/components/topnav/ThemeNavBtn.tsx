@@ -18,9 +18,12 @@ export function ThemeNavBtn() {
       type="text"
       aria-label="Toggle theme"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="!flex !h-10 !w-10 !items-center !justify-center !rounded-[10px] !p-0"
+      className="theme-nav-btn !flex !h-10 !w-10 !items-center !justify-center !rounded-[10px] !p-0"
       style={{ background: "transparent" }}
     >
+      <style>{`
+        .theme-nav-btn:hover { background: var(--color-bg-tertiary) !important; }
+      `}</style>
       <Icon
         name={isDark ? "light_mode" : "dark_mode"}
         size={22}
