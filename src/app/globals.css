@@ -158,3 +158,13 @@ body {
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
+
+@keyframes eq-bar {
+  0% { height: 20%; }
+  100% { height: 100%; }
+}
+
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(240,40,73,0.7); }
+  100% { box-shadow: 0 0 0 12px rgba(240,40,73,0); }
+}

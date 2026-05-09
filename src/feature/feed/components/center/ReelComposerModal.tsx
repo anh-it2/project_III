@@ -1,9 +1,10 @@
 "use client";
 
-import { Avatar, Button, Flex, Input, Modal, Typography, Upload, message } from "antd";
+import { Avatar, Button, Flex, Input, Typography, Upload, message } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/shared/components/Icon";
+import { DarkModal } from "@/shared/components/modal/DarkModal";
 import { gradientBg } from "@/shared/utils/gradient";
 import { CURRENT_USER, MUSIC_TRACKS } from "../../data/constants";
 import type { MusicTrack, ReelData } from "../../data/types";
@@ -168,44 +169,11 @@ export function ReelComposerModal({
   }, [search]);
 
   return (
-    <Modal
+    <DarkModal
       open={open}
       onCancel={onClose}
-      footer={null}
       width={960}
-      destroyOnHidden
-      className="reel-composer-modal"
-      closeIcon={
-        <Icon name="close" size={20} color="#e4e6eb" />
-      }
-      title={null}
-      styles={{
-        body: { background: "#161616", padding: 0 },
-        header: { display: "none" },
-      }}
     >
-      <style>{`
-        .reel-composer-modal {
-          padding: 0 !important;
-          background: #161616 !important;
-          border: 1px solid #2e2e2e;
-          overflow: hidden;
-        }
-        .reel-composer-modal .ant-modal-content,
-        .reel-composer-modal > .ant-modal-section {
-          padding: 0 !important;
-          background: #161616 !important;
-        }
-        .reel-composer-modal .ant-modal-close {
-          top: 14px;
-          inset-inline-end: 14px;
-        }
-        @keyframes eq-bar {
-          0% { height: 20%; }
-          100% { height: 100%; }
-        }
-      `}</style>
-
       <div className="!relative !overflow-hidden">
         <div
           className="!absolute !inset-x-0 !top-0 !h-[80px]"
@@ -739,6 +707,6 @@ export function ReelComposerModal({
           </Flex>
         </Flex>
       </div>
-    </Modal>
+    </DarkModal>
   );
 }

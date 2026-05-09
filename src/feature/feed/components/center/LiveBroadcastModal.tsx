@@ -1,6 +1,7 @@
 "use client";
 
-import { Avatar, Button, Flex, Input, Modal, Typography } from "antd";
+import { Avatar, Button, Flex, Input, Typography } from "antd";
+import { DarkModal } from "@/shared/components/modal/DarkModal";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { gradientBg } from "@/shared/utils/gradient";
@@ -131,43 +132,12 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
   };
 
   return (
-    <Modal
+    <DarkModal
       open={open}
       onCancel={cancel}
-      footer={null}
       width={720}
-      destroyOnHidden
-      className="live-broadcast-modal"
-      closeIcon={<Icon name="close" size={20} color="#e4e6eb" />}
-      title={null}
-      styles={{
-        body: { background: "#0a0a0a", padding: 0 },
-        header: { display: "none" },
-      }}
+      bg="#0a0a0a"
     >
-      <style>{`
-        .live-broadcast-modal {
-          padding: 0 !important;
-          background: #0a0a0a !important;
-          border: 1px solid #2e2e2e;
-          overflow: hidden;
-        }
-        .live-broadcast-modal .ant-modal-content,
-        .live-broadcast-modal > .ant-modal-section {
-          padding: 0 !important;
-          background: #0a0a0a !important;
-        }
-        .live-broadcast-modal .ant-modal-close {
-          top: 14px;
-          inset-inline-end: 14px;
-          z-index: 10;
-        }
-        @keyframes live-pulse {
-          0% { box-shadow: 0 0 0 0 rgba(240,40,73,0.7); }
-          100% { box-shadow: 0 0 0 12px rgba(240,40,73,0); }
-        }
-      `}</style>
-
       <Flex
         align="center"
         gap={10}
@@ -375,6 +345,6 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
           )}
         </Flex>
       </Flex>
-    </Modal>
+    </DarkModal>
   );
 }

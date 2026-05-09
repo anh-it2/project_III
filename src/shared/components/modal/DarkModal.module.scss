@@ -1,0 +1,31 @@
+.wrap {
+  :global(.ant-modal-container) {
+    padding: 0 !important;
+  }
+}
+
+.modal {
+  padding: 0 !important;
+
+  :global(.ant-modal-content) {
+    padding: 0 !important;
+    background: var(--dark-modal-bg, #161616) !important;
+    border: 1px solid #2e2e2e;
+    overflow: hidden;
+  }
+
+  :global(.ant-modal-body) {
+    padding: 0 !important;
+    background: var(--dark-modal-bg, #161616) !important;
+  }
+
+  :global(.ant-modal-header) {
+    display: none !important;
+  }
+
+  :global(.ant-modal-close) {
+    top: 14px;
+    inset-inline-end: 14px;
+    z-index: 10;
+  }
+}

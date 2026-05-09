@@ -1,9 +1,10 @@
 "use client";
 
-import { Avatar, Button, Flex, Input, Modal, Typography, Upload, message } from "antd";
+import { Avatar, Button, Flex, Input, Typography, Upload, message } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/shared/components/Icon";
+import { DarkModal } from "@/shared/components/modal/DarkModal";
 import { gradientBg } from "@/shared/utils/gradient";
 import { CURRENT_USER, FEELINGS } from "../../data/constants";
 import type { Feeling, FeedPostData } from "../../data/types";
@@ -120,38 +121,11 @@ export function PostComposerModal({
   };
 
   return (
-    <Modal
+    <DarkModal
       open={open}
       onCancel={onClose}
-      footer={null}
       width={520}
-      destroyOnHidden
-      className="post-composer-modal"
-      closeIcon={<Icon name="close" size={20} color="#e4e6eb" />}
-      title={null}
-      styles={{
-        body: { background: "#161616", padding: 0 },
-        header: { display: "none" },
-      }}
     >
-      <style>{`
-        .post-composer-modal {
-          padding: 0 !important;
-          background: #161616 !important;
-          border: 1px solid #2e2e2e;
-          overflow: hidden;
-        }
-        .post-composer-modal .ant-modal-content,
-        .post-composer-modal > .ant-modal-section {
-          padding: 0 !important;
-          background: #161616 !important;
-        }
-        .post-composer-modal .ant-modal-close {
-          top: 14px;
-          inset-inline-end: 14px;
-        }
-      `}</style>
-
       <Flex
         align="center"
         justify="center"
@@ -422,6 +396,6 @@ export function PostComposerModal({
           Post
         </Button>
       </Flex>
-    </Modal>
+    </DarkModal>
   );
 }
