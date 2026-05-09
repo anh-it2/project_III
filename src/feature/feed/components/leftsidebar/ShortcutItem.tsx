@@ -15,7 +15,7 @@ export function ShortcutItem({ label, gradient }: ShortcutItemProps) {
     <Flex
       align="center"
       gap={12}
-      className="!h-11 !w-full !cursor-pointer !rounded-lg !px-2"
+      className="!h-11 !w-full !cursor-pointer !rounded-lg !px-2 hover:!bg-[var(--color-bg-tertiary)]"
     >
       <div
         className="!h-9 !w-9 !shrink-0 !rounded-lg"

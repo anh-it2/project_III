@@ -1,17 +1,33 @@
 "use client";
 
 import { Flex, Typography } from "antd";
+import { useNavigation } from "@/shared/hooks/useNavigation";
 import { CURRENT_USER } from "../../data/constants";
 import { gradientBg } from "@/shared/utils/gradient";
 
 const { Text } = Typography;
 
 export function UserRow() {
+  const nav = useNavigation();
+
+  function go() {
+    nav.push("/profile");
+  }
+
   return (
     <Flex
       align="center"
       gap={12}
-      className="!h-11 !w-full !cursor-pointer !rounded-lg !px-2"
+      onClick={go}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          go();
+        }
+      }}
+      className="!h-11 !w-full !cursor-pointer !rounded-lg !px-2 hover:!bg-[var(--color-bg-tertiary)]"
     >
       <Flex
         align="center"

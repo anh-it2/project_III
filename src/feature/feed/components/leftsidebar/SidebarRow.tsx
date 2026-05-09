@@ -17,7 +17,9 @@ export function SidebarRow({ iconBg, icon, label, active }: SidebarRowProps) {
     <Flex
       align="center"
       gap={12}
-      className="!h-11 !w-full !cursor-pointer !rounded-lg !px-2"
+      className={`!h-11 !w-full !cursor-pointer !rounded-lg !px-2 ${
+        active ? "" : "hover:!bg-[var(--color-bg-tertiary)]"
+      }`}
       style={{ background: active ? "var(--color-primary-bg)" : "transparent" }}
     >
       <Flex

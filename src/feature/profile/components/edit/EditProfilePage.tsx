@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Flex, Typography } from "antd";
 import { FormProvider, useForm } from "react-hook-form";
-import { useRouter } from "@/i18n/navigation";
+import { useNavigation } from "@/shared/hooks/useNavigation";
 import { TopNav } from "@/shared/components/topnav/TopNav";
 import {
   EDIT_PAGE_MAX_WIDTH,
@@ -20,7 +20,7 @@ import { EditPageHeader } from "./EditPageHeader";
 const { Text } = Typography;
 
 export function EditProfilePage() {
-  const router = useRouter();
+  const nav = useNavigation();
   const methods = useForm<EditProfileValues>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: EDIT_PROFILE_DEFAULTS,
@@ -29,7 +29,7 @@ export function EditProfilePage() {
 
   async function onSubmit(values: EditProfileValues) {
     console.log("[edit-profile] save", values);
-    router.push("/profile");
+    nav.push("/profile");
   }
 
   return (

@@ -1,21 +1,22 @@
 "use client";
 
 import { Flex, Typography } from "antd";
-import { usePathname, useRouter } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
+import { useNavigation } from "@/shared/hooks/useNavigation";
 import { gradientBg } from "@/shared/utils/gradient";
 
 const { Text } = Typography;
 
 export function Logo() {
-  const router = useRouter();
+  const nav = useNavigation();
   const pathname = usePathname();
 
   function handleClick() {
     if (pathname === "/") {
-      router.refresh();
+      window.location.reload();
       return;
     }
-    router.push("/");
+    nav.push("/");
   }
 
   return (

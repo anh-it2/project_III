@@ -1,7 +1,7 @@
 "use client";
 
 import { Flex } from "antd";
-import { useRouter } from "@/i18n/navigation";
+import { useNavigation } from "@/shared/hooks/useNavigation";
 import { RECENT_CHATS, type ChatPreview } from "@/shared/data/chats";
 import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
 import { ChatDropdownFooter } from "./ChatDropdownFooter";
@@ -13,7 +13,7 @@ interface ChatDropdownContentProps {
 }
 
 export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
-  const router = useRouter();
+  const nav = useNavigation();
   const openChat = useChatBoxesStore((s) => s.openChat);
 
   function handleItemClick(chat: ChatPreview) {
@@ -22,7 +22,7 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
   }
 
   function goSeeAll() {
-    router.push("/chat");
+    nav.push("/chat");
     onClose();
   }
 

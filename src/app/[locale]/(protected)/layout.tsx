@@ -3,6 +3,7 @@
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { useRouter } from "@/i18n/navigation";
 import { ChatBoxes } from "@/shared/components/chatbox/ChatBoxes";
+import { NavigationProgressBar } from "@/shared/components/NavigationProgressBar";
 import { useEffect, useState } from "react";
 
 export default function ProtectedLayout({
@@ -38,6 +39,7 @@ export default function ProtectedLayout({
   if (!hydrated || !isLoggined) return null;
   return (
     <>
+      <NavigationProgressBar />
       {children}
       <ChatBoxes />
     </>

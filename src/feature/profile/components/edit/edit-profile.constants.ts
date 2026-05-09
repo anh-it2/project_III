@@ -7,6 +7,8 @@ export const EDIT_PROFILE_DEFAULTS: EditProfileValues = {
   work: "Product Designer at Meta",
   education: "Stanford University",
   relationship: "Single",
+  avatarUrl: "",
+  coverUrl: "",
 };
 
 export const EDIT_PAGE_MAX_WIDTH = 960;

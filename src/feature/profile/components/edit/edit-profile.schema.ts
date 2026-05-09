@@ -7,6 +7,8 @@ export const editProfileSchema = z.object({
   work: z.string(),
   education: z.string(),
   relationship: z.string(),
+  avatarUrl: z.string().optional(),
+  coverUrl: z.string().optional(),
 });
 
 export type EditProfileValues = z.infer<typeof editProfileSchema>;
