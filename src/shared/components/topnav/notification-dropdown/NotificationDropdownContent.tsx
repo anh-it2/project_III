@@ -24,7 +24,7 @@ export function NotificationDropdownContent({
   return (
     <Flex
       vertical
-      className="!w-[380px]"
+      className="!w-[min(380px,calc(100vw-16px))]"
       style={{
         background: "var(--color-bg-secondary)",
         border: "1px solid var(--color-border)",
