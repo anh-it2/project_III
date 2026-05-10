@@ -40,6 +40,7 @@ export function CommentInput({
         }}
       >
         <Input
+          autoFocus
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onPressEnter={handleSend}

@@ -158,14 +158,16 @@ export function PostComposerModal({
       open={open}
       onCancel={onClose}
       width={520}
+      bg="var(--color-bg-secondary)"
+      borderColor="var(--color-border)"
     >
       <Flex
         align="center"
         justify="center"
         className="!relative !px-6 !py-3"
-        style={{ borderBottom: "1px solid #2e2e2e" }}
+        style={{ borderBottom: "1px solid var(--color-border)" }}
       >
-        <Title level={5} className="!m-0" style={{ color: "#e4e6eb" }}>
+        <Title level={5} className="!m-0" style={{ color: "var(--color-text)" }}>
           {isEdit ? "Edit post" : "Create post"}
         </Title>
       </Flex>
@@ -179,13 +181,19 @@ export function PostComposerModal({
             {CURRENT_USER.initial}
           </Avatar>
           <Flex vertical gap={0}>
-            <Text className="!text-sm !font-semibold" style={{ color: "#e4e6eb" }}>
+            <Text className="!text-sm !font-semibold" style={{ color: "var(--color-text)" }}>
               {CURRENT_USER.name}
               {feeling && (
-                <Text className="!text-sm !font-normal" style={{ color: "#9ca3af" }}>
+                <Text
+                  className="!text-sm !font-normal"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
                   {" is "}
                   {feeling.kind === "feeling" ? "feeling " : ""}
-                  <Text className="!text-sm !font-semibold" style={{ color: "#e4e6eb" }}>
+                  <Text
+                    className="!text-sm !font-semibold"
+                    style={{ color: "var(--color-text)" }}
+                  >
                     {feeling.emoji} {feeling.label}
                   </Text>
                 </Text>
@@ -195,10 +203,13 @@ export function PostComposerModal({
               align="center"
               gap={3}
               className="!rounded-full !px-1.5 !py-0.5 !w-fit"
-              style={{ background: "#252525" }}
+              style={{ background: "var(--color-bg-tertiary)" }}
             >
-              <Icon name="public" size={11} color="#9ca3af" />
-              <Text className="!text-[10px] !font-semibold" style={{ color: "#9ca3af" }}>
+              <Icon name="public" size={11} color="var(--color-text-muted)" />
+              <Text
+                className="!text-[10px] !font-semibold"
+                style={{ color: "var(--color-text-muted)" }}
+              >
                 Public
               </Text>
             </Flex>
@@ -211,10 +222,10 @@ export function PostComposerModal({
           placeholder={`What's on your mind, ${CURRENT_USER.name.split(" ").pop()}?`}
           autoSize={{ minRows: 4, maxRows: 8 }}
           maxLength={500}
+          variant="borderless"
           style={{
             background: "transparent",
-            border: "none",
-            color: "#e4e6eb",
+            color: "var(--color-text)",
             fontSize: 18,
             resize: "none",
             padding: 0,
@@ -226,7 +237,10 @@ export function PostComposerModal({
             vertical
             gap={8}
             className="!rounded-xl !p-3"
-            style={{ border: "1px solid #2e2e2e", background: "#0a0a0a" }}
+            style={{
+              border: "1px solid var(--color-border)",
+              background: "var(--color-bg)",
+            }}
           >
             {!imageUrl && (
               <Upload.Dragger
@@ -234,21 +248,30 @@ export function PostComposerModal({
                 beforeUpload={handleBeforeUpload}
                 showUploadList={false}
                 fileList={file ? [file] : []}
-                style={{ background: "transparent", border: "1px dashed #2e2e2e" }}
+                style={{
+                  background: "transparent",
+                  border: "1px dashed var(--color-border)",
+                }}
               >
                 <Flex vertical align="center" justify="center" gap={6} className="!py-6">
                   <Flex
                     align="center"
                     justify="center"
                     className="!h-10 !w-10 !rounded-full"
-                    style={{ background: "#1f1f1f" }}
+                    style={{ background: "var(--color-bg-tertiary)" }}
                   >
                     <Icon name="add_a_photo" size={20} color="#22c55e" />
                   </Flex>
-                  <Text className="!text-sm !font-semibold" style={{ color: "#e4e6eb" }}>
+                  <Text
+                    className="!text-sm !font-semibold"
+                    style={{ color: "var(--color-text)" }}
+                  >
                     Add photos/videos
                   </Text>
-                  <Text className="!text-[11px]" style={{ color: "#6b7280" }}>
+                  <Text
+                    className="!text-[11px]"
+                    style={{ color: "var(--color-text-placeholder)" }}
+                  >
                     or drag and drop
                   </Text>
                 </Flex>
@@ -276,17 +299,11 @@ export function PostComposerModal({
                   type="text"
                   size="small"
                   onClick={removeMedia}
-                  className="!absolute"
+                  className="!absolute !top-2 !right-2 !h-7 !w-7 !rounded-full !p-0"
                   style={{
-                    top: 8,
-                    right: 8,
                     background: "rgba(0,0,0,0.7)",
                     backdropFilter: "blur(8px)",
                     color: "#fff",
-                    borderRadius: 999,
-                    height: 28,
-                    width: 28,
-                    padding: 0,
                   }}
                   icon={<Icon name="close" size={14} color="#fff" />}
                 />
@@ -300,10 +317,13 @@ export function PostComposerModal({
             vertical
             gap={8}
             className="!rounded-xl !p-3"
-            style={{ border: "1px solid #2e2e2e", background: "#0a0a0a" }}
+            style={{
+              border: "1px solid var(--color-border)",
+              background: "var(--color-bg)",
+            }}
           >
             <Flex align="center" justify="space-between">
-              <Title level={5} className="!m-0" style={{ color: "#e4e6eb" }}>
+              <Title level={5} className="!m-0" style={{ color: "var(--color-text)" }}>
                 How are you feeling?
               </Title>
               {feeling && (
@@ -311,36 +331,49 @@ export function PostComposerModal({
                   type="text"
                   size="small"
                   onClick={() => setFeeling(null)}
-                  style={{ color: "#9ca3af" }}
+                  style={{ color: "var(--color-text-muted)" }}
                 >
                   Clear
                 </Button>
               )}
             </Flex>
             <Flex gap={8}>
-              {(["feeling", "activity"] as const).map((tab) => (
-                <Button
-                  key={tab}
-                  size="small"
-                  onClick={() => setFeelingTab(tab)}
-                  style={{
-                    background: feelingTab === tab ? "#2374e1" : "#1f1f1f",
-                    border: "none",
-                    color: "#fff",
-                    fontWeight: 600,
-                    textTransform: "capitalize",
-                  }}
-                >
-                  {tab === "feeling" ? "Feelings" : "Activities"}
-                </Button>
-              ))}
+              {(["feeling", "activity"] as const).map((tab) => {
+                const active = feelingTab === tab;
+                return (
+                  <Button
+                    key={tab}
+                    size="small"
+                    onClick={() => setFeelingTab(tab)}
+                    style={{
+                      background: active
+                        ? "var(--color-primary)"
+                        : "var(--color-bg-tertiary)",
+                      border: "none",
+                      color: active
+                        ? "var(--color-on-primary)"
+                        : "var(--color-text)",
+                      fontWeight: 600,
+                      textTransform: "capitalize",
+                    }}
+                  >
+                    {tab === "feeling" ? "Feelings" : "Activities"}
+                  </Button>
+                );
+              })}
             </Flex>
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={`Search ${feelingTab}s...`}
-              prefix={<Icon name="search" size={14} color="#6b7280" />}
-              style={{ background: "#1f1f1f", border: "1px solid #2e2e2e", color: "#e4e6eb" }}
+              prefix={
+                <Icon name="search" size={14} color="var(--color-text-muted)" />
+              }
+              style={{
+                background: "var(--color-bg-tertiary)",
+                border: "1px solid var(--color-border)",
+                color: "var(--color-text)",
+              }}
             />
             <Flex
               wrap="wrap"
@@ -358,15 +391,22 @@ export function PostComposerModal({
                     onClick={() => setFeeling(f)}
                     className="!cursor-pointer !rounded-full !px-3 !py-1.5"
                     style={{
-                      background: selected ? "rgba(35,116,225,0.2)" : "#1f1f1f",
-                      border: selected ? "1px solid #2374e1" : "1px solid transparent",
+                      background: selected
+                        ? "var(--color-primary-bg)"
+                        : "var(--color-bg-tertiary)",
+                      border: selected
+                        ? "1px solid var(--color-primary)"
+                        : "1px solid transparent",
                       transition: "background 0.15s",
                     }}
                   >
                     <Text className="!text-base !leading-none">{f.emoji}</Text>
                     <Text
                       className="!text-xs !font-semibold"
-                      style={{ color: "#e4e6eb", textTransform: "capitalize" }}
+                      style={{
+                        color: "var(--color-text)",
+                        textTransform: "capitalize",
+                      }}
                     >
                       {f.label}
                     </Text>
@@ -374,7 +414,10 @@ export function PostComposerModal({
                 );
               })}
               {filteredFeelings.length === 0 && (
-                <Text className="!text-xs !w-full !text-center !py-4" style={{ color: "#6b7280" }}>
+                <Text
+                  className="!text-xs !w-full !text-center !py-4"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
                   No matches
                 </Text>
               )}
@@ -386,9 +429,12 @@ export function PostComposerModal({
           align="center"
           justify="space-between"
           className="!rounded-xl !px-3 !py-2"
-          style={{ border: "1px solid #2e2e2e" }}
+          style={{ border: "1px solid var(--color-border)" }}
         >
-          <Text className="!text-sm !font-semibold" style={{ color: "#e4e6eb" }}>
+          <Text
+            className="!text-sm !font-semibold"
+            style={{ color: "var(--color-text)" }}
+          >
             Add to your post
           </Text>
           <Flex gap={4}>
@@ -398,7 +444,9 @@ export function PostComposerModal({
               onClick={() => setShowPhotoSection((v) => !v)}
               icon={<Icon name="photo_library" size={22} color="#22c55e" />}
               style={{
-                background: showPhotoSection ? "rgba(34,197,94,0.15)" : "transparent",
+                background: showPhotoSection
+                  ? "rgba(34,197,94,0.15)"
+                  : "transparent",
               }}
             />
             <Button
@@ -407,7 +455,9 @@ export function PostComposerModal({
               onClick={() => setShowFeelingPicker((v) => !v)}
               icon={<Icon name="mood" size={22} color="#f59e0b" />}
               style={{
-                background: showFeelingPicker ? "rgba(245,158,11,0.15)" : "transparent",
+                background: showFeelingPicker
+                  ? "rgba(245,158,11,0.15)"
+                  : "transparent",
               }}
             />
           </Flex>
@@ -419,12 +469,7 @@ export function PostComposerModal({
           disabled={!canSubmit}
           block
           size="large"
-          style={{
-            background: canSubmit ? "#2374e1" : "#252525",
-            border: "none",
-            fontWeight: 700,
-            height: 40,
-          }}
+          className="!h-10 !font-bold"
         >
           {isEdit ? "Save" : "Post"}
         </Button>

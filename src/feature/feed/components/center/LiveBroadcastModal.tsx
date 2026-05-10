@@ -18,6 +18,8 @@ interface LiveBroadcastModalProps {
 
 type Phase = "idle" | "preview" | "live";
 
+const LIVE_GRADIENT: [string, string] = ["#f02849", "#dc2626"];
+
 export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastModalProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -136,27 +138,28 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
       open={open}
       onCancel={cancel}
       width={720}
-      bg="#0a0a0a"
+      bg="var(--color-bg-secondary)"
+      borderColor="var(--color-border)"
     >
       <Flex
         align="center"
         gap={10}
         className="!relative !px-5 !py-3"
-        style={{ borderBottom: "1px solid #2e2e2e" }}
+        style={{ borderBottom: "1px solid var(--color-border)" }}
       >
         <Flex
           align="center"
           justify="center"
           className="!h-9 !w-9 !rounded-xl"
-          style={{ background: gradientBg(["#f02849", "#dc2626"]) }}
+          style={{ background: gradientBg(LIVE_GRADIENT) }}
         >
           <Icon name="videocam" size={18} color="#fff" />
         </Flex>
         <Flex vertical>
-          <Title level={5} className="!m-0 !leading-tight" style={{ color: "#e4e6eb" }}>
+          <Title level={5} className="!m-0 !leading-tight" style={{ color: "var(--color-text)" }}>
             {phase === "live" ? "You're live" : "Go live"}
           </Title>
-          <Text className="!text-xs" style={{ color: "#9ca3af" }}>
+          <Text className="!text-xs" style={{ color: "var(--color-text-muted)" }}>
             {phase === "live"
               ? "Broadcasting to your followers"
               : "Stream video to your friends and followers"}
@@ -164,34 +167,46 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
         </Flex>
       </Flex>
 
-      <div className="!relative !w-full" style={{ background: "#000", aspectRatio: "16 / 9" }}>
+      <div
+        className="!relative !w-full"
+        style={{
+          background: phase === "idle" ? "var(--color-bg)" : "#000",
+          aspectRatio: "16 / 9",
+        }}
+      >
         {phase === "idle" && !snapshot && (
           <Flex
             vertical
             align="center"
             justify="center"
-            gap={14}
+            gap={16}
             className="!h-full !w-full !px-6"
           >
             <Flex
               align="center"
               justify="center"
-              className="!h-16 !w-16 !rounded-full"
-              style={{ background: gradientBg(["#f02849", "#dc2626"]) }}
+              className="!h-20 !w-20 !rounded-full"
+              style={{ background: gradientBg(LIVE_GRADIENT) }}
             >
-              <Icon name="videocam" size={32} color="#fff" />
+              <Icon name="videocam" size={40} color="#fff" />
             </Flex>
-            <Text className="!text-base !font-bold" style={{ color: "#e4e6eb" }}>
+            <Text
+              className="!text-xl !font-bold"
+              style={{ color: "var(--color-text)" }}
+            >
               Camera ready
             </Text>
             <Text
-              className="!text-xs !text-center"
-              style={{ color: "#9ca3af", maxWidth: 360 }}
+              className="!text-sm !text-center"
+              style={{ color: "var(--color-text-muted)", maxWidth: 360 }}
             >
               We need access to your camera and microphone to start the broadcast
             </Text>
             {error && (
-              <Text className="!text-xs !text-center" style={{ color: "#f87171" }}>
+              <Text
+                className="!text-sm !text-center"
+                style={{ color: "var(--color-error)" }}
+              >
                 {error}
               </Text>
             )}
@@ -199,13 +214,12 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
               type="primary"
               onClick={startCamera}
               size="large"
+              className="!font-bold !px-7 !text-base"
               style={{
-                background: gradientBg(["#f02849", "#dc2626"]),
+                background: gradientBg(LIVE_GRADIENT),
                 border: "none",
-                fontWeight: 700,
-                paddingInline: 28,
               }}
-              icon={<Icon name="videocam" size={18} color="#fff" />}
+              icon={<Icon name="videocam" size={20} color="#fff" />}
             >
               Enable camera
             </Button>
@@ -226,18 +240,13 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
             <Flex
               align="center"
               gap={6}
-              className="!absolute !rounded-md !px-2 !py-1"
+              className="!absolute !top-3.5 !left-3.5 !rounded-md !px-2 !py-1"
               style={{
-                top: 14,
-                left: 14,
                 background: "#f02849",
                 animation: "live-pulse 1.5s infinite",
               }}
             >
-              <span
-                className="!h-2 !w-2 !rounded-full"
-                style={{ background: "#fff" }}
-              />
+              <span className="!h-2 !w-2 !rounded-full !bg-white" />
               <Text className="!text-[11px] !font-bold !text-white !tracking-wider">
                 LIVE
               </Text>
@@ -245,8 +254,8 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
             <Flex
               align="center"
               gap={4}
-              className="!absolute !rounded-md !px-2 !py-1"
-              style={{ top: 14, left: 80, background: "rgba(0,0,0,0.6)" }}
+              className="!absolute !top-3.5 !rounded-md !px-2 !py-1"
+              style={{ left: 80, background: "rgba(0,0,0,0.6)" }}
             >
               <Icon name="visibility" size={12} color="#fff" />
               <Text className="!text-[11px] !font-semibold !text-white">
@@ -255,8 +264,8 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
             </Flex>
             <Flex
               align="center"
-              className="!absolute !rounded-md !px-2 !py-1"
-              style={{ top: 14, right: 56, background: "rgba(0,0,0,0.6)" }}
+              className="!absolute !top-3.5 !rounded-md !px-2 !py-1"
+              style={{ right: 14, background: "rgba(0,0,0,0.6)" }}
             >
               <Text className="!text-[11px] !font-semibold !text-white">
                 {formatTime(elapsed)}
@@ -275,17 +284,20 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
             {CURRENT_USER.initial}
           </Avatar>
           <Flex vertical gap={0}>
-            <Text className="!text-sm !font-semibold" style={{ color: "#e4e6eb" }}>
+            <Text className="!text-sm !font-semibold" style={{ color: "var(--color-text)" }}>
               {CURRENT_USER.name}
             </Text>
             <Flex
               align="center"
               gap={3}
               className="!rounded-full !px-1.5 !py-0.5 !w-fit"
-              style={{ background: "#252525" }}
+              style={{ background: "var(--color-bg-tertiary)" }}
             >
-              <Icon name="public" size={11} color="#9ca3af" />
-              <Text className="!text-[10px] !font-semibold" style={{ color: "#9ca3af" }}>
+              <Icon name="public" size={11} color="var(--color-text-muted)" />
+              <Text
+                className="!text-[10px] !font-semibold"
+                style={{ color: "var(--color-text-muted)" }}
+              >
                 Public
               </Text>
             </Flex>
@@ -299,16 +311,20 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
           maxLength={150}
           disabled={phase === "live"}
           style={{
-            background: "#161616",
-            border: "1px solid #2e2e2e",
-            color: "#e4e6eb",
+            background: "var(--color-bg-tertiary)",
+            border: "1px solid var(--color-border)",
+            color: "var(--color-text)",
             resize: "none",
           }}
         />
         <Flex justify="end" gap={8}>
           <Button
             onClick={cancel}
-            style={{ background: "transparent", border: "1px solid #2e2e2e", color: "#e4e6eb" }}
+            style={{
+              background: "transparent",
+              border: "1px solid var(--color-border)",
+              color: "var(--color-text)",
+            }}
           >
             Cancel
           </Button>
@@ -317,11 +333,10 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
               type="primary"
               onClick={goLive}
               icon={<Icon name="sensors" size={16} color="#fff" />}
+              className="!font-bold !px-6"
               style={{
-                background: gradientBg(["#f02849", "#dc2626"]),
+                background: gradientBg(LIVE_GRADIENT),
                 border: "none",
-                fontWeight: 700,
-                paddingInline: 24,
               }}
             >
               Go live
@@ -332,12 +347,10 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
               danger
               onClick={endLive}
               icon={<Icon name="stop_circle" size={16} color="#fff" />}
+              className="!font-bold !px-6 !text-white"
               style={{
                 background: "#f02849",
                 border: "none",
-                fontWeight: 700,
-                paddingInline: 24,
-                color: "#fff",
               }}
             >
               End live

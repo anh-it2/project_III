@@ -15,19 +15,18 @@ export function TabItem({ label, active }: TabItemProps) {
     <Flex
       align="center"
       justify="center"
+      className="!h-[38px] !rounded-[20px] !px-5 !cursor-pointer"
       style={{
-        height: 38,
-        padding: "0 20px",
-        borderRadius: 20,
-        background: active ? gradientBg(["#4096ff", "#a855f7"]) : "#1a1a1a",
-        border: active ? "0" : "1px solid #2a2a2a",
-        cursor: "pointer",
+        background: active
+          ? gradientBg(["#4096ff", "#a855f7"])
+          : "var(--color-bg-tertiary)",
+        border: active ? "0" : "1px solid var(--color-border)",
       }}
     >
       <Text
         className="!text-[13px]"
         style={{
-          color: active ? "#FFFFFF" : "var(--color-text-muted)",
+          color: active ? "#FFFFFF" : "var(--color-text)",
           fontWeight: active ? 600 : 500,
         }}
       >
