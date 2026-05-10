@@ -16,13 +16,14 @@ interface MessageListProps {
   user: OnlineUserDto;
   messages: ChatMessage[];
   isLoading: boolean;
+  compact?: boolean;
 }
 
 function messageKey(m: ChatMessage) {
   return m.id ?? m.tempId;
 }
 
-export function MessageList({ user, messages, isLoading }: MessageListProps) {
+export function MessageList({ user, messages, isLoading, compact = false }: MessageListProps) {
   const myId = useAuthStore((s) => s.userId);
   const conversationId = buildDmId(myId, user.id);
   const typingMap = useChatStore((s) => s.typingUsers[user.id]);
@@ -104,9 +105,12 @@ export function MessageList({ user, messages, isLoading }: MessageListProps) {
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-y-auto bg-[#fafbfc] px-3 py-4 sm:px-8 sm:py-6 dark:bg-[#0a0a0a]"
+      className={
+        "flex-1 overflow-y-auto bg-[#fafbfc] dark:bg-[#0a0a0a] " +
+        (compact ? "px-3 py-3" : "px-3 py-4 sm:px-8 sm:py-6")
+      }
     >
-      <Flex vertical gap={12}>
+      <Flex vertical gap={compact ? 8 : 12}>
         {messages.length === 0 ? (
           <Flex justify="center" className="py-8">
             <Text className="!text-[13px] !text-[var(--color-text-muted)]">

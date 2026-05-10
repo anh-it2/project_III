@@ -1,12 +1,14 @@
 "use client";
 
-import { Button, Flex, Input, Typography } from "antd";
-import { useState } from "react";
+import { Button, Flex, Typography } from "antd";
 import { Icon } from "@/shared/components/Icon";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { useChat } from "@/feature/chat/hooks/useChat";
 import { useMessages } from "@/feature/chat/hooks/useMessage";
 import { buildDmId } from "@/feature/chat/lib/conversation";
+import { MessageInput } from "@/feature/chat/components/main/MessageInput";
+import { MessageList } from "@/feature/chat/components/main/MessageList";
+import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import type { ChatPreview } from "@/shared/data/chats";
 import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
 import { gradientBg } from "@/shared/utils/gradient";
@@ -25,22 +27,16 @@ export function ChatBox({ chat }: ChatBoxProps) {
   const myId = useAuthStore((s) => s.userId);
   const conversationId = buildDmId(myId, chat.id);
   const { sendMessage, isConnected } = useChat(conversationId);
-  const { messages } = useMessages(conversationId);
-  const [draft, setDraft] = useState("");
+  const { messages, isLoading } = useMessages(conversationId);
 
-  function send() {
-    const v = draft.trim();
-    if (!v || !isConnected) return;
-    sendMessage(v, "text").catch(() => undefined);
-    setDraft("");
-  }
+  const user: OnlineUserDto = { id: chat.id, name: chat.name };
 
   return (
     <Flex
       vertical
       style={{
         width: 328,
-        height: minimized ? 56 : 420,
+        height: minimized ? 56 : 440,
         background: "var(--color-bg-secondary)",
         border: "1px solid var(--color-border)",
         borderTopLeftRadius: 12,
@@ -147,73 +143,20 @@ export function ChatBox({ chat }: ChatBoxProps) {
 
       {!minimized ? (
         <>
-          <Flex
-            vertical
-            gap={6}
-            className="!flex-1 !overflow-y-auto"
-            style={{ padding: "12px" }}
-          >
-            {[...messages].reverse().map((m) => {
-              const fromMe = m.senderId === myId;
-              return (
-                <Flex
-                  key={m.id ?? m.tempId}
-                  justify={fromMe ? "flex-end" : "flex-start"}
-                  className="!w-full"
-                >
-                  <div
-                    style={{
-                      maxWidth: "75%",
-                      padding: "8px 12px",
-                      borderRadius: 18,
-                      background: fromMe
-                        ? "var(--color-primary)"
-                        : "var(--color-bg-tertiary)",
-                      color: fromMe ? "#fff" : "var(--color-text)",
-                      fontSize: 14,
-                      lineHeight: 1.35,
-                      wordBreak: "break-word",
-                    }}
-                  >
-                    {m.content}
-                  </div>
-                </Flex>
-              );
-            })}
-          </Flex>
-          <Flex
-            align="center"
-            gap={6}
-            style={{
-              padding: "8px 10px",
-              borderTop: "1px solid var(--color-border)",
-              flexShrink: 0,
-            }}
-          >
-            <Input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onPressEnter={send}
-              placeholder="Aa"
-              style={{
-                background: "var(--color-bg-tertiary)",
-                borderColor: "transparent",
-                color: "var(--color-text)",
-                borderRadius: 999,
-              }}
-            />
-            <Button
-              type="text"
-              onClick={send}
-              icon={
-                <Icon
-                  name="send"
-                  size={20}
-                  color="var(--color-primary)"
-                />
-              }
-            />
-          </Flex>
+          <MessageList
+            user={user}
+            messages={messages}
+            isLoading={isLoading}
+            compact
+          />
+          <MessageInput
+            recipientName={chat.name}
+            onSend={(content, type) =>
+              sendMessage(content, type).catch(() => undefined)
+            }
+            disabled={!isConnected}
+            compact
+          />
         </>
       ) : null}
     </Flex>

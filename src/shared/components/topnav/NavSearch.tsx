@@ -9,7 +9,7 @@ export function NavSearch() {
       prefix={<Icon name="search" size={20} color="var(--color-text-muted)" />}
       placeholder="Search Facebook..."
       variant="borderless"
-      className="!h-10 !w-80 !rounded-full !px-4"
+      className="!h-10 !w-40 !rounded-full !px-4 sm:!w-56 md:!w-64 lg:!w-80"
       style={{ background: "var(--color-bg-tertiary)", color: "var(--color-text)" }}
     />
   );

@@ -24,7 +24,17 @@ export function SidebarHeader({ onLogout }: SidebarHeaderProps) {
     <div className="flex h-[72px] items-center justify-between border-b border-[var(--color-border)] px-4">
       <div className="flex items-center gap-2.5">
         <div
-          className="flex h-9 w-9 items-center justify-center rounded-[10px]"
+          role="link"
+          tabIndex={0}
+          aria-label="Go to feed"
+          onClick={() => nav.push("/")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              nav.push("/");
+            }
+          }}
+          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-[10px] transition-opacity hover:opacity-90"
           style={{
             background:
               "linear-gradient(180deg, var(--color-primary), var(--color-primary-light))",

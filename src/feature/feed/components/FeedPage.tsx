@@ -15,9 +15,13 @@ export function FeedPage() {
     >
       <TopNav />
       <Flex className="!w-full !flex-1 !items-stretch">
-        <LeftSidebar />
+        <div className="!hidden lg:!block">
+          <LeftSidebar />
+        </div>
         <CenterFeed />
-        <RightSidebar />
+        <div className="!hidden xl:!block">
+          <RightSidebar />
+        </div>
       </Flex>
     </Flex>
   );

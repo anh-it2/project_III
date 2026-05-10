@@ -20,15 +20,20 @@ interface MessageInputProps {
     type: "text" | "image",
   ) => void | Promise<void>;
   disabled?: boolean;
+  compact?: boolean;
 }
 
 const PILL_BTN =
   "!h-10 !w-10 !rounded-full !bg-[#f0f2f5] !text-[var(--color-primary)] hover:!bg-[#e4e6eb] dark:!bg-[#1f1f1f] dark:hover:!bg-[#262626]";
 
+const PILL_BTN_COMPACT =
+  "!h-8 !w-8 !rounded-full !bg-[#f0f2f5] !text-[var(--color-primary)] hover:!bg-[#e4e6eb] dark:!bg-[#1f1f1f] dark:hover:!bg-[#262626]";
+
 export function MessageInput({
   recipientName,
   onSend,
   disabled = false,
+  compact = false,
 }: MessageInputProps) {
   const [draft, setDraft] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -72,10 +77,23 @@ export function MessageInput({
     return false;
   }
 
+  const pill = compact ? PILL_BTN_COMPACT : PILL_BTN;
+  const sendSize = compact ? "!h-9 !w-9" : "!h-11 !w-11";
+  const inputSize = compact ? "!h-9" : "!h-11";
+
   return (
-    <div className="flex h-20 items-center gap-2 border-t border-[var(--color-border)] bg-white px-3 sm:gap-3 sm:px-6 dark:bg-[#141414]">
-      <Flex align="center" gap={6}>
-        <Button type="text" icon={<PlusOutlined />} className={PILL_BTN} />
+    <div
+      className={
+        "flex items-center border-t border-[var(--color-border)] bg-white dark:bg-[#141414] " +
+        (compact
+          ? "h-14 gap-1 px-2"
+          : "h-20 gap-2 px-3 sm:gap-3 sm:px-6")
+      }
+    >
+      <Flex align="center" gap={compact ? 4 : 6}>
+        {!compact && (
+          <Button type="text" icon={<PlusOutlined />} className={pill} />
+        )}
         <Upload
           accept="image/*"
           beforeUpload={handleImage}
@@ -87,7 +105,7 @@ export function MessageInput({
             icon={<PictureOutlined />}
             loading={uploading}
             disabled={disabled || uploading}
-            className={PILL_BTN}
+            className={pill}
           />
         </Upload>
         <Popover
@@ -109,7 +127,7 @@ export function MessageInput({
           <Button
             type="text"
             disabled={disabled}
-            className={PILL_BTN + " !text-[11px] !font-bold"}
+            className={pill + " !text-[11px] !font-bold"}
           >
             GIF
           </Button>
@@ -146,22 +164,30 @@ export function MessageInput({
                 className="!text-[var(--color-primary)]"
               />
             </Popover>
-            <Button
-              type="text"
-              size="small"
-              icon={<AudioOutlined />}
-              className="!text-[var(--color-primary)]"
-            />
+            {!compact && (
+              <Button
+                type="text"
+                size="small"
+                icon={<AudioOutlined />}
+                className="!text-[var(--color-primary)]"
+              />
+            )}
           </Flex>
         }
-        className="!h-11 !flex-1 !rounded-[22px] !border-0 !bg-[#f0f2f5] !px-4 dark:!bg-[#1f1f1f] [&_input]:!bg-transparent [&_input]:!text-[15px] [&_input]:!text-[var(--color-text)] [&_input::placeholder]:!text-[var(--color-text-placeholder)]"
+        className={
+          inputSize +
+          " !flex-1 !rounded-[22px] !border-0 !bg-[#f0f2f5] !px-4 dark:!bg-[#1f1f1f] [&_input]:!bg-transparent [&_input]:!text-[14px] [&_input]:!text-[var(--color-text)] [&_input::placeholder]:!text-[var(--color-text-placeholder)]"
+        }
       />
       <Button
         type="primary"
         icon={<SendOutlined />}
         onClick={handleSend}
         disabled={!trimmed || disabled}
-        className="!h-11 !w-11 !rounded-full !border-0 !text-[var(--color-on-primary)]"
+        className={
+          sendSize +
+          " !rounded-full !border-0 !text-[var(--color-on-primary)]"
+        }
         style={{
           background:
             "linear-gradient(90deg, var(--color-primary-dark), var(--color-primary))",

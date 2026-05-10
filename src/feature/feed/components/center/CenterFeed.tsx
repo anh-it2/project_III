@@ -19,7 +19,7 @@ export function CenterFeed() {
     <Flex
       vertical
       gap={16}
-      className="!min-w-0 !flex-1 !px-10 !py-5"
+      className="!mx-auto !w-full !min-w-0 !max-w-[680px] !flex-1 !px-2 !py-3 sm:!px-4 sm:!py-4 lg:!max-w-none lg:!px-10 lg:!py-5"
       style={{ background: "var(--color-bg)" }}
     >
       <Stories />

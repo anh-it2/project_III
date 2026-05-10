@@ -34,7 +34,10 @@ export function ComposerActionBtn({ icon, iconColor, label, onClick }: ComposerA
         .composer-action-btn:hover { background: var(--color-bg-tertiary); }
       `}</style>
       <Icon name={icon} size={22} color={iconColor} />
-      <Text className="!text-sm !font-semibold" style={{ color: "var(--color-text-secondary)" }}>
+      <Text
+        className="!hidden !text-sm !font-semibold sm:!inline"
+        style={{ color: "var(--color-text-secondary)" }}
+      >
         {label}
       </Text>
     </Flex>
