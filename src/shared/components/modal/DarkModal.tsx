@@ -7,6 +7,7 @@ import styles from "./DarkModal.module.scss";
 
 export interface DarkModalProps extends Omit<ModalProps, "title" | "style"> {
   bg?: string;
+  borderColor?: string;
   title?: ModalProps["title"];
   style?: CSSProperties;
 }
@@ -17,6 +18,7 @@ function cx(...values: Array<string | undefined | false>) {
 
 export function DarkModal({
   bg = "#161616",
+  borderColor,
   className,
   wrapClassName,
   closeIcon,
@@ -36,7 +38,13 @@ export function DarkModal({
       wrapClassName={cx(styles.wrap, wrapClassName)}
       className={cx(styles.modal, className)}
       closeIcon={closeIcon ?? <Icon name="close" size={20} color="#e4e6eb" />}
-      style={{ ...(style ?? {}), ["--dark-modal-bg" as string]: bg }}
+      style={{
+        ...(style ?? {}),
+        ["--dark-modal-bg" as string]: bg,
+        ...(borderColor
+          ? { ["--dark-modal-border" as string]: borderColor }
+          : {}),
+      }}
     >
       {children}
     </Modal>

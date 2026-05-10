@@ -15,6 +15,14 @@ export function CenterFeed() {
     setPosts((prev) => [post, ...prev]);
   };
 
+  const handleRemove = (id: string) => {
+    setPosts((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const handleUpdate = (updated: FeedPostData) => {
+    setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+  };
+
   return (
     <Flex
       vertical
@@ -25,7 +33,12 @@ export function CenterFeed() {
       <Stories />
       <Composer onCreatePost={handleCreate} />
       {posts.map((p) => (
-        <FeedPost key={p.id} post={p} />
+        <FeedPost
+          key={p.id}
+          post={p}
+          onRemove={handleRemove}
+          onUpdate={handleUpdate}
+        />
       ))}
     </Flex>
   );

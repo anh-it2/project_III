@@ -7,6 +7,7 @@ import type { Comment, ReactionId } from "@/shared/data/reactions";
 import { CURRENT_USER } from "../../data/constants";
 import type { FeedPostData } from "../../data/types";
 import { PostActions } from "./PostActions";
+import { PostComposerModal } from "./PostComposerModal";
 import { PostHeader } from "./PostHeader";
 import { PostImage } from "./PostImage";
 import { PostStats } from "./PostStats";
@@ -14,9 +15,12 @@ import { PostText } from "./PostText";
 
 interface FeedPostProps {
   post: FeedPostData;
+  onRemove?: (id: string) => void;
+  onUpdate?: (post: FeedPostData) => void;
 }
 
-export function FeedPost({ post }: FeedPostProps) {
+export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
+  const [editOpen, setEditOpen] = useState(false);
   const [reaction, setReaction] = useState<ReactionId | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState(false);
@@ -50,6 +54,9 @@ export function FeedPost({ post }: FeedPostProps) {
         time={post.time}
         feeling={post.feeling}
         isLive={post.isLive}
+        isOwn={post.author.name === CURRENT_USER.name}
+        onRemove={onRemove ? () => onRemove(post.id) : undefined}
+        onEdit={onUpdate ? () => setEditOpen(true) : undefined}
       />
       {post.text ? <PostText text={post.text} /> : null}
       {(post.imageUrl || post.imageGradient) ? (
@@ -80,6 +87,18 @@ export function FeedPost({ post }: FeedPostProps) {
           authorGradient={CURRENT_USER.gradient}
         />
       ) : null}
+      {onUpdate && (
+        <PostComposerModal
+          open={editOpen}
+          mode="default"
+          initialPost={post}
+          onClose={() => setEditOpen(false)}
+          onSubmit={(updated) => {
+            onUpdate(updated);
+            setEditOpen(false);
+          }}
+        />
+      )}
     </Flex>
   );
 }

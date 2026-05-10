@@ -1,9 +1,16 @@
 "use client";
 
-import { Flex, Typography } from "antd";
+import { Button, Dropdown, Flex, Typography } from "antd";
+import { useState } from "react";
 import { Icon } from "@/shared/components/Icon";
+import { ConfirmModal } from "@/shared/components/modal/ConfirmModal";
 import type { FeedAuthor, Feeling } from "../../data/types";
 import { gradientBg } from "@/shared/utils/gradient";
+import styles from "./PostHeader.module.scss";
+import {
+  POST_HEADER_MENU_STYLES,
+  makePostHeaderMenuItems,
+} from "./PostHeaderMenu";
 
 const { Text } = Typography;
 
@@ -12,9 +19,27 @@ interface PostHeaderProps {
   time: string;
   feeling?: Feeling;
   isLive?: boolean;
+  isOwn?: boolean;
+  onRemove?: () => void;
+  onEdit?: () => void;
 }
 
-export function PostHeader({ author, time, feeling, isLive }: PostHeaderProps) {
+export function PostHeader({
+  author,
+  time,
+  feeling,
+  isLive,
+  isOwn = false,
+  onRemove,
+  onEdit,
+}: PostHeaderProps) {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleConfirm = () => {
+    setConfirmOpen(false);
+    onRemove?.();
+  };
+
   return (
     <Flex
       align="center"
@@ -70,7 +95,43 @@ export function PostHeader({ author, time, feeling, isLive }: PostHeaderProps) {
           </Flex>
         </Flex>
       </Flex>
-      <Icon name="more_horiz" size={24} color="var(--color-text-secondary)" />
+      <Dropdown
+        trigger={["click"]}
+        placement="bottomRight"
+        menu={{
+          items: makePostHeaderMenuItems(author.name, isOwn),
+          style: POST_HEADER_MENU_STYLES,
+          onClick: ({ key, domEvent }) => {
+            domEvent.stopPropagation();
+            if (key === "remove" && onRemove) setConfirmOpen(true);
+            if (key === "edit" && onEdit) onEdit();
+          },
+        }}
+      >
+        <Button
+          type="text"
+          shape="circle"
+          aria-label="Post options"
+          className={`${styles.moreBtn} !flex !h-9 !w-9 !items-center !justify-center`}
+          icon={
+            <Icon
+              name="more_horiz"
+              size={22}
+              color="var(--color-text-secondary)"
+            />
+          }
+        />
+      </Dropdown>
+      <ConfirmModal
+        open={confirmOpen}
+        title="Remove this post?"
+        description="This post will be permanently removed from your timeline."
+        okText="Remove"
+        cancelText="Cancel"
+        danger
+        onOk={handleConfirm}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </Flex>
   );
 }

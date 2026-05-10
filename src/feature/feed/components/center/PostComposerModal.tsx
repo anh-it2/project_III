@@ -18,6 +18,7 @@ interface PostComposerModalProps {
   mode: ComposerMode;
   onClose: () => void;
   onSubmit: (post: FeedPostData) => void;
+  initialPost?: FeedPostData;
 }
 
 export function PostComposerModal({
@@ -25,7 +26,9 @@ export function PostComposerModal({
   mode,
   onClose,
   onSubmit,
+  initialPost,
 }: PostComposerModalProps) {
+  const isEdit = !!initialPost;
   const [text, setText] = useState("");
   const [file, setFile] = useState<UploadFile | null>(null);
   const [imageUrl, setImageUrl] = useState("");
@@ -39,9 +42,27 @@ export function PostComposerModal({
   useEffect(() => {
     if (!open) return;
     submittedRef.current = false;
+    if (initialPost) {
+      setText(initialPost.text ?? "");
+      setImageUrl(initialPost.imageUrl ?? "");
+      setFeeling(initialPost.feeling ?? null);
+      setShowPhotoSection(!!initialPost.imageUrl);
+      setShowFeelingPicker(!!initialPost.feeling);
+      setFile(
+        initialPost.imageUrl
+          ? {
+              uid: `existing-${initialPost.id}`,
+              name: "existing",
+              status: "done",
+            }
+          : null,
+      );
+      return;
+    }
     setShowPhotoSection(mode === "photo");
     setShowFeelingPicker(mode === "feeling");
-  }, [open, mode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, mode, initialPost]);
 
   useEffect(() => {
     if (open) return;
@@ -102,6 +123,18 @@ export function PostComposerModal({
       return;
     }
     submittedRef.current = true;
+    if (isEdit && initialPost) {
+      onSubmit({
+        ...initialPost,
+        text: text.trim(),
+        imageUrl: imageUrl || undefined,
+        imageGradient: imageUrl ? undefined : initialPost.imageGradient,
+        feeling: feeling ?? undefined,
+        time: `${initialPost.time} · edited`,
+      });
+      onClose();
+      return;
+    }
     onSubmit({
       id: `fp-${Date.now()}`,
       author: {
@@ -133,7 +166,7 @@ export function PostComposerModal({
         style={{ borderBottom: "1px solid #2e2e2e" }}
       >
         <Title level={5} className="!m-0" style={{ color: "#e4e6eb" }}>
-          Create post
+          {isEdit ? "Edit post" : "Create post"}
         </Title>
       </Flex>
 
@@ -393,7 +426,7 @@ export function PostComposerModal({
             height: 40,
           }}
         >
-          Post
+          {isEdit ? "Save" : "Post"}
         </Button>
       </Flex>
     </DarkModal>
