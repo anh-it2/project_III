@@ -17,7 +17,7 @@ export function ChatRoom() {
   const closeAllChatBoxes = useChatBoxesStore((s) => s.closeAll);
 
   const [selected, setSelected] = useState<OnlineUserDto | null>(null);
-  const [showRightPanel, setShowRightPanel] = useState(true);
+  const [showRightPanel, setShowRightPanel] = useState(false);
 
   useEffect(() => {
     closeAllChatBoxes();
@@ -28,22 +28,59 @@ export function ChatRoom() {
     router.push("/login");
   }
 
+  const hasSelection = !!selected;
+
   return (
-    <div className="flex h-screen min-h-screen bg-[#fafbfc] dark:bg-[#0a0a0a]">
-      <ChatSidebar
-        users={users}
-        selectedUserId={selected?.id ?? null}
-        currentUserName={userName}
-        onSelect={setSelected}
-        onLogout={handleLogout}
+    <div className="relative flex h-screen min-h-screen overflow-hidden bg-[#fafbfc] dark:bg-[#0a0a0a]">
+      {/* mobile: single-column slider; desktop: static flex */}
+      <div className="relative h-full w-full overflow-hidden md:flex md:w-auto md:flex-1">
+        <div
+          className={
+            "absolute inset-0 transition-transform duration-300 ease-out md:static md:w-[340px] md:shrink-0 md:translate-x-0 " +
+            (hasSelection ? "-translate-x-full md:!translate-x-0" : "translate-x-0")
+          }
+        >
+          <ChatSidebar
+            users={users}
+            selectedUserId={selected?.id ?? null}
+            currentUserName={userName}
+            onSelect={setSelected}
+            onLogout={handleLogout}
+          />
+        </div>
+
+        <main
+          className={
+            "absolute inset-0 flex min-w-0 flex-col transition-transform duration-300 ease-out md:static md:flex-1 md:translate-x-0 " +
+            (hasSelection ? "translate-x-0" : "translate-x-full md:!translate-x-0")
+          }
+        >
+          <ChatMain
+            user={selected}
+            onToggleInfo={() => setShowRightPanel((v) => !v)}
+            onBack={() => setSelected(null)}
+          />
+        </main>
+      </div>
+
+      {/* right panel: slide-in drawer with backdrop on all sizes */}
+      <div
+        className={
+          "fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 " +
+          (showRightPanel
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0")
+        }
+        onClick={() => setShowRightPanel(false)}
       />
-      <main className="flex min-w-0 flex-1 flex-col">
-        <ChatMain
-          user={selected}
-          onToggleInfo={() => setShowRightPanel((v) => !v)}
-        />
-      </main>
-      {showRightPanel && <ChatRightPanel user={selected} />}
+      <div
+        className={
+          "fixed inset-y-0 right-0 z-50 w-[340px] max-w-[85vw] transform transition-transform duration-300 ease-out " +
+          (showRightPanel ? "translate-x-0" : "translate-x-full")
+        }
+      >
+        <ChatRightPanel user={selected} />
+      </div>
     </div>
   );
 }

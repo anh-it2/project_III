@@ -73,7 +73,7 @@ export function MessageInput({
   }
 
   return (
-    <div className="flex h-20 items-center gap-3 border-t border-[var(--color-border)] bg-white px-6 dark:bg-[#141414]">
+    <div className="flex h-20 items-center gap-2 border-t border-[var(--color-border)] bg-white px-3 sm:gap-3 sm:px-6 dark:bg-[#141414]">
       <Flex align="center" gap={6}>
         <Button type="text" icon={<PlusOutlined />} className={PILL_BTN} />
         <Upload

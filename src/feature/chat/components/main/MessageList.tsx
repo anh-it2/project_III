@@ -104,7 +104,7 @@ export function MessageList({ user, messages, isLoading }: MessageListProps) {
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-y-auto bg-[#fafbfc] px-8 py-6 dark:bg-[#0a0a0a]"
+      className="flex-1 overflow-y-auto bg-[#fafbfc] px-3 py-4 sm:px-8 sm:py-6 dark:bg-[#0a0a0a]"
     >
       <Flex vertical gap={12}>
         {messages.length === 0 ? (

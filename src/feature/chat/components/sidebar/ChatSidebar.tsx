@@ -22,7 +22,7 @@ export function ChatSidebar({
   onLogout,
 }: ChatSidebarProps) {
   return (
-    <aside className="flex h-full w-[340px] shrink-0 flex-col border-r border-[var(--color-border)] bg-white dark:bg-[#141414]">
+    <aside className="flex h-full w-full flex-col border-r border-[var(--color-border)] bg-white dark:bg-[#141414] md:w-[340px] md:shrink-0">
       <SidebarHeader onLogout={onLogout} />
       <SidebarSearch />
       <SidebarFilters />

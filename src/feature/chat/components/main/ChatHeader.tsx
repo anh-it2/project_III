@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowLeftOutlined,
   InfoCircleOutlined,
   PhoneOutlined,
   VideoCameraOutlined,
@@ -17,15 +18,27 @@ const ACTION_BTN_CLASS =
 interface ChatHeaderProps {
   user: OnlineUserDto;
   onToggleInfo?: () => void;
+  onBack?: () => void;
 }
 
-export function ChatHeader({ user, onToggleInfo }: ChatHeaderProps) {
+export function ChatHeader({ user, onToggleInfo, onBack }: ChatHeaderProps) {
   return (
-    <div className="flex h-[72px] items-center justify-between border-b border-[var(--color-border)] bg-white px-6 dark:bg-[#141414]">
-      <Flex align="center" gap={12}>
+    <div className="flex h-[72px] items-center justify-between border-b border-[var(--color-border)] bg-white px-3 sm:px-6 dark:bg-[#141414]">
+      <Flex align="center" gap={8} className="min-w-0">
+        {onBack && (
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={onBack}
+            className={ACTION_BTN_CLASS + " md:!hidden"}
+          />
+        )}
         <Avatar name={user.name} seed={user.id} size={44} online />
-        <Flex vertical gap={2}>
-          <Text className="!text-[16px] !font-semibold !text-[var(--color-text)]">
+        <Flex vertical gap={2} className="min-w-0">
+          <Text
+            ellipsis
+            className="!text-[15px] !font-semibold !text-[var(--color-text)] sm:!text-[16px]"
+          >
             {user.name}
           </Text>
           <Flex align="center" gap={6}>
@@ -36,16 +49,16 @@ export function ChatHeader({ user, onToggleInfo }: ChatHeaderProps) {
           </Flex>
         </Flex>
       </Flex>
-      <Flex align="center" gap={6}>
+      <Flex align="center" gap={6} className="shrink-0">
         <Button
           type="text"
           icon={<PhoneOutlined />}
-          className={ACTION_BTN_CLASS}
+          className={ACTION_BTN_CLASS + " !hidden sm:!inline-flex"}
         />
         <Button
           type="text"
           icon={<VideoCameraOutlined />}
-          className={ACTION_BTN_CLASS}
+          className={ACTION_BTN_CLASS + " !hidden sm:!inline-flex"}
         />
         <Button
           type="text"
