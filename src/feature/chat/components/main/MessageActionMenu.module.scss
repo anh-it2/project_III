@@ -15,15 +15,21 @@
     }
 
     :global(.ant-dropdown-menu-item-icon),
-    :global(.anticon) {
+    :global(.anticon),
+    :global(.material-symbols-rounded) {
       color: var(--color-text-secondary) !important;
     }
+  }
+
+  :global(.ant-dropdown-menu-item-divider) {
+    background: var(--color-border) !important;
   }
 
   :global(.ant-dropdown-menu-item-danger) {
     color: var(--color-error) !important;
 
-    :global(.anticon) {
+    :global(.anticon),
+    :global(.material-symbols-rounded) {
       color: var(--color-error) !important;
     }
 

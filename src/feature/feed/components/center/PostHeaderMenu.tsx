@@ -3,21 +3,13 @@
 import type { MenuProps } from "antd";
 import { Icon } from "@/shared/components/Icon";
 
-function menuIcon(name: string, color = "var(--color-text-secondary)") {
-  return <Icon name={name} size={20} color={color} />;
+function menuIcon(name: string) {
+  return <Icon name={name} size={20} />;
 }
 
-function menuLabel(text: string, danger = false) {
+function menuLabel(text: string) {
   return (
-    <span
-      style={{
-        color: danger ? "var(--color-error)" : "var(--color-text)",
-        fontSize: 14,
-        fontWeight: 500,
-      }}
-    >
-      {text}
-    </span>
+    <span style={{ fontSize: 14, fontWeight: 500 }}>{text}</span>
   );
 }
 
@@ -45,8 +37,8 @@ export function makePostHeaderMenuItems(
       { type: "divider" },
       {
         key: "remove",
-        icon: menuIcon("delete", "var(--color-error)"),
-        label: menuLabel("Remove post", true),
+        icon: menuIcon("delete"),
+        label: menuLabel("Remove post"),
         danger: true,
       },
     ];
@@ -75,18 +67,10 @@ export function makePostHeaderMenuItems(
     { type: "divider" },
     {
       key: "report",
-      icon: menuIcon("flag", "var(--color-error)"),
-      label: menuLabel("Report post", true),
+      icon: menuIcon("flag"),
+      label: menuLabel("Report post"),
       danger: true,
     },
   ];
 }
 
-export const POST_HEADER_MENU_STYLES = {
-  background: "var(--color-bg-secondary)",
-  border: "1px solid var(--color-border)",
-  borderRadius: 12,
-  boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
-  padding: 6,
-  minWidth: 280,
-};

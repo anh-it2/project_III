@@ -7,10 +7,7 @@ import { ConfirmModal } from "@/shared/components/modal/ConfirmModal";
 import type { FeedAuthor, Feeling } from "../../data/types";
 import { gradientBg } from "@/shared/utils/gradient";
 import styles from "./PostHeader.module.scss";
-import {
-  POST_HEADER_MENU_STYLES,
-  makePostHeaderMenuItems,
-} from "./PostHeaderMenu";
+import { makePostHeaderMenuItems } from "./PostHeaderMenu";
 
 const { Text } = Typography;
 
@@ -100,7 +97,7 @@ export function PostHeader({
         placement="bottomRight"
         menu={{
           items: makePostHeaderMenuItems(author.name, isOwn),
-          style: POST_HEADER_MENU_STYLES,
+          className: styles.menu,
           onClick: ({ key, domEvent }) => {
             domEvent.stopPropagation();
             if (key === "remove" && onRemove) setConfirmOpen(true);
