@@ -11,6 +11,7 @@ interface ConversationListProps {
   selectedUserId: string | null;
   currentUserName: string;
   onSelect: (user: OnlineUserDto) => void;
+  unreadMap?: Record<string, boolean>;
 }
 
 export function ConversationList({
@@ -18,6 +19,7 @@ export function ConversationList({
   selectedUserId,
   currentUserName,
   onSelect,
+  unreadMap,
 }: ConversationListProps) {
   if (users.length === 0) {
     return (
@@ -40,6 +42,7 @@ export function ConversationList({
           <ConversationItem
             user={u}
             active={selectedUserId === u.id}
+            unread={!!unreadMap?.[u.id]}
             onClick={() => onSelect(u)}
           />
         </div>

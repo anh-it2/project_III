@@ -6,6 +6,7 @@ import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import { usePresenceStore } from "@/feature/presence/stores/presence.store";
 import { pickGradient } from "@/feature/chat/lib/avatar";
 import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
+import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
 import { ChatDropdownFooter } from "./ChatDropdownFooter";
 import { ChatDropdownHeader } from "./ChatDropdownHeader";
 import { ChatDropdownItem } from "./ChatDropdownItem";
@@ -20,8 +21,11 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
   const nav = useNavigation();
   const onlineUsers = usePresenceStore((s) => s.onlineUsers);
   const openChat = useChatBoxesStore((s) => s.openChat);
+  const unreadMap = useChatRoomUnreadStore((s) => s.unread);
+  const markRead = useChatRoomUnreadStore((s) => s.markRead);
 
   function handleItemClick(user: OnlineUserDto) {
+    markRead(user.id);
     openChat({
       id: user.id,
       name: user.name,
@@ -41,7 +45,7 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
   return (
     <Flex
       vertical
-      className="!w-[360px]"
+      className="!w-[min(360px,calc(100vw-16px))]"
       style={{
         background: "var(--color-bg-secondary)",
         border: "1px solid var(--color-border)",
@@ -77,9 +81,10 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
               chat={{
                 id: u.id,
                 name: u.name,
-                lastMessage: "Active now",
+                lastMessage: unreadMap[u.id] ? "New message" : "Active now",
                 time: "",
                 online: true,
+                unread: !!unreadMap[u.id],
                 gradient: pickGradient(u.id),
               }}
               onClick={() => handleItemClick(u)}

@@ -10,16 +10,7 @@ export function ChatBoxes() {
 
   return (
     <div
-      style={{
-        position: "fixed",
-        bottom: 0,
-        right: 344,
-        display: "flex",
-        gap: 12,
-        alignItems: "flex-end",
-        zIndex: 1000,
-        pointerEvents: "none",
-      }}
+      className="!fixed !bottom-0 !right-2 sm:!right-6 xl:!right-[344px] !z-[1000] !flex !items-end !gap-3 !pointer-events-none [&>*:nth-child(n+2)]:!hidden sm:[&>*:nth-child(n+2)]:!flex"
     >
       {openChats.map((chat) => (
         <div key={chat.id} style={{ pointerEvents: "auto" }}>

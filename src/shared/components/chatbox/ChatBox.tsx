@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Flex, Typography } from "antd";
+import { useEffect, useRef } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { useChat } from "@/feature/chat/hooks/useChat";
@@ -11,6 +12,7 @@ import { MessageList } from "@/feature/chat/components/main/MessageList";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import type { ChatPreview } from "@/shared/data/chats";
 import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
+import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
 import { gradientBg } from "@/shared/utils/gradient";
 
 const { Text } = Typography;
@@ -23,6 +25,9 @@ export function ChatBox({ chat }: ChatBoxProps) {
   const minimized = useChatBoxesStore((s) => s.minimized[chat.id] ?? false);
   const closeChat = useChatBoxesStore((s) => s.closeChat);
   const toggleMinimize = useChatBoxesStore((s) => s.toggleMinimize);
+  const markUnread = useChatBoxesStore((s) => s.markUnread);
+  const markRead = useChatBoxesStore((s) => s.markRead);
+  const markRoomRead = useChatRoomUnreadStore((s) => s.markRead);
 
   const myId = useAuthStore((s) => s.userId);
   const conversationId = buildDmId(myId, chat.id);
@@ -31,11 +36,55 @@ export function ChatBox({ chat }: ChatBoxProps) {
 
   const user: OnlineUserDto = { id: chat.id, name: chat.name };
 
+  const lastSeenSeqRef = useRef<number>(-1);
+  const initRef = useRef(false);
+
+  useEffect(() => {
+    let newestPeerSeq = -1;
+    for (const m of messages) {
+      if (m.senderId === myId) continue;
+      const s = m.seq ?? -1;
+      if (s > newestPeerSeq) newestPeerSeq = s;
+    }
+    if (!initRef.current) {
+      initRef.current = true;
+      lastSeenSeqRef.current = newestPeerSeq;
+      if (!minimized) {
+        markRead(chat.id);
+        markRoomRead(chat.id);
+      }
+      return;
+    }
+    if (newestPeerSeq > lastSeenSeqRef.current) {
+      if (minimized) {
+        markUnread(chat.id);
+      } else {
+        lastSeenSeqRef.current = newestPeerSeq;
+        markRead(chat.id);
+        markRoomRead(chat.id);
+      }
+    }
+  }, [messages, minimized, chat.id, myId, markUnread, markRead, markRoomRead]);
+
+  useEffect(() => {
+    if (!minimized) {
+      let newestPeerSeq = -1;
+      for (const m of messages) {
+        if (m.senderId === myId) continue;
+        const s = m.seq ?? -1;
+        if (s > newestPeerSeq) newestPeerSeq = s;
+      }
+      lastSeenSeqRef.current = newestPeerSeq;
+      markRead(chat.id);
+      markRoomRead(chat.id);
+    }
+  }, [minimized, chat.id, markRead, markRoomRead, messages, myId]);
+
   return (
     <Flex
       vertical
+      className="!w-[calc(100vw-16px)] sm:!w-[328px]"
       style={{
-        width: 328,
         height: minimized ? 56 : 440,
         background: "var(--color-bg-secondary)",
         border: "1px solid var(--color-border)",

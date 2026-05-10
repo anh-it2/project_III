@@ -6,6 +6,7 @@ import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import { usePresenceStore } from "@/feature/presence/stores/presence.store";
 import { useRouter } from "@/i18n/navigation";
 import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
+import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
 import { ChatMain } from "./main/ChatMain";
 import { ChatRightPanel } from "./right/ChatRightPanel";
 import { ChatSidebar } from "./sidebar/ChatSidebar";
@@ -15,6 +16,8 @@ export function ChatRoom() {
   const { userName, removeLogginedUser } = useAuthStore();
   const users = usePresenceStore((s) => s.onlineUsers);
   const closeAllChatBoxes = useChatBoxesStore((s) => s.closeAll);
+  const setActivePeer = useChatRoomUnreadStore((s) => s.setActivePeer);
+  const unreadMap = useChatRoomUnreadStore((s) => s.unread);
 
   const [selected, setSelected] = useState<OnlineUserDto | null>(null);
   const [showRightPanel, setShowRightPanel] = useState(false);
@@ -22,6 +25,11 @@ export function ChatRoom() {
   useEffect(() => {
     closeAllChatBoxes();
   }, [closeAllChatBoxes]);
+
+  useEffect(() => {
+    setActivePeer(selected?.id ?? null);
+    return () => setActivePeer(null);
+  }, [selected?.id, setActivePeer]);
 
   function handleLogout() {
     removeLogginedUser();
@@ -46,6 +54,7 @@ export function ChatRoom() {
             currentUserName={userName}
             onSelect={setSelected}
             onLogout={handleLogout}
+            unreadMap={unreadMap}
           />
         </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { useGlobalChatUnread } from "@/feature/chat/hooks/useGlobalChatUnread";
 import { useRouter } from "@/i18n/navigation";
 import { ChatBoxes } from "@/shared/components/chatbox/ChatBoxes";
 import { NavigationProgressBar } from "@/shared/components/NavigationProgressBar";
@@ -26,6 +27,8 @@ export default function ProtectedLayout({
   useEffect(() => {
     if (hydrated && !isLoggined) router.replace("/login");
   }, [hydrated, isLoggined, router]);
+
+  useGlobalChatUnread();
 
   if (!hydrated || !isLoggined) return null;
   return (
