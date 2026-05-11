@@ -1,0 +1,70 @@
+.field {
+  width: 100% !important;
+  height: 48px !important;
+  border-radius: 10px !important;
+  padding: 0 16px !important;
+  font-size: 15px !important;
+  background: var(--color-bg-tertiary) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-text) !important;
+
+  :global(input) {
+    background: transparent !important;
+    color: var(--color-text) !important;
+    caret-color: var(--color-text);
+    font-size: 15px !important;
+
+    &::placeholder {
+      color: var(--color-text-placeholder) !important;
+    }
+  }
+
+  :global(.ant-picker-suffix),
+  :global(.ant-picker-clear) {
+    color: var(--color-text-placeholder) !important;
+    background: transparent !important;
+  }
+
+  &:hover {
+    border-color: var(--color-primary) !important;
+  }
+
+  &:global(.ant-picker-focused) {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15) !important;
+  }
+
+  &:global(.ant-picker-status-error) {
+    border-color: var(--color-error) !important;
+  }
+}
+
+.popup {
+  :global(.ant-picker-panel-container) {
+    background: var(--color-bg-secondary) !important;
+    border: 1px solid var(--color-border) !important;
+  }
+
+  :global(.ant-picker-header),
+  :global(.ant-picker-header button) {
+    color: var(--color-text) !important;
+  }
+
+  :global(.ant-picker-content th),
+  :global(.ant-picker-cell-inner) {
+    color: var(--color-text) !important;
+  }
+
+  :global(.ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner) {
+    color: var(--color-text-muted) !important;
+  }
+
+  :global(.ant-picker-cell-selected .ant-picker-cell-inner) {
+    background: var(--color-primary) !important;
+    color: #ffffff !important;
+  }
+
+  :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected) .ant-picker-cell-inner) {
+    background: var(--color-bg-tertiary) !important;
+  }
+}

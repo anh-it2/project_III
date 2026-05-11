@@ -48,6 +48,7 @@ export interface FeedPostData {
   text: string;
   imageGradient?: [string, string, string];
   imageUrl?: string;
+  videoUrl?: string;
   feeling?: Feeling;
   isLive?: boolean;
   likes: string;

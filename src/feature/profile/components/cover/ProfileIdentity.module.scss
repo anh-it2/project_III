@@ -1,0 +1,104 @@
+.name {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.95),
+    0 2px 8px rgba(0, 0, 0, 0.7),
+    0 4px 18px rgba(0, 0, 0, 0.55);
+  -webkit-text-stroke: 0.6px rgba(0, 0, 0, 0.55);
+  paint-order: stroke fill;
+}
+
+.verified {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #4096ff;
+  filter:
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 6px rgba(64, 150, 255, 0.55));
+  background: linear-gradient(135deg, #4096ff, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  :global(.material-symbols-rounded) {
+    background: linear-gradient(135deg, #4096ff, #a855f7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-variation-settings: "FILL" 1;
+  }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.1px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 4px 14px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  max-width: 100%;
+
+  :global(.material-symbols-rounded) {
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 640px) {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+}
+
+.chipText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+
+.statusChip {
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.32),
+    rgba(16, 185, 129, 0.22)
+  );
+  border-color: rgba(134, 239, 172, 0.45);
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow:
+    0 0 0 2px rgba(34, 197, 94, 0.35),
+    0 0 8px rgba(34, 197, 94, 0.8);
+  animation: statusPulse 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 2px rgba(34, 197, 94, 0.35),
+      0 0 8px rgba(34, 197, 94, 0.8);
+  }
+  50% {
+    box-shadow:
+      0 0 0 4px rgba(34, 197, 94, 0.1),
+      0 0 14px rgba(34, 197, 94, 1);
+  }
+}

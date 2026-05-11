@@ -9,10 +9,39 @@ const { Text } = Typography;
 interface PostImageProps {
   gradient?: [string, string, string];
   imageUrl?: string;
+  videoUrl?: string;
   isLive?: boolean;
 }
 
-export function PostImage({ gradient, imageUrl, isLive }: PostImageProps) {
+export function PostImage({ gradient, imageUrl, videoUrl, isLive }: PostImageProps) {
+  if (videoUrl) {
+    return (
+      <div className="!relative !w-full" style={{ background: "#000" }}>
+        <video
+          src={videoUrl}
+          poster={imageUrl}
+          controls
+          playsInline
+          preload="metadata"
+          className="!w-full"
+          style={{ maxHeight: 520, objectFit: "contain", background: "#000" }}
+        />
+        {isLive && (
+          <Flex
+            align="center"
+            gap={6}
+            className="!absolute !rounded-md !px-2 !py-1"
+            style={{ top: 12, left: 12, background: "#f02849" }}
+          >
+            <span className="!h-2 !w-2 !rounded-full" style={{ background: "#fff" }} />
+            <Text className="!text-[11px] !font-bold !text-white !tracking-wider">
+              LIVE REPLAY
+            </Text>
+          </Flex>
+        )}
+      </div>
+    );
+  }
   if (imageUrl) {
     return (
       <div className="!relative !w-full" style={{ background: "#000" }}>

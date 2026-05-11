@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { App, Flex, Typography } from "antd";
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigation } from "@/shared/hooks/useNavigation";
 import { TopNav } from "@/shared/components/topnav/TopNav";
@@ -16,23 +17,31 @@ import { EditAboutSection } from "./EditAboutSection";
 import { EditCoverPreview } from "./EditCoverPreview";
 import { EditIdentitySection } from "./EditIdentitySection";
 import { EditPageHeader } from "./EditPageHeader";
+import { useProfileMeta } from "./useProfileMeta";
 
 const { Text } = Typography;
 
 export function EditProfilePage() {
   const nav = useNavigation();
   const { message } = App.useApp();
+  const { meta, hydrated, save } = useProfileMeta();
   const methods = useForm<EditProfileValues>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: EDIT_PROFILE_DEFAULTS,
     mode: "onSubmit",
   });
 
+  useEffect(() => {
+    if (hydrated) methods.reset(meta);
+  }, [hydrated, meta, methods]);
+
   async function onSubmit(values: EditProfileValues) {
-    console.log("[edit-profile] save", values);
+    save(values);
     message.success("Profile updated");
     nav.push("/profile");
   }
+
+  const hasFieldErrors = Object.keys(methods.formState.errors).length > 0;
 
   return (
     <Flex
@@ -60,6 +69,14 @@ export function EditProfilePage() {
             <EditCoverPreview />
             <EditIdentitySection />
             <EditAboutSection />
+            {hasFieldErrors && (
+              <Text
+                className="!text-sm"
+                style={{ color: "var(--color-error)" }}
+              >
+                Please fill out the required fields marked with *.
+              </Text>
+            )}
             {methods.formState.errors.root && (
               <Text type="danger" className="!text-sm">
                 {methods.formState.errors.root.message}

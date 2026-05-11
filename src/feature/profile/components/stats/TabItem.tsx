@@ -8,13 +8,15 @@ const { Text } = Typography;
 interface TabItemProps {
   label: string;
   active?: boolean;
+  onClick?: () => void;
 }
 
-export function TabItem({ label, active }: TabItemProps) {
+export function TabItem({ label, active, onClick }: TabItemProps) {
   return (
     <Flex
       align="center"
       justify="center"
+      onClick={onClick}
       className="!h-[34px] !shrink-0 !rounded-[20px] !px-4 !cursor-pointer md:!h-[38px] md:!px-5"
       style={{
         background: active

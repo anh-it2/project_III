@@ -1,7 +1,7 @@
 "use client";
 
 import { App, Button, Flex, Typography, Upload } from "antd";
-import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Icon } from "../Icon";
 import { gradientBg } from "../../data/mock";
@@ -33,16 +33,6 @@ export function EditCoverPreview() {
     .join("")
     .toUpperCase();
 
-  const latestRef = useRef({ avatarUrl, coverUrl });
-  latestRef.current = { avatarUrl, coverUrl };
-  useEffect(() => {
-    return () => {
-      const { avatarUrl: a, coverUrl: c } = latestRef.current;
-      if (a?.startsWith("blob:")) URL.revokeObjectURL(a);
-      if (c?.startsWith("blob:")) URL.revokeObjectURL(c);
-    };
-  }, []);
-
   const makeBeforeUpload = (field: "avatarUrl" | "coverUrl") => (raw: File) => {
     if (!raw.type.startsWith("image/")) {
       message.error("Only images allowed");
@@ -52,16 +42,21 @@ export function EditCoverPreview() {
       message.error("File too big (max 4MB)");
       return Upload.LIST_IGNORE;
     }
-    const prev = field === "avatarUrl" ? avatarUrl : coverUrl;
-    if (prev?.startsWith("blob:")) URL.revokeObjectURL(prev);
-    const url = URL.createObjectURL(raw);
-    setValue(field, url, { shouldDirty: true });
-    message.success(field === "avatarUrl" ? "Profile picture updated" : "Cover photo updated");
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = typeof reader.result === "string" ? reader.result : "";
+      if (!url) return;
+      setValue(field, url, { shouldDirty: true });
+      message.success(
+        field === "avatarUrl" ? "Profile picture updated" : "Cover photo updated"
+      );
+    };
+    reader.onerror = () => message.error("Failed to read image");
+    reader.readAsDataURL(raw);
     return false;
   };
 
   const removeAvatar = () => {
-    if (avatarUrl?.startsWith("blob:")) URL.revokeObjectURL(avatarUrl);
     setValue("avatarUrl", "", { shouldDirty: true });
     message.success("Profile picture removed");
   };
@@ -80,11 +75,12 @@ export function EditCoverPreview() {
         }}
       >
         {coverUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={coverUrl}
             alt="cover preview"
-            className="!h-full !w-full"
+            fill
+            unoptimized
+            sizes="(min-width: 960px) 912px, 100vw"
             style={{ objectFit: "cover" }}
           />
         )}
@@ -112,7 +108,7 @@ export function EditCoverPreview() {
 
       <Flex align="center" gap={20} className="!w-full">
         <div
-          className="flex shrink-0 items-center justify-center overflow-hidden"
+          className="relative flex shrink-0 items-center justify-center overflow-hidden"
           style={{
             width: EDIT_AVATAR_SIZE,
             height: EDIT_AVATAR_SIZE,
@@ -123,11 +119,12 @@ export function EditCoverPreview() {
           }}
         >
           {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={avatarUrl}
               alt="avatar preview"
-              className="!h-full !w-full"
+              fill
+              unoptimized
+              sizes="120px"
               style={{ objectFit: "cover" }}
             />
           ) : (

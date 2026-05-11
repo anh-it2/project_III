@@ -1,0 +1,106 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Flex, Typography } from "antd";
+import { useEffect, useMemo } from "react";
+import { FormProvider, useForm, type Resolver } from "react-hook-form";
+import { DarkModal } from "@/shared/components/modal/DarkModal";
+import type {
+  AboutRowData,
+  AboutSectionSchema,
+  FormValues,
+} from "../../data/mock";
+import { AboutEditFields } from "./AboutEditFields";
+import { AboutEditFooter } from "./AboutEditFooter";
+import {
+  buildDefaults,
+  buildZodSchema,
+  cleanValues,
+} from "./aboutEditForm.utils";
+
+const { Text, Title } = Typography;
+
+interface AboutRowEditModalProps {
+  open: boolean;
+  mode: "add" | "edit";
+  schema: AboutSectionSchema;
+  initial?: AboutRowData;
+  onCancel: () => void;
+  onSubmit: (values: FormValues) => void;
+}
+
+export function AboutRowEditModal({
+  open,
+  mode,
+  schema,
+  initial,
+  onCancel,
+  onSubmit,
+}: AboutRowEditModalProps) {
+  const resolver = useMemo(
+    () => zodResolver(buildZodSchema(schema.fields)) as unknown as Resolver<FormValues>,
+    [schema]
+  );
+  const methods = useForm<FormValues>({
+    resolver,
+    defaultValues: buildDefaults(schema.fields, initial?.values),
+    mode: "onSubmit",
+  });
+
+  useEffect(() => {
+    if (open) {
+      methods.reset(buildDefaults(schema.fields, initial?.values));
+    }
+  }, [open, initial, schema, methods]);
+
+  const title =
+    mode === "add"
+      ? `Add ${schema.title?.toLowerCase() ?? "item"}`
+      : `Edit ${schema.title?.toLowerCase() ?? "item"}`;
+
+  const handleSave = methods.handleSubmit((raw) => {
+    onSubmit(cleanValues(schema.fields, raw));
+  });
+
+  const handleCancel = () => {
+    methods.reset(buildDefaults(schema.fields));
+    onCancel();
+  };
+
+  const hasErrors = Object.keys(methods.formState.errors).length > 0;
+
+  return (
+    <DarkModal
+      open={open}
+      onCancel={handleCancel}
+      width={520}
+      centered
+      bg="var(--color-bg-secondary)"
+      borderColor="var(--color-border)"
+    >
+      <Flex vertical gap={20} style={{ padding: "24px 28px" }}>
+        <Title
+          level={5}
+          className="!m-0 !leading-tight"
+          style={{ color: "var(--color-text)" }}
+        >
+          {title}
+        </Title>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSave} noValidate>
+            <AboutEditFields fields={schema.fields} />
+            {hasErrors && (
+              <Text
+                className="!mt-3 !block !text-[13px]"
+                style={{ color: "var(--color-error)" }}
+              >
+                Please fill out the required fields marked with *.
+              </Text>
+            )}
+            <AboutEditFooter onCancel={handleCancel} />
+          </form>
+        </FormProvider>
+      </Flex>
+    </DarkModal>
+  );
+}

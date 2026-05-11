@@ -1,0 +1,80 @@
+.field {
+  background: var(--color-bg-tertiary) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px;
+  caret-color: var(--color-text);
+
+  &::placeholder,
+  :global(textarea)::placeholder,
+  :global(input)::placeholder {
+    color: var(--color-text-placeholder) !important;
+  }
+
+  &:hover,
+  &:focus,
+  &:focus-within {
+    background: var(--color-bg-tertiary) !important;
+    border-color: var(--color-primary) !important;
+  }
+
+  &:global(.ant-select) {
+    background: transparent !important;
+    border: 0 !important;
+
+    :global(.ant-select-selector) {
+      background: var(--color-bg-tertiary) !important;
+      border: 1px solid var(--color-border) !important;
+      color: var(--color-text) !important;
+      border-radius: 8px !important;
+    }
+
+    :global(.ant-select-selection-placeholder) {
+      color: var(--color-text-placeholder) !important;
+    }
+
+    :global(.ant-select-selection-item) {
+      color: var(--color-text) !important;
+    }
+
+    :global(.ant-select-arrow),
+    :global(.ant-select-clear) {
+      color: var(--color-text-muted) !important;
+      background: var(--color-bg-tertiary) !important;
+    }
+
+    &:hover :global(.ant-select-selector),
+    &:global(.ant-select-focused) :global(.ant-select-selector) {
+      border-color: var(--color-primary) !important;
+    }
+  }
+}
+
+.fieldPopup {
+  background: var(--color-bg-secondary) !important;
+  border: 1px solid var(--color-border) !important;
+
+  :global(.ant-select-item) {
+    color: var(--color-text) !important;
+  }
+
+  :global(.ant-select-item-option-active),
+  :global(.ant-select-item-option-selected) {
+    background: var(--color-bg-tertiary) !important;
+    color: var(--color-text) !important;
+  }
+}
+
+.checkbox {
+  color: var(--color-text) !important;
+
+  :global(.ant-checkbox-inner) {
+    background: var(--color-bg-tertiary) !important;
+    border-color: var(--color-border) !important;
+  }
+
+  :global(.ant-checkbox-checked .ant-checkbox-inner) {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+  }
+}

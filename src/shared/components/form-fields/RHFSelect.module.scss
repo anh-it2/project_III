@@ -1,0 +1,60 @@
+.field {
+  width: 100% !important;
+  font-size: 15px !important;
+
+  &:global(.ant-select) :global(.ant-select-selector) {
+    height: 48px !important;
+    border-radius: 10px !important;
+    padding: 0 16px !important;
+    background: var(--color-bg-tertiary) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-text) !important;
+  }
+
+  :global(.ant-select-selection-item),
+  :global(.ant-select-selection-placeholder) {
+    line-height: 46px !important;
+  }
+
+  :global(.ant-select-selection-item) {
+    color: var(--color-text) !important;
+  }
+
+  :global(.ant-select-selection-placeholder) {
+    color: var(--color-text-placeholder) !important;
+  }
+
+  :global(.ant-select-arrow),
+  :global(.ant-select-clear) {
+    color: var(--color-text-muted) !important;
+    background: transparent !important;
+  }
+
+  &:hover :global(.ant-select-selector) {
+    border-color: var(--color-primary) !important;
+  }
+
+  &:global(.ant-select-focused) :global(.ant-select-selector) {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15) !important;
+  }
+
+  &:global(.ant-select-status-error) :global(.ant-select-selector) {
+    border-color: var(--color-error) !important;
+  }
+}
+
+.popup {
+  background: var(--color-bg-secondary) !important;
+  border: 1px solid var(--color-border) !important;
+
+  :global(.ant-select-item) {
+    color: var(--color-text) !important;
+  }
+
+  :global(.ant-select-item-option-active),
+  :global(.ant-select-item-option-selected) {
+    background: var(--color-bg-tertiary) !important;
+    color: var(--color-text) !important;
+  }
+}

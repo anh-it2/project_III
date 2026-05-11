@@ -1,10 +1,16 @@
 "use client";
 
 import { Flex } from "antd";
+import type { TabId } from "../../data/mock";
 import { StatsRow } from "./StatsRow";
 import { TabsRow } from "./TabsRow";
 
-export function StatsAndTabs() {
+interface StatsAndTabsProps {
+  active: TabId;
+  onChange: (tab: TabId) => void;
+}
+
+export function StatsAndTabs({ active, onChange }: StatsAndTabsProps) {
   return (
     <Flex
       vertical
@@ -12,7 +18,7 @@ export function StatsAndTabs() {
       style={{ background: "var(--color-bg-secondary)", borderColor: "var(--color-border)" }}
     >
       <StatsRow />
-      <TabsRow />
+      <TabsRow active={active} onChange={onChange} />
     </Flex>
   );
 }

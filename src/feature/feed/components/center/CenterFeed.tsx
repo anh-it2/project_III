@@ -1,26 +1,43 @@
 "use client";
 
 import { Flex } from "antd";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FEED_POSTS } from "../../data/constants";
 import type { FeedPostData } from "../../data/types";
+import { useUserPosts } from "../../data/useUserPosts";
 import { Composer } from "./Composer";
 import { FeedPost } from "./FeedPost";
 import { Stories } from "./Stories";
 
 export function CenterFeed() {
-  const [posts, setPosts] = useState<FeedPostData[]>(FEED_POSTS);
+  const { posts: userPosts, addPost, removePost, updatePost } = useUserPosts();
+  const [mockPosts, setMockPosts] = useState<FeedPostData[]>(FEED_POSTS);
+
+  const allPosts = useMemo(
+    () => [...userPosts, ...mockPosts],
+    [userPosts, mockPosts]
+  );
+
+  const isUserPost = (id: string) => userPosts.some((p) => p.id === id);
 
   const handleCreate = (post: FeedPostData) => {
-    setPosts((prev) => [post, ...prev]);
+    addPost(post);
   };
 
   const handleRemove = (id: string) => {
-    setPosts((prev) => prev.filter((p) => p.id !== id));
+    if (isUserPost(id)) {
+      removePost(id);
+      return;
+    }
+    setMockPosts((prev) => prev.filter((p) => p.id !== id));
   };
 
   const handleUpdate = (updated: FeedPostData) => {
-    setPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+    if (isUserPost(updated.id)) {
+      updatePost(updated);
+      return;
+    }
+    setMockPosts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
   };
 
   return (
@@ -32,7 +49,7 @@ export function CenterFeed() {
     >
       <Stories />
       <Composer onCreatePost={handleCreate} />
-      {posts.map((p) => (
+      {allPosts.map((p) => (
         <FeedPost
           key={p.id}
           post={p}

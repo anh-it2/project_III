@@ -1,8 +1,14 @@
 "use client";
 
 import { Flex } from "antd";
+import { RHFSelect } from "@/shared/components/form-fields/RHFSelect";
 import { RHFTextField } from "@/shared/components/form-fields/RHFTextField";
 import { EditCard } from "./EditCard";
+
+const RELATIONSHIP_OPTIONS = [
+  { label: "Single", value: "Single" },
+  { label: "In a relationship", value: "In a relationship" },
+];
 
 export function EditAboutSection() {
   return (
@@ -21,10 +27,11 @@ export function EditAboutSection() {
           label="Education"
           placeholder="e.g. Stanford University"
         />
-        <RHFTextField
+        <RHFSelect
           name="relationship"
           label="Relationship"
-          placeholder="e.g. Single"
+          placeholder="Select relationship status"
+          options={RELATIONSHIP_OPTIONS}
         />
       </Flex>
     </EditCard>

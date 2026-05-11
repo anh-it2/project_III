@@ -1,10 +1,20 @@
 "use client";
 
 import { Flex } from "antd";
+import type { TabId } from "../data/mock";
+import { AboutTab } from "./about/AboutTab";
 import { MainFeed } from "./feed/MainFeed";
 import { Sidebar } from "./sidebar/Sidebar";
 
-export function ContentArea() {
+interface ContentAreaProps {
+  tab: TabId;
+}
+
+export function ContentArea({ tab }: ContentAreaProps) {
+  if (tab === "About") {
+    return <AboutTab />;
+  }
+
   return (
     <Flex
       gap={24}

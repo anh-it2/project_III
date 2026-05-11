@@ -25,6 +25,8 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
   const [phase, setPhase] = useState<Phase>("idle");
   const [title, setTitle] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -43,10 +45,23 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
     timerRef.current = null;
   };
 
+  const stopRecorder = () => {
+    const rec = recorderRef.current;
+    if (rec && rec.state !== "inactive") {
+      try {
+        rec.stop();
+      } catch {
+        /* ignore */
+      }
+    }
+    recorderRef.current = null;
+  };
+
   useEffect(() => {
     return () => {
       stopStream();
       stopTimer();
+      stopRecorder();
     };
   }, []);
 
@@ -75,6 +90,17 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
     }
   };
 
+  const pickMimeType = (): string | undefined => {
+    if (typeof MediaRecorder === "undefined") return undefined;
+    const candidates = [
+      "video/webm;codecs=vp9,opus",
+      "video/webm;codecs=vp8,opus",
+      "video/webm",
+      "video/mp4",
+    ];
+    return candidates.find((t) => MediaRecorder.isTypeSupported?.(t));
+  };
+
   const goLive = () => {
     setPhase("live");
     setElapsed(0);
@@ -83,7 +109,46 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
       setElapsed((s) => s + 1);
       setViewers((v) => v + Math.floor(Math.random() * 3));
     }, 1000);
+    chunksRef.current = [];
+    const stream = streamRef.current;
+    if (stream && typeof MediaRecorder !== "undefined") {
+      try {
+        const mime = pickMimeType();
+        const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+        rec.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
+        };
+        rec.start(1000);
+        recorderRef.current = rec;
+      } catch {
+        recorderRef.current = null;
+      }
+    }
     message.success("Broadcast started");
+  };
+
+  const finalizeRecording = (): Promise<string | undefined> => {
+    return new Promise((resolve) => {
+      const rec = recorderRef.current;
+      if (!rec || rec.state === "inactive") {
+        resolve(undefined);
+        return;
+      }
+      rec.onstop = () => {
+        const chunks = chunksRef.current;
+        if (chunks.length === 0) {
+          resolve(undefined);
+          return;
+        }
+        const blob = new Blob(chunks, { type: rec.mimeType || "video/webm" });
+        resolve(URL.createObjectURL(blob));
+      };
+      try {
+        rec.stop();
+      } catch {
+        resolve(undefined);
+      }
+    });
   };
 
   const captureFrame = (): string | null => {
@@ -102,10 +167,11 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
     }
   };
 
-  const endLive = () => {
+  const endLive = async () => {
     const frame = captureFrame();
     setSnapshot(frame);
     stopTimer();
+    const videoUrl = await finalizeRecording();
     stopStream();
     onSubmit({
       id: `fp-live-${Date.now()}`,
@@ -117,6 +183,7 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
       time: "Just now",
       text: title.trim() || "Was live",
       imageUrl: frame ?? undefined,
+      videoUrl,
       isLive: true,
       likes: String(viewers),
       comments: 0,
@@ -315,6 +382,7 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
           autoSize={{ minRows: 2, maxRows: 4 }}
           maxLength={150}
           disabled={phase === "live"}
+          className="[&_textarea]:!text-[var(--color-text)] [&_textarea::placeholder]:!text-[var(--color-text-placeholder)] [&_textarea::placeholder]:!opacity-100 [&_.ant-input::placeholder]:!text-[var(--color-text-placeholder)] [&_.ant-input::placeholder]:!opacity-100"
           style={{
             background: "var(--color-bg-tertiary)",
             border: "1px solid var(--color-border)",

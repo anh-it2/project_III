@@ -100,10 +100,11 @@ export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
         onEdit={onUpdate ? () => setEditOpen(true) : undefined}
       />
       {post.text ? <PostText text={post.text} /> : null}
-      {(post.imageUrl || post.imageGradient) ? (
+      {(post.imageUrl || post.imageGradient || post.videoUrl) ? (
         <PostImage
           gradient={post.imageGradient}
           imageUrl={post.imageUrl}
+          videoUrl={post.videoUrl}
           isLive={post.isLive}
         />
       ) : null}

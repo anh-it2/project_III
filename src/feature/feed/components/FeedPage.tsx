@@ -27,7 +27,7 @@ export function FeedPage() {
           wrapper: { width: 340 },
           body: { padding: 0, background: "var(--color-bg)", position: "relative" },
           header: { display: "none" },
-          content: { background: "var(--color-bg)" },
+          section: { background: "var(--color-bg)" },
         }}
       >
         <Button

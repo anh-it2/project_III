@@ -67,7 +67,9 @@ export function PostComposerModal({
 
   useEffect(() => {
     if (open) return;
-    if (!submittedRef.current && imageUrl) URL.revokeObjectURL(imageUrl);
+    if (!submittedRef.current && imageUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(imageUrl);
+    }
     setText("");
     setFile(null);
     setImageUrl("");
@@ -84,13 +86,27 @@ export function PostComposerModal({
       message.error("Only images or videos allowed");
       return Upload.LIST_IGNORE;
     }
-    if (raw.size > 50 * 1024 * 1024) {
-      message.error("File too big (max 50MB)");
+    const isImage = raw.type.startsWith("image/");
+    const limit = isImage ? 5 * 1024 * 1024 : 50 * 1024 * 1024;
+    if (raw.size > limit) {
+      message.error(
+        isImage ? "Image too big (max 5MB to persist)" : "File too big (max 50MB)"
+      );
       return Upload.LIST_IGNORE;
     }
-    if (imageUrl) URL.revokeObjectURL(imageUrl);
-    const url = URL.createObjectURL(raw);
-    setImageUrl(url);
+    if (imageUrl.startsWith("blob:")) URL.revokeObjectURL(imageUrl);
+    if (isImage) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const url = typeof reader.result === "string" ? reader.result : "";
+        if (!url) return;
+        setImageUrl(url);
+      };
+      reader.onerror = () => message.error("Failed to read image");
+      reader.readAsDataURL(raw);
+    } else {
+      setImageUrl(URL.createObjectURL(raw));
+    }
     setFile({
       uid: String(Date.now()),
       name: raw.name,
@@ -102,7 +118,7 @@ export function PostComposerModal({
   };
 
   const removeMedia = () => {
-    if (imageUrl) URL.revokeObjectURL(imageUrl);
+    if (imageUrl.startsWith("blob:")) URL.revokeObjectURL(imageUrl);
     setFile(null);
     setImageUrl("");
   };
@@ -226,6 +242,7 @@ export function PostComposerModal({
           autoSize={{ minRows: 4, maxRows: 8 }}
           maxLength={500}
           variant="borderless"
+          className="[&_textarea]:!text-[var(--color-text)] [&_textarea::placeholder]:!text-[var(--color-text-placeholder)] [&_textarea::placeholder]:!opacity-100 [&_.ant-input::placeholder]:!text-[var(--color-text-placeholder)] [&_.ant-input::placeholder]:!opacity-100"
           style={{
             background: "transparent",
             color: "var(--color-text)",
@@ -372,6 +389,7 @@ export function PostComposerModal({
               prefix={
                 <Icon name="search" size={14} color="var(--color-text-muted)" />
               }
+              className="[&_input]:!text-[var(--color-text)] [&_input::placeholder]:!text-[var(--color-text-placeholder)] [&_input::placeholder]:!opacity-100 [&_.ant-input::placeholder]:!text-[var(--color-text-placeholder)] [&_.ant-input::placeholder]:!opacity-100"
               style={{
                 background: "var(--color-bg-tertiary)",
                 border: "1px solid var(--color-border)",

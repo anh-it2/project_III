@@ -1,9 +1,10 @@
 "use client";
 
 import { Flex } from "antd";
-import { useState } from "react";
+import { useMemo } from "react";
 import { Composer } from "@/feature/feed/components/center/Composer";
 import type { FeedPostData } from "@/feature/feed/data/types";
+import { useUserPosts } from "@/feature/feed/data/useUserPosts";
 import { POSTS, type Post } from "../../data/mock";
 import { PostCard } from "./PostCard";
 
@@ -25,16 +26,21 @@ function feedToProfilePost(p: FeedPostData): Post {
 }
 
 export function MainFeed() {
-  const [posts, setPosts] = useState<Post[]>(POSTS);
+  const { posts: userPosts, addPost } = useUserPosts();
+
+  const allPosts = useMemo<Post[]>(
+    () => [...userPosts.map(feedToProfilePost), ...POSTS],
+    [userPosts]
+  );
 
   const handleCreate = (post: FeedPostData) => {
-    setPosts((prev) => [feedToProfilePost(post), ...prev]);
+    addPost(post);
   };
 
   return (
     <Flex vertical gap={20} className="!flex-1">
       <Composer onCreatePost={handleCreate} />
-      {posts.map((p) => (
+      {allPosts.map((p) => (
         <PostCard key={p.id} post={p} />
       ))}
     </Flex>

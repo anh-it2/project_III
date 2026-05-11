@@ -107,7 +107,67 @@ For full custom dialogs:
 <DarkModal open={...} bg="var(--color-bg-secondary)" borderColor="var(--color-border)" />
 ```
 
-## 6. Components: prefer Ant Design over raw HTML
+## 6. Forms — use shared RHF wrappers
+
+All forms use **react-hook-form** (`FormProvider` + `useForm`) with **zod** validation via `zodResolver`. Form inputs render through shared `RHF*` wrappers in `src/shared/components/form-fields/` — never call antd `Input`/`Select`/`DatePicker`/`Checkbox` directly inside a form.
+
+### Existing wrappers (check before creating)
+
+| Kind | Component | Antd primitive |
+|---|---|---|
+| Text input | `RHFTextField` | `Input` |
+| Password | `RHFPasswordField` | `Input.Password` |
+| Multiline | `RHFTextArea` | `Input.TextArea` |
+| Select / enum | `RHFSelect` | `Select` |
+| Boolean | `RHFCheckbox` | `Checkbox` |
+| Date / Month / Year | `RHFDatePicker` | `DatePicker` |
+
+If the field kind you need is missing, create `RHF<Kind>.tsx` next to the others — **do not inline a raw antd field inside a form**.
+
+### Wrapper pattern (when creating a new one)
+
+Copy the structure from `RHFTextField.tsx`:
+
+- `"use client"`, then `Controller` + `useFormContext` from `react-hook-form`.
+- Props from `./types.ts` (`name`, `label`, `placeholder`, `isRequire`, `disabled`, `className`, …). Add kind-specific props.
+- Render: `<label>` using `getLabelCls(fieldState.invalid)` → label text + `<RequiredAsterisk />` when `isRequire`.
+- The antd primitive itself, themed via Tailwind tokens that already exist in `_field-shared.tsx` (`INPUT_TEMPLATE_CLASS` for text-style, the local `TEXTAREA_CLASS` / `PICKER_CLASS` / `SELECT_CLASS` for others) — `!h-12 !rounded-[10px]`, `dark:!bg-[var(--color-bg-tertiary)]`, `!text-[var(--color-text)]`, placeholder + caret via `[&_input::placeholder]:!text-[var(--color-text-placeholder)]` etc. Forward `status={fieldState.invalid ? "error" : ""}`.
+- `<FieldErrorText invalid={fieldState.invalid} message={fieldState.error?.message} />` below.
+- For non-text primitives (Select/DatePicker): bridge form state ↔ antd value/onChange manually. For `RHFDatePicker`, store the value as an **ISO string** (`d.toISOString()`) and convert back with `dayjs(value)` so persistence is plain text and zod can validate as `z.string()`.
+
+### Form composition pattern
+
+```tsx
+const methods = useForm<FormValues>({
+  resolver: zodResolver(buildZodSchema(fields)) as unknown as Resolver<FormValues>,
+  defaultValues: buildDefaults(fields, initial?.values),
+  mode: "onSubmit",
+});
+
+<FormProvider {...methods}>
+  <form onSubmit={methods.handleSubmit(onValid)} noValidate>
+    {/* RHF fields here */}
+  </form>
+</FormProvider>
+```
+
+For schema-driven forms (fields described in data, not hard-coded), split the modal into pieces — see [AboutRowEditModal.tsx](src/feature/profile/components/about/AboutRowEditModal.tsx) for the canonical split:
+
+- `aboutEditForm.utils.ts` — `buildDefaults`, `buildZodSchema` (with `superRefine` for conditional `required`), `cleanValues`.
+- `AboutEditField.tsx` — single field switch on `kind`.
+- `AboutEditFields.tsx` — list renderer; uses `useWatch()` for `hideWhen` conditional fields + `span: 1` half-width layout.
+- `AboutEditFooter.tsx` — Cancel / Save buttons.
+- `AboutRowEditModal.tsx` — shell only: `DarkModal` + `FormProvider` + title + error banner.
+
+### Required-field UX (must-have)
+
+1. **Asterisk** — `<RequiredAsterisk />` (red `*`) beside every required label. Driven by `isRequire` prop on the wrapper.
+2. **Label color** flips to `--color-error` when the field is invalid (handled by `getLabelCls`).
+3. **Inline error** under the field via `FieldErrorText` (red 12px text).
+4. **Form-level banner** under all fields when `Object.keys(formState.errors).length > 0`: e.g. *"Please fill out the required fields marked with *."* — gives the user one visible nudge after a failed submit even if the offending field has scrolled away.
+5. Conditional required: if a field has `hideWhen`, validate it only when visible. Use zod `superRefine` to skip hidden fields rather than `z.string().min(1)`, otherwise hidden fields fail submit.
+
+## 7. Components: prefer Ant Design over raw HTML
 
 For new pages and components, reach for `antd` first:
 
@@ -127,7 +187,7 @@ Use raw `<div>`, `<span>`, `<button>` only when antd has no equivalent or the el
 
 Icons: `<Icon name="..." />` from `@/shared/components/Icon` (Material Symbols Rounded). Pass `color="var(--color-text-secondary)"` etc.
 
-## 7. Header dropdowns — bypass antd `Dropdown` for viewport-anchored panels
+## 8. Header dropdowns — bypass antd `Dropdown` for viewport-anchored panels
 
 Antd `Dropdown` anchors to its trigger. On narrow viewports, panels anchored to a far-right trigger overflow off-screen. Pattern used by ChatNavBtn / NotificationNavBtn:
 
@@ -136,16 +196,18 @@ Antd `Dropdown` anchors to its trigger. On narrow viewports, panels anchored to 
 - Cap panel width: `!w-[min(360px,calc(100vw-16px))]`.
 - Add a `useEffect` for `mousedown` outside + `Escape` to close.
 
-## 8. Responsive sidebars on Feed/Chat layouts
+## 9. Responsive sidebars on Feed/Chat layouts
 
 - Hide left sidebar `<lg`, hide right sidebar `<xl`. Center column uses `!mx-auto !max-w-[680px]` below lg, full width at lg+.
 - Chat boxes: `right-2` mobile, `sm:right-6`, `xl:right-[344px]` (clears right sidebar). Cap width `calc(100vw-16px)` mobile, `328px` `sm+`. Hide siblings beyond first on mobile via `[&>*:nth-child(n+2)]:!hidden sm:[&>*:nth-child(n+2)]:!flex`.
 
-## 9. Quick checklist before finishing a UI change
+## 10. Quick checklist before finishing a UI change
 
 - [ ] No hardcoded colors for theme surfaces — used `var(--color-*)`.
 - [ ] No `<style>{...}</style>` JSX tags introduced. SCSS module if Tailwind insufficient.
 - [ ] Antd component used where one exists.
+- [ ] Form fields go through shared `RHF*` wrappers — created a new wrapper if a kind was missing instead of inlining antd.
+- [ ] Required fields show `*`, invalid state turns label/border red, inline error appears, and a form-level banner shows after a failed submit.
 - [ ] Tested visually in both light and dark modes (toggle via theme button).
 - [ ] Mobile / tablet / desktop checked at `sm` / `lg` / `xl` breakpoints.
 - [ ] `npx tsc --noEmit` clean for touched files.
