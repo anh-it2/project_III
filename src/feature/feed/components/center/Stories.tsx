@@ -5,19 +5,45 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { STORIES } from "../../data/constants";
+import { useReelComposer } from "../../lib/reelComposer";
 import type { ReelData } from "../../data/types";
 import { CreateStoryCard } from "./CreateStoryCard";
 import { ReelCard } from "./ReelCard";
 import { ReelComposerModal } from "./ReelComposerModal";
 import { StoryCard } from "./StoryCard";
 
+const REELS_STORAGE_KEY = "feed.reels";
+
 export function Stories() {
   const t = useTranslations("Feed.story");
   const [reels, setReels] = useState<ReelData[]>([]);
-  const [composerOpen, setComposerOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const reelComposer = useReelComposer();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(REELS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as ReelData[];
+        if (Array.isArray(parsed)) setReels(parsed);
+      }
+    } catch {
+      // ignore corrupt storage
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(REELS_STORAGE_KEY, JSON.stringify(reels));
+    } catch {
+      // quota exceeded — large media won't persist
+    }
+  }, [reels, hydrated]);
 
   const updateArrows = useCallback(() => {
     const el = scrollerRef.current;
@@ -63,7 +89,9 @@ export function Stories() {
           ref={scrollerRef}
           className="no-scrollbar !h-full !w-full !overflow-x-auto !p-2"
         >
-          <CreateStoryCard onClick={() => setComposerOpen(true)} />
+          <CreateStoryCard
+            onClick={() => reelComposer?.openComposer(undefined)}
+          />
           {reels.map((r) => (
             <ReelCard key={r.id} reel={r} />
           ))}
@@ -101,9 +129,10 @@ export function Stories() {
         />
       </div>
       <ReelComposerModal
-        open={composerOpen}
-        onClose={() => setComposerOpen(false)}
+        open={reelComposer?.open ?? false}
+        onClose={() => reelComposer?.closeComposer()}
         onSubmit={handleSubmit}
+        initial={reelComposer?.initial}
       />
     </>
   );

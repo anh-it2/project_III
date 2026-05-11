@@ -306,6 +306,7 @@
     "reelViewer": {
       "title": "Reels",
       "follow": "Theo dõi",
+      "following": "Đang theo dõi",
       "justNow": "Vừa xong"
     },
     "live": {

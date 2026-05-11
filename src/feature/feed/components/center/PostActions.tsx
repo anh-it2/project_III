@@ -12,6 +12,16 @@ interface PostActionsProps {
   onReactionChange: (next: ReactionId | null) => void;
   onCommentClick: () => void;
   onShared: () => void;
+  shareSource?: {
+    mediaUrl?: string;
+    mediaType?: "video" | "image";
+    text?: string;
+  };
+  onShareToReel?: (init: {
+    mediaUrl: string;
+    mediaType: "video" | "image";
+    caption?: string;
+  }) => void;
 }
 
 const BTN_CLASS =
@@ -23,6 +33,8 @@ export function PostActions({
   onReactionChange,
   onCommentClick,
   onShared,
+  shareSource,
+  onShareToReel,
 }: PostActionsProps) {
   return (
     <Flex
@@ -37,7 +49,13 @@ export function PostActions({
         className={BTN_CLASS}
       />
       <CommentButton onClick={onCommentClick} className={BTN_CLASS} />
-      <ShareMenu postId={postId} onShared={onShared} className={BTN_CLASS} />
+      <ShareMenu
+        postId={postId}
+        onShared={onShared}
+        className={BTN_CLASS}
+        source={shareSource}
+        onShareToReel={onShareToReel}
+      />
     </Flex>
   );
 }

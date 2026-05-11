@@ -5,6 +5,9 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { gradientBg } from "@/shared/utils/gradient";
+import { emitNotification } from "@/feature/notification/lib/emit";
+import { getFirstUserId } from "@/shared/lib/firstUser";
+import { useNavigation } from "@/shared/hooks/useNavigation";
 import { CURRENT_USER, MUSIC_TRACKS } from "../../data/constants";
 import type { ReelData } from "../../data/types";
 import styles from "./ReelViewerModal.module.scss";
@@ -19,13 +22,34 @@ interface ReelViewerModalProps {
 
 export function ReelViewerModal({ open, onClose, reel }: ReelViewerModalProps) {
   const t = useTranslations("Feed.reelViewer");
+  const nav = useNavigation();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [muted, setMuted] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [followed, setFollowed] = useState(false);
   const track = reel.musicId
     ? MUSIC_TRACKS.find((t) => t.id === reel.musicId)
     : null;
+
+  function handleFollow(e?: React.MouseEvent) {
+    e?.stopPropagation();
+    if (followed) return;
+    setFollowed(true);
+    const recipientId = getFirstUserId();
+    if (!recipientId) return;
+    emitNotification({
+      recipientId,
+      kind: "follow",
+      preview: reel.caption?.slice(0, 80),
+    });
+  }
+
+  function handleAvatarClick(e?: React.MouseEvent) {
+    e?.stopPropagation();
+    onClose();
+    nav.push("/profile");
+  }
 
   useEffect(() => {
     if (!open) {
@@ -211,17 +235,20 @@ export function ReelViewerModal({ open, onClose, reel }: ReelViewerModalProps) {
             <Flex align="center" gap={8}>
               <Avatar
                 size={36}
+                onClick={handleAvatarClick}
                 style={{
                   background: gradientBg(CURRENT_USER.gradient),
                   fontWeight: 700,
                   border: "2px solid #fff",
+                  cursor: "pointer",
                 }}
               >
                 {CURRENT_USER.initial}
               </Avatar>
               <Flex vertical gap={0} className="!flex-1 !min-w-0">
                 <Text
-                  className="!text-sm !font-bold !leading-tight !text-white"
+                  onClick={handleAvatarClick}
+                  className="!text-sm !font-bold !leading-tight !text-white !cursor-pointer hover:!underline"
                 >
                   {CURRENT_USER.name}
                 </Text>
@@ -234,16 +261,17 @@ export function ReelViewerModal({ open, onClose, reel }: ReelViewerModalProps) {
               </Flex>
               <Button
                 size="small"
-                onClick={(e) => e.stopPropagation()}
+                onClick={handleFollow}
+                disabled={followed}
                 style={{
-                  background: "transparent",
+                  background: followed ? "rgba(255,255,255,0.15)" : "transparent",
                   border: "1px solid rgba(255,255,255,0.5)",
                   color: "#fff",
                   fontWeight: 600,
                   height: 26,
                 }}
               >
-                {t("follow")}
+                {followed ? t("following") : t("follow")}
               </Button>
             </Flex>
 

@@ -31,7 +31,9 @@ export function PostCard({ post }: PostCardProps) {
     return getFirstUserId() ?? post.ownerId;
   }
 
-  function handleAddComment(text: string) {
+  function handleAddComment(payload: { text: string; imageUrl?: string }) {
+    const { text, imageUrl } = payload;
+    if (!text && !imageUrl) return;
     setComments((prev) => [
       ...prev,
       {
@@ -39,6 +41,7 @@ export function PostCard({ post }: PostCardProps) {
         author: "You",
         authorGradient: ["#4096ff", "#a855f7"],
         text,
+        imageUrl,
         time: "Just now",
       },
     ]);
@@ -49,7 +52,7 @@ export function PostCard({ post }: PostCardProps) {
         recipientId,
         kind: "comment",
         postId: post.id,
-        preview: text,
+        preview: text || (imageUrl ? "📷" : undefined),
       });
     }
   }
@@ -107,6 +110,11 @@ export function PostCard({ post }: PostCardProps) {
         onReactionChange={handleReactionChange}
         onCommentClick={() => setShowComments((v) => !v)}
         onShared={handleShared}
+        shareSource={
+          post.image
+            ? { mediaUrl: post.image, mediaType: "image", text: post.text }
+            : undefined
+        }
       />
       {showComments ? (
         <CommentSection comments={comments} onAdd={handleAddComment} />

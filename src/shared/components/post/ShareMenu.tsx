@@ -11,9 +11,25 @@ interface ShareMenuProps {
   postId: string;
   onShared: () => void;
   className?: string;
+  source?: {
+    mediaUrl?: string;
+    mediaType?: "video" | "image";
+    text?: string;
+  };
+  onShareToReel?: (init: {
+    mediaUrl: string;
+    mediaType: "video" | "image";
+    caption?: string;
+  }) => void;
 }
 
-export function ShareMenu({ postId, onShared, className }: ShareMenuProps) {
+export function ShareMenu({
+  postId,
+  onShared,
+  className,
+  source,
+  onShareToReel,
+}: ShareMenuProps) {
   const t = useTranslations("Post");
   const [api, contextHolder] = message.useMessage();
 
@@ -22,6 +38,13 @@ export function ShareMenu({ postId, onShared, className }: ShareMenuProps) {
       const url = `${window.location.origin}/posts/${postId}`;
       void navigator.clipboard.writeText(url);
       api.success(t("linkCopied"));
+    } else if (action === "feed" && onShareToReel && source?.mediaUrl && source.mediaType) {
+      onShareToReel({
+        mediaUrl: source.mediaUrl,
+        mediaType: source.mediaType,
+        caption: source.text ?? "",
+      });
+      api.success(`${t("sharedVia")}${label}`);
     } else {
       api.success(`${t("sharedVia")}${label}`);
     }

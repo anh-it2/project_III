@@ -16,6 +16,11 @@ interface ReelComposerModalProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (reel: ReelData) => void;
+  initial?: {
+    mediaUrl: string;
+    mediaType: "video" | "image";
+    caption?: string;
+  };
 }
 
 const TRACK_GRADIENTS: [string, string][] = [
@@ -59,6 +64,7 @@ export function ReelComposerModal({
   open,
   onClose,
   onSubmit,
+  initial,
 }: ReelComposerModalProps) {
   const t = useTranslations("Feed.reelComposer");
   const tPostComposer = useTranslations("Feed.postComposer");
@@ -71,16 +77,23 @@ export function ReelComposerModal({
   const [search, setSearch] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const submittedRef = useRef(false);
+  const rawFileRef = useRef<File | null>(null);
   const [playingId, setPlayingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) {
       submittedRef.current = false;
+      if (initial) {
+        setMediaUrl(initial.mediaUrl);
+        setMediaType(initial.mediaType);
+        setCaption(initial.caption ?? "");
+      }
       return;
     }
-    if (!submittedRef.current && mediaUrl) {
+    if (!submittedRef.current && mediaUrl && mediaUrl.startsWith("blob:")) {
       URL.revokeObjectURL(mediaUrl);
     }
+    rawFileRef.current = null;
     setFile(null);
     setMediaUrl("");
     setMediaType(null);
@@ -106,6 +119,7 @@ export function ReelComposerModal({
     }
     if (mediaUrl) URL.revokeObjectURL(mediaUrl);
     const url = URL.createObjectURL(raw);
+    rawFileRef.current = raw;
     setMediaUrl(url);
     setMediaType(isVideo ? "video" : "image");
     setFile({
@@ -119,7 +133,8 @@ export function ReelComposerModal({
   };
 
   const handleRemoveMedia = () => {
-    if (mediaUrl) URL.revokeObjectURL(mediaUrl);
+    if (mediaUrl && mediaUrl.startsWith("blob:")) URL.revokeObjectURL(mediaUrl);
+    rawFileRef.current = null;
     setFile(null);
     setMediaUrl("");
     setMediaType(null);
@@ -139,18 +154,34 @@ export function ReelComposerModal({
     setPlayingId(track.id);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!mediaUrl || !mediaType) {
       message.warning(t("warningUploadFirst"));
       return;
     }
     audioRef.current?.pause();
     setPlayingId(null);
+
+    let persistedUrl = mediaUrl;
+    const raw = rawFileRef.current;
+    if (raw) {
+      try {
+        persistedUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(raw);
+        });
+      } catch {
+        // fallback to blob URL — reel works in-session, won't persist
+      }
+    }
+
     submittedRef.current = true;
     onSubmit({
       id: `r-${Date.now()}`,
       mediaType,
-      mediaUrl,
+      mediaUrl: persistedUrl,
       musicId: musicId ?? undefined,
       caption: caption.trim() || undefined,
     });

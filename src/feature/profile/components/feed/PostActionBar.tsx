@@ -12,6 +12,11 @@ interface PostActionBarProps {
   onReactionChange: (next: ReactionId | null) => void;
   onCommentClick: () => void;
   onShared: () => void;
+  shareSource?: {
+    mediaUrl?: string;
+    mediaType?: "video" | "image";
+    text?: string;
+  };
 }
 
 export function PostActionBar({
@@ -20,6 +25,7 @@ export function PostActionBar({
   onReactionChange,
   onCommentClick,
   onShared,
+  shareSource,
 }: PostActionBarProps) {
   return (
     <Flex
@@ -29,7 +35,7 @@ export function PostActionBar({
     >
       <LikeButton reaction={reaction} onChange={onReactionChange} />
       <CommentButton onClick={onCommentClick} />
-      <ShareMenu postId={postId} onShared={onShared} />
+      <ShareMenu postId={postId} onShared={onShared} source={shareSource} />
     </Flex>
   );
 }

@@ -1,13 +1,13 @@
 "use client";
 
 import { Flex } from "antd";
-import type { Comment } from "../../data/reactions";
+import type { Comment, CommentInputPayload } from "../../data/reactions";
 import { CommentInput } from "./CommentInput";
 import { CommentList } from "./CommentList";
 
 interface CommentSectionProps {
   comments: Comment[];
-  onAdd: (text: string) => void;
+  onAdd: (payload: CommentInputPayload) => void;
   authorInitial?: string;
   authorGradient?: [string, string];
 }

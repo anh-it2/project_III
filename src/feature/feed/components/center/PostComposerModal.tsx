@@ -37,6 +37,7 @@ export function PostComposerModal({
   const [text, setText] = useState("");
   const [file, setFile] = useState<UploadFile | null>(null);
   const [imageUrl, setImageUrl] = useState("");
+  const [mediaType, setMediaType] = useState<"image" | "video">("image");
   const [feeling, setFeeling] = useState<Feeling | null>(null);
   const [showPhotoSection, setShowPhotoSection] = useState(false);
   const [showFeelingPicker, setShowFeelingPicker] = useState(false);
@@ -48,17 +49,21 @@ export function PostComposerModal({
     if (!open) return;
     submittedRef.current = false;
     if (initialPost) {
+      const existingMedia = initialPost.videoUrl ?? initialPost.imageUrl ?? "";
+      const existingType: "image" | "video" = initialPost.videoUrl ? "video" : "image";
       setText(initialPost.text ?? "");
-      setImageUrl(initialPost.imageUrl ?? "");
+      setImageUrl(existingMedia);
+      setMediaType(existingType);
       setFeeling(initialPost.feeling ?? null);
-      setShowPhotoSection(!!initialPost.imageUrl);
+      setShowPhotoSection(!!existingMedia);
       setShowFeelingPicker(!!initialPost.feeling);
       setFile(
-        initialPost.imageUrl
+        existingMedia
           ? {
               uid: `existing-${initialPost.id}`,
               name: "existing",
               status: "done",
+              type: existingType === "video" ? "video/*" : "image/*",
             }
           : null,
       );
@@ -77,6 +82,7 @@ export function PostComposerModal({
     setText("");
     setFile(null);
     setImageUrl("");
+    setMediaType("image");
     setFeeling(null);
     setShowPhotoSection(false);
     setShowFeelingPicker(false);
@@ -99,18 +105,16 @@ export function PostComposerModal({
       return Upload.LIST_IGNORE;
     }
     if (imageUrl.startsWith("blob:")) URL.revokeObjectURL(imageUrl);
-    if (isImage) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const url = typeof reader.result === "string" ? reader.result : "";
-        if (!url) return;
-        setImageUrl(url);
-      };
-      reader.onerror = () => message.error("Failed to read image");
-      reader.readAsDataURL(raw);
-    } else {
-      setImageUrl(URL.createObjectURL(raw));
-    }
+    setMediaType(isImage ? "image" : "video");
+    const reader = new FileReader();
+    reader.onload = () => {
+      const url = typeof reader.result === "string" ? reader.result : "";
+      if (!url) return;
+      setImageUrl(url);
+    };
+    reader.onerror = () =>
+      message.error(isImage ? "Failed to read image" : "Failed to read video");
+    reader.readAsDataURL(raw);
     setFile({
       uid: String(Date.now()),
       name: raw.name,
@@ -125,6 +129,7 @@ export function PostComposerModal({
     if (imageUrl.startsWith("blob:")) URL.revokeObjectURL(imageUrl);
     setFile(null);
     setImageUrl("");
+    setMediaType("image");
   };
 
   const filteredFeelings = useMemo(() => {
@@ -144,11 +149,15 @@ export function PostComposerModal({
       return;
     }
     submittedRef.current = true;
+    const isVideo = mediaType === "video";
+    const imageField = imageUrl && !isVideo ? imageUrl : undefined;
+    const videoField = imageUrl && isVideo ? imageUrl : undefined;
     if (isEdit && initialPost) {
       onSubmit({
         ...initialPost,
         text: text.trim(),
-        imageUrl: imageUrl || undefined,
+        imageUrl: imageField,
+        videoUrl: videoField,
         imageGradient: imageUrl ? undefined : initialPost.imageGradient,
         feeling: feeling ?? undefined,
         time: `${initialPost.time} · edited`,
@@ -166,7 +175,8 @@ export function PostComposerModal({
       },
       time: tReel("justNow"),
       text: text.trim(),
-      imageUrl: imageUrl || undefined,
+      imageUrl: imageField,
+      videoUrl: videoField,
       feeling: feeling ?? undefined,
       likes: "0",
       comments: 0,
@@ -302,7 +312,7 @@ export function PostComposerModal({
             )}
             {imageUrl && (
               <div className="!relative !overflow-hidden !rounded-lg">
-                {file?.type?.startsWith("video/") ? (
+                {mediaType === "video" ? (
                   <video
                     src={imageUrl}
                     controls

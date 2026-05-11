@@ -8,6 +8,7 @@ import type { Comment, ReactionId } from "@/shared/data/reactions";
 import { emitNotification } from "@/feature/notification/lib/emit";
 import { getFirstUserId } from "@/shared/lib/firstUser";
 import { CURRENT_USER } from "../../data/constants";
+import { useReelComposer } from "../../lib/reelComposer";
 import type { FeedPostData } from "../../data/types";
 import { PostActions } from "./PostActions";
 import { PostComposerModal } from "./PostComposerModal";
@@ -24,6 +25,7 @@ interface FeedPostProps {
 
 export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
   const t = useTranslations("Feed.reelViewer");
+  const reelComposer = useReelComposer();
   const [editOpen, setEditOpen] = useState(false);
   const [reaction, setReaction] = useState<ReactionId | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -36,7 +38,9 @@ export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
     return getFirstUserId() ?? post.ownerId ?? post.author.id;
   }
 
-  function handleAdd(text: string) {
+  function handleAdd(payload: { text: string; imageUrl?: string }) {
+    const { text, imageUrl } = payload;
+    if (!text && !imageUrl) return;
     setComments((prev) => [
       ...prev,
       {
@@ -45,6 +49,7 @@ export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
         authorInitial: CURRENT_USER.initial,
         authorGradient: CURRENT_USER.gradient,
         text,
+        imageUrl,
         time: t("justNow"),
       },
     ]);
@@ -55,7 +60,7 @@ export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
         recipientId,
         kind: "comment",
         postId: post.id,
-        preview: text,
+        preview: text || (imageUrl ? "📷" : undefined),
       });
     }
   }
@@ -122,6 +127,14 @@ export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
         onReactionChange={handleReactionChange}
         onCommentClick={() => setShowComments((v) => !v)}
         onShared={handleShared}
+        shareSource={
+          post.videoUrl
+            ? { mediaUrl: post.videoUrl, mediaType: "video", text: post.text }
+            : post.imageUrl
+            ? { mediaUrl: post.imageUrl, mediaType: "image", text: post.text }
+            : undefined
+        }
+        onShareToReel={reelComposer?.openComposer}
       />
       {showComments ? (
         <CommentSection

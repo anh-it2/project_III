@@ -69,6 +69,21 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
     };
   }, []);
 
+  useEffect(() => {
+    if (!open) {
+      stopStream();
+      stopTimer();
+      stopRecorder();
+      setPhase("idle");
+      setTitle("");
+      setError(null);
+      setElapsed(0);
+      setViewers(0);
+      setSnapshot(null);
+      chunksRef.current = [];
+    }
+  }, [open]);
+
   const startCamera = async () => {
     setError(null);
     if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
@@ -122,7 +137,7 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
         rec.ondataavailable = (e) => {
           if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
         };
-        rec.start(1000);
+        rec.start();
         recorderRef.current = rec;
       } catch {
         recorderRef.current = null;
@@ -138,20 +153,43 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
         resolve(undefined);
         return;
       }
+      let settled = false;
+      let stopFired = false;
+      const settle = (val: string | undefined) => {
+        if (settled) return;
+        settled = true;
+        resolve(val);
+      };
       rec.onstop = () => {
+        stopFired = true;
         const chunks = chunksRef.current;
         if (chunks.length === 0) {
-          resolve(undefined);
+          settle(undefined);
           return;
         }
         const blob = new Blob(chunks, { type: rec.mimeType || "video/webm" });
-        resolve(URL.createObjectURL(blob));
+        const reader = new FileReader();
+        reader.onload = () =>
+          settle(typeof reader.result === "string" ? reader.result : undefined);
+        reader.onerror = () => settle(undefined);
+        reader.readAsDataURL(blob);
       };
       try {
+        if (typeof rec.requestData === "function") {
+          try {
+            rec.requestData();
+          } catch {
+            /* ignore — some browsers reject mid-state */
+          }
+        }
         rec.stop();
       } catch {
-        resolve(undefined);
+        settle(undefined);
       }
+      // safety: only fire if onstop never fires (browser bug). 10s gives FileReader time to encode large blobs.
+      setTimeout(() => {
+        if (!stopFired) settle(undefined);
+      }, 10000);
     });
   };
 

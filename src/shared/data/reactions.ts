@@ -35,5 +35,11 @@ export interface Comment {
   authorInitial?: string;
   authorGradient?: [string, string];
   text: string;
+  imageUrl?: string;
   time: string;
+}
+
+export interface CommentInputPayload {
+  text: string;
+  imageUrl?: string;
 }
