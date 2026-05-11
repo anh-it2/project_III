@@ -6,9 +6,9 @@ import { FEED_POSTS } from "../../data/constants";
 import type { FeedPostData } from "../../data/types";
 import { useUserPosts } from "../../data/useUserPosts";
 import { ReelComposerProvider } from "../../lib/reelComposer";
-import { Composer } from "./Composer";
-import { FeedPost } from "./FeedPost";
-import { Stories } from "./Stories";
+import { Composer } from "./composer/Composer";
+import { FeedPost } from "./post/FeedPost";
+import { Stories } from "./stories/Stories";
 
 export function CenterFeed() {
   const { posts: userPosts, addPost, removePost, updatePost } = useUserPosts();

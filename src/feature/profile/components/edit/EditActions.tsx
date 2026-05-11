@@ -4,7 +4,7 @@ import { Button, Flex } from "antd";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { gradientBg } from "../../data/mock";
-import { EDIT_PRIMARY_GRADIENT } from "./edit-profile.constants";
+import { EDIT_PRIMARY_GRADIENT } from "./data/edit-profile.constants";
 
 interface Props {
   submitting: boolean;

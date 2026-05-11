@@ -2,11 +2,11 @@
 
 import { Flex } from "antd";
 import { useMemo } from "react";
-import { Composer } from "@/feature/feed/components/center/Composer";
+import { Composer } from "@/feature/feed/components/center/composer/Composer";
 import type { FeedPostData } from "@/feature/feed/data/types";
 import { useUserPosts } from "@/feature/feed/data/useUserPosts";
 import { POSTS, type Post } from "../../data/mock";
-import { PostCard } from "./PostCard";
+import { PostCard } from "./post/PostCard";
 
 function feedToProfilePost(p: FeedPostData): Post {
   const feelingSuffix = p.feeling

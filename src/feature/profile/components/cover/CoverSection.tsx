@@ -3,8 +3,8 @@
 import { Flex } from "antd";
 import Image from "next/image";
 import { CoverBlobs } from "./CoverBlobs";
-import { ProfileCenter } from "./ProfileCenter";
-import { useProfileMeta } from "../edit/useProfileMeta";
+import { ProfileCenter } from "./identity/ProfileCenter";
+import { useProfileMeta } from "../edit/data/useProfileMeta";
 import styles from "./CoverSection.module.scss";
 
 const COVER_GRADIENT =

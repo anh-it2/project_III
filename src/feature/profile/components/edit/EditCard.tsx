@@ -8,7 +8,7 @@ import {
   EDIT_CARD_PADDING,
   EDIT_CARD_RADIUS,
   EDIT_CARD_SHADOW,
-} from "./edit-profile.constants";
+} from "./data/edit-profile.constants";
 
 const { Text } = Typography;
 

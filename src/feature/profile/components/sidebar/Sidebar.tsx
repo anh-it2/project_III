@@ -1,9 +1,9 @@
 "use client";
 
 import { Flex } from "antd";
-import { AboutCard } from "./AboutCard";
-import { FriendsCard } from "./FriendsCard";
-import { PhotosCard } from "./PhotosCard";
+import { AboutCard } from "./about/AboutCard";
+import { FriendsCard } from "./friends/FriendsCard";
+import { PhotosCard } from "./photos/PhotosCard";
 
 export function Sidebar() {
   return (

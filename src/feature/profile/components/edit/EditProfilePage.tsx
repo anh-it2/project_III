@@ -10,14 +10,14 @@ import {
   EDIT_PAGE_MAX_WIDTH,
   EDIT_PAGE_PADDING,
   EDIT_PROFILE_DEFAULTS,
-} from "./edit-profile.constants";
-import { editProfileSchema, type EditProfileValues } from "./edit-profile.schema";
+} from "./data/edit-profile.constants";
+import { editProfileSchema, type EditProfileValues } from "./data/edit-profile.schema";
 import { EditActions } from "./EditActions";
-import { EditAboutSection } from "./EditAboutSection";
-import { EditCoverPreview } from "./EditCoverPreview";
-import { EditIdentitySection } from "./EditIdentitySection";
+import { EditAboutSection } from "./sections/EditAboutSection";
+import { EditCoverPreview } from "./sections/EditCoverPreview";
+import { EditIdentitySection } from "./sections/EditIdentitySection";
 import { EditPageHeader } from "./EditPageHeader";
-import { useProfileMeta } from "./useProfileMeta";
+import { useProfileMeta } from "./data/useProfileMeta";
 
 const { Text } = Typography;
 

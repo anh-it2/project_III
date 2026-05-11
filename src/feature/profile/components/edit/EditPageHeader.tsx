@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Icon } from "../Icon";
 import { gradientText } from "../../data/mock";
-import { EDIT_PRIMARY_GRADIENT } from "./edit-profile.constants";
+import { EDIT_PRIMARY_GRADIENT } from "./data/edit-profile.constants";
 
 const { Title, Text } = Typography;
 

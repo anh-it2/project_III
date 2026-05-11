@@ -3,8 +3,8 @@
 import { Flex } from "antd";
 import { useState } from "react";
 import type { AboutCategoryId } from "../../data/mock";
-import { AboutContent } from "./AboutContent";
-import { AboutSideNav } from "./AboutSideNav";
+import { AboutContent } from "./content/AboutContent";
+import { AboutSideNav } from "./sidenav/AboutSideNav";
 
 export function AboutTab() {
   const [active, setActive] = useState<AboutCategoryId>("overview");
