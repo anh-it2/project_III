@@ -57,6 +57,7 @@ export function CenterFeed() {
             post={p}
             onRemove={handleRemove}
             onUpdate={handleUpdate}
+            onShareToProfile={addPost}
           />
         ))}
       </Flex>

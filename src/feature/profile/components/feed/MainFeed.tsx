@@ -12,12 +12,15 @@ function feedToProfilePost(p: FeedPostData): Post {
   const feelingSuffix = p.feeling
     ? ` — ${p.feeling.kind === "feeling" ? "feeling " : ""}${p.feeling.emoji} ${p.feeling.label}`
     : "";
+  const sharedSuffix = p.sharedFrom
+    ? `\n\n— Shared from ${p.sharedFrom.author.name}: ${p.sharedFrom.text}`
+    : "";
   return {
     id: p.id,
     author: { name: p.author.name, gradient: p.author.gradient },
     time: p.time,
-    text: p.text + feelingSuffix,
-    image: p.imageUrl,
+    text: p.text + feelingSuffix + sharedSuffix,
+    image: p.imageUrl ?? p.sharedFrom?.imageUrl,
     emojis: "",
     likes: 0,
     comments: p.comments,

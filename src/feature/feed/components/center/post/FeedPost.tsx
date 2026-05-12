@@ -16,17 +16,21 @@ import { PostHeader } from "./header/PostHeader";
 import { PostImage } from "./body/PostImage";
 import { PostStats } from "./footer/PostStats";
 import { PostText } from "./body/PostText";
+import { SharedPostPreview } from "./body/SharedPostPreview";
+import { ShareToFeedModal } from "./share/ShareToFeedModal";
 
 interface FeedPostProps {
   post: FeedPostData;
   onRemove?: (id: string) => void;
   onUpdate?: (post: FeedPostData) => void;
+  onShareToProfile?: (post: FeedPostData) => void;
 }
 
-export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
+export function FeedPost({ post, onRemove, onUpdate, onShareToProfile }: FeedPostProps) {
   const t = useTranslations("Feed.reelViewer");
   const reelComposer = useReelComposer();
   const [editOpen, setEditOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [reaction, setReaction] = useState<ReactionId | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState(false);
@@ -107,7 +111,9 @@ export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
         onEdit={onUpdate ? () => setEditOpen(true) : undefined}
       />
       {post.text ? <PostText text={post.text} /> : null}
-      {(post.imageUrl || post.imageGradient || post.videoUrl) ? (
+      {post.sharedFrom ? (
+        <SharedPostPreview post={post.sharedFrom} />
+      ) : (post.imageUrl || post.imageGradient || post.videoUrl) ? (
         <PostImage
           gradient={post.imageGradient}
           imageUrl={post.imageUrl}
@@ -135,6 +141,7 @@ export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
             : undefined
         }
         onShareToReel={reelComposer?.openComposer}
+        onShareNow={onShareToProfile ? () => setShareOpen(true) : undefined}
       />
       {showComments ? (
         <CommentSection
@@ -153,6 +160,18 @@ export function FeedPost({ post, onRemove, onUpdate }: FeedPostProps) {
           onSubmit={(updated) => {
             onUpdate(updated);
             setEditOpen(false);
+          }}
+        />
+      )}
+      {onShareToProfile && (
+        <ShareToFeedModal
+          open={shareOpen}
+          originalPost={post}
+          onClose={() => setShareOpen(false)}
+          onSubmit={(newPost) => {
+            onShareToProfile(newPost);
+            handleShared();
+            setShareOpen(false);
           }}
         />
       )}

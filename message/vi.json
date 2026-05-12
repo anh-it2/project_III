@@ -347,6 +347,13 @@
       "following": "Đang theo dõi",
       "justNow": "Vừa xong"
     },
+    "shareToFeed": {
+      "title": "Chia sẻ lên trang cá nhân",
+      "visibility": "Công khai",
+      "captionPlaceholder": "Hãy nói gì đó về bài viết này…",
+      "postNow": "Đăng",
+      "shared": "Đã chia sẻ lên trang cá nhân"
+    },
     "live": {
       "titleIdle": "Phát trực tiếp",
       "titleActive": "Bạn đang phát trực tiếp",

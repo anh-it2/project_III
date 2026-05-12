@@ -27,6 +27,7 @@ interface ShareMenuProps {
     mediaType: "video" | "image";
     caption?: string;
   }) => void;
+  onShareNow?: () => void;
 }
 
 export function ShareMenu({
@@ -35,6 +36,7 @@ export function ShareMenu({
   className,
   source,
   onShareToReel,
+  onShareNow,
 }: ShareMenuProps) {
   const t = useTranslations("Post");
   const [api, contextHolder] = message.useMessage();
@@ -53,6 +55,11 @@ export function ShareMenu({
     if (action === "messenger") {
       setOpen(false);
       setSendModalOpen(true);
+      return;
+    }
+    if (action === "now" && onShareNow) {
+      setOpen(false);
+      onShareNow();
       return;
     }
     if (

@@ -40,6 +40,18 @@ export interface Feeling {
   kind: "feeling" | "activity";
 }
 
+export interface SharedPostRef {
+  id: string;
+  author: FeedAuthor;
+  time: string;
+  text: string;
+  imageGradient?: [string, string, string];
+  imageUrl?: string;
+  videoUrl?: string;
+  feeling?: Feeling;
+  isLive?: boolean;
+}
+
 export interface FeedPostData {
   id: string;
   ownerId?: string;
@@ -54,6 +66,7 @@ export interface FeedPostData {
   likes: string;
   comments: number;
   shares: number;
+  sharedFrom?: SharedPostRef;
 }
 
 export interface ContactRowData {

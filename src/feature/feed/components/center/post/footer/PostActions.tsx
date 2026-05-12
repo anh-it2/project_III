@@ -22,6 +22,7 @@ interface PostActionsProps {
     mediaType: "video" | "image";
     caption?: string;
   }) => void;
+  onShareNow?: () => void;
 }
 
 const BTN_CLASS =
@@ -35,6 +36,7 @@ export function PostActions({
   onShared,
   shareSource,
   onShareToReel,
+  onShareNow,
 }: PostActionsProps) {
   return (
     <Flex
@@ -55,6 +57,7 @@ export function PostActions({
         className={BTN_CLASS}
         source={shareSource}
         onShareToReel={onShareToReel}
+        onShareNow={onShareNow}
       />
     </Flex>
   );

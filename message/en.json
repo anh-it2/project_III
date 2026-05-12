@@ -347,6 +347,13 @@
       "following": "Following",
       "justNow": "Just now"
     },
+    "shareToFeed": {
+      "title": "Share to your feed",
+      "visibility": "Public",
+      "captionPlaceholder": "Say something about this…",
+      "postNow": "Post",
+      "shared": "Shared to your feed"
+    },
     "live": {
       "titleIdle": "Go live",
       "titleActive": "You're live",
