@@ -1,8 +1,9 @@
 "use client";
 
-import { Flex, Typography } from "antd";
+import { Flex, Input, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
+import { Icon } from "@/shared/components/Icon";
 import { useNavigation } from "@/shared/hooks/useNavigation";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import { usePresenceStore } from "@/feature/presence/stores/presence.store";
@@ -34,6 +35,7 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
   const unreadMap = useChatRoomUnreadStore((s) => s.unread);
   const markRead = useChatRoomUnreadStore((s) => s.markRead);
   const [tab, setTab] = useState<DropdownTabKey>("all");
+  const [query, setQuery] = useState("");
 
   const contacts = useMemo<ContactEntry[]>(() => {
     const onlineIds = new Set(onlineUsers.map((u) => u.id));
@@ -43,11 +45,16 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
   }, [onlineUsers, knownUsers]);
 
   const visibleContacts = useMemo(() => {
-    if (tab === "all") return contacts;
-    return contacts.filter((c) =>
-      tab === "unread" ? !!unreadMap[c.user.id] : !unreadMap[c.user.id],
-    );
-  }, [contacts, unreadMap, tab]);
+    const byTab =
+      tab === "all"
+        ? contacts
+        : contacts.filter((c) =>
+            tab === "unread" ? !!unreadMap[c.user.id] : !unreadMap[c.user.id],
+          );
+    const q = query.trim().toLowerCase();
+    if (!q) return byTab;
+    return byTab.filter((c) => c.user.name.toLowerCase().includes(q));
+  }, [contacts, unreadMap, tab, query]);
 
   const tabLabels = {
     all: t("tabs.all"),
@@ -90,6 +97,23 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
         onExpand={goSeeAll}
         onPickUser={handleItemClick}
       />
+      <div className="!w-full" style={{ padding: "0 12px 8px 12px" }}>
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("searchPlaceholder")}
+          prefix={
+            <Icon
+              name="search"
+              size={16}
+              color="var(--color-text-placeholder)"
+            />
+          }
+          allowClear
+          variant="filled"
+          className="!h-9 !rounded-full !bg-[var(--color-bg-tertiary)] [&_input]:!bg-transparent [&_input]:!text-[14px] [&_input]:!text-[var(--color-text)] [&_input::placeholder]:!text-[var(--color-text-placeholder)]"
+        />
+      </div>
       <DropdownTabs value={tab} onChange={setTab} labels={tabLabels} />
       <Flex
         vertical
@@ -107,11 +131,13 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
               className="!text-[13px]"
               style={{ color: "var(--color-text-muted)" }}
             >
-              {tab === "unread"
-                ? t("noUnread")
-                : tab === "read"
-                  ? t("noRead")
-                  : t("noUsers")}
+              {query.trim()
+                ? t("noResults")
+                : tab === "unread"
+                  ? t("noUnread")
+                  : tab === "read"
+                    ? t("noRead")
+                    : t("noUsers")}
             </Text>
           </div>
         ) : (

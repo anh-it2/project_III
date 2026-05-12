@@ -11,6 +11,7 @@ import { useConversationSettingsStore } from "../../../stores/conversation-setti
 import { getTheme } from "../../../lib/themes";
 import type { ChatMessage, ReplyContext } from "../../../types";
 import { MessageBubble } from "./bubble/MessageBubble";
+import { PinnedBanner } from "./PinnedBanner";
 import { TypingIndicator } from "./TypingIndicator";
 
 const { Text } = Typography;
@@ -112,6 +113,22 @@ export function MessageList({
     });
   }, [conversationId, messages.length, firstUnreadKey, someoneTyping]);
 
+  function handleJumpToPinned(messageId: string) {
+    const c = containerRef.current;
+    if (!c) return;
+    const target =
+      c.querySelector<HTMLElement>(`[data-msg-id="${CSS.escape(messageId)}"]`) ??
+      c.querySelector<HTMLElement>(`[data-msg-key="${CSS.escape(messageId)}"]`);
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.style.transition = "background 0.6s";
+    const prev = target.style.background;
+    target.style.background = "rgba(250, 204, 21, 0.18)";
+    setTimeout(() => {
+      target.style.background = prev;
+    }, 1200);
+  }
+
   if (isLoading && messages.length === 0) {
     return (
       <Flex
@@ -125,6 +142,8 @@ export function MessageList({
   }
 
   return (
+    <Flex vertical className="!min-h-0 !flex-1">
+      <PinnedBanner conversationId={conversationId} onJump={handleJumpToPinned} />
     <div
       ref={containerRef}
       className={
@@ -161,9 +180,11 @@ export function MessageList({
                 }
               : undefined;
             return (
-              <div key={key} data-msg-key={key}>
+              <div key={key} data-msg-key={key} data-msg-id={m.id ?? ""}>
                 <MessageBubble
                   id={m.id}
+                  conversationId={conversationId}
+                  senderId={m.senderId}
                   content={m.content}
                   type={m.type}
                   mine={mine}
@@ -189,5 +210,6 @@ export function MessageList({
         <div ref={endRef} />
       </Flex>
     </div>
+    </Flex>
   );
 }

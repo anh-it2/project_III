@@ -70,6 +70,8 @@
       "noUsers": "No contacts yet",
       "noUnread": "No unread chats",
       "noRead": "No read chats",
+      "noResults": "No matches",
+      "searchPlaceholder": "Search Messenger",
       "newMessage": "New message",
       "activeNow": "Active now",
       "offline": "Offline",
@@ -303,6 +305,7 @@
     "message": {
       "unsent": "Message unsent",
       "edited": "edited",
+      "pinnedLabel": "Pinned",
       "replyingTo": "Replying to",
       "photo": "📷 Photo",
       "imageAlt": "chat attachment"
@@ -317,10 +320,23 @@
     "actionMenu": {
       "reply": "Reply",
       "edit": "Edit",
+      "pin": "Pin message",
+      "unpin": "Unpin message",
+      "pinnedToast": "Message pinned",
+      "unpinnedToast": "Message unpinned",
       "unsend": "Unsend",
       "unsendConfirmTitle": "Unsend message?",
       "unsendConfirmDesc": "This message will be removed for everyone.",
       "unsendError": "Unsend failed"
+    },
+    "pinnedBanner": {
+      "label": "Pinned message",
+      "count": "{count, plural, one {# pinned message} other {# pinned messages}}",
+      "viewAll": "View all",
+      "unpin": "Unpin",
+      "imagePlaceholder": "Photo",
+      "filePlaceholder": "File",
+      "videoPlaceholder": "Video"
     },
     "inlineEditor": {
       "cancel": "Cancel",
@@ -346,7 +362,16 @@
       "noSharedMedia": "No shared media yet",
       "privacyTitle": "Privacy & support",
       "block": "Block",
-      "report": "Report"
+      "report": "Report",
+      "mediaSection": {
+        "title": "Media, files and links",
+        "media": "Media",
+        "files": "Files",
+        "links": "Links",
+        "emptyMedia": "No media shared yet.",
+        "emptyFiles": "No files shared yet.",
+        "emptyLinks": "No links shared yet."
+      }
     }
   },
   "Feed": {

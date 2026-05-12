@@ -1,8 +1,13 @@
 "use client";
 
-import { Flex, Typography } from "antd";
+import { Typography } from "antd";
 import { useTranslations } from "next-intl";
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
+import { usePresenceStore } from "@/feature/presence/stores/presence.store";
+import { buildDmId } from "../../lib/conversation";
+import { useConversationSettingsStore } from "../../stores/conversation-settings.store";
+import { MediaFilesLinks } from "./media-files-links";
 import { PrivacyActions } from "./PrivacyActions";
 import { ProfileSection } from "./ProfileSection";
 import { QuickActions } from "./QuickActions";
@@ -15,6 +20,15 @@ interface ChatRightPanelProps {
 
 export function ChatRightPanel({ user }: ChatRightPanelProps) {
   const t = useTranslations("Chat.right");
+  const myId = useAuthStore((s) => s.userId);
+  const conversationId = user ? buildDmId(myId, user.id) : "";
+  const peerNickname = useConversationSettingsStore((s) =>
+    user ? s.settings[conversationId]?.nicknames?.[user.id] : undefined,
+  );
+  const isOnline = usePresenceStore((s) =>
+    user ? s.onlineUsers.some((u) => u.id === user.id) : false,
+  );
+
   if (!user) {
     return (
       <aside className="flex h-full w-[340px] shrink-0 items-center justify-center border-l border-[var(--color-border)] bg-white px-6 dark:bg-[#141414]">
@@ -25,31 +39,21 @@ export function ChatRightPanel({ user }: ChatRightPanelProps) {
     );
   }
 
+  const displayName = peerNickname ?? user.name;
+
   return (
     <aside className="flex h-full w-[340px] shrink-0 flex-col overflow-y-auto border-l border-[var(--color-border)] bg-white pr-3 dark:bg-[#141414]">
-      <ProfileSection user={user} />
+      <ProfileSection
+        user={user}
+        displayName={displayName}
+        isOnline={isOnline}
+      />
       <div className="h-3" />
       <QuickActions />
       <div className="h-3" />
-      <Flex
-        vertical
-        gap={12}
-        className="border-b border-[var(--color-border)] px-6 py-6"
-      >
-        <Flex justify="space-between" align="center" gap={8}>
-          <Text className="!text-[14px] !font-semibold !text-[var(--color-text)]">
-            {t("sharedMedia")}
-          </Text>
-          <Text className="!shrink-0 !cursor-pointer !text-[12px] !font-semibold !text-[var(--color-primary)]">
-            {t("seeAll")}
-          </Text>
-        </Flex>
-        <Text className="!text-[13px] !text-[var(--color-text-muted)]">
-          {t("noSharedMedia")}
-        </Text>
-      </Flex>
+      <MediaFilesLinks conversationId={conversationId} />
       <div className="h-3" />
-      <PrivacyActions recipientName={user.name} />
+      <PrivacyActions recipientName={displayName} />
     </aside>
   );
 }

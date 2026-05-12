@@ -9,10 +9,17 @@ const { Title, Text } = Typography;
 
 interface ProfileSectionProps {
   user: OnlineUserDto;
+  displayName?: string;
+  isOnline?: boolean;
 }
 
-export function ProfileSection({ user }: ProfileSectionProps) {
+export function ProfileSection({
+  user,
+  displayName,
+  isOnline = false,
+}: ProfileSectionProps) {
   const t = useTranslations("Chat.header");
+  const name = displayName ?? user.name;
   return (
     <Flex
       vertical
@@ -20,15 +27,20 @@ export function ProfileSection({ user }: ProfileSectionProps) {
       gap={10}
       className="border-b border-[var(--color-border)] px-6 pb-6 pt-8"
     >
-      <Avatar name={user.name} seed={user.id} size={88} online />
+      <Avatar name={name} seed={user.id} size={88} online={isOnline} />
       <Title
         level={5}
         className="!m-0 !max-w-full !break-all !text-center !text-[16px] !font-semibold !text-[var(--color-text)]"
       >
-        {user.name}
+        {name}
       </Title>
-      <Text className="!text-[12px] !font-medium !text-[#22c55e]">
-        {t("activeNow")}
+      <Text
+        className="!text-[12px] !font-medium"
+        style={{
+          color: isOnline ? "#22c55e" : "var(--color-text-muted)",
+        }}
+      >
+        {isOnline ? t("activeNow") : t("offline")}
       </Text>
     </Flex>
   );

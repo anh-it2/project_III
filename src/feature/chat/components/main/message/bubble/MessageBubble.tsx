@@ -3,7 +3,9 @@
 import { Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { Icon } from "@/shared/components/Icon";
 import { extractFirstInternalPostId } from "../../../../lib/messageLinks";
+import { usePinnedMessagesStore } from "../../../../stores/pinned-messages.store";
 import type { ReplyContext } from "../../../../types";
 import { Avatar } from "../../../Avatar";
 import { MessageActionMenu } from "../menu/MessageActionMenu";
@@ -17,6 +19,8 @@ const { Text } = Typography;
 
 interface MessageBubbleProps {
   id?: string;
+  conversationId: string;
+  senderId: string;
   content: string;
   type?: "text" | "image" | "file" | "video";
   mine: boolean;
@@ -38,6 +42,8 @@ const TEXT_PADDING = "px-4 py-3";
 
 export function MessageBubble({
   id,
+  conversationId,
+  senderId,
   content,
   type = "text",
   mine,
@@ -56,6 +62,9 @@ export function MessageBubble({
   const t = useTranslations("Chat.message");
   const [editing, setEditing] = useState(false);
   const isImage = type === "image";
+  const isPinned = usePinnedMessagesStore((s) =>
+    id ? s.pinned[conversationId]?.some((m) => m.id === id) ?? false : false,
+  );
 
   if (deleted) {
     return (
@@ -110,6 +119,8 @@ export function MessageBubble({
   const menu = id ? (
     <MessageActionMenu
       id={id}
+      conversationId={conversationId}
+      senderId={senderId}
       mine={mine}
       type={type}
       content={content}
@@ -120,6 +131,22 @@ export function MessageBubble({
       onUnsend={onUnsend}
       placement={mine ? "bottomLeft" : "bottomRight"}
     />
+  ) : null;
+
+  const pinnedTag = isPinned ? (
+    <Flex align="center" gap={4} className={mine ? "!self-end" : "!self-start"}>
+      <Icon
+        name="push_pin"
+        size={11}
+        color="var(--color-text-muted)"
+      />
+      <Text
+        className="!text-[10px] !font-medium"
+        style={{ color: "var(--color-text-muted)" }}
+      >
+        {t("pinnedLabel")}
+      </Text>
+    </Flex>
   ) : null;
 
   const hasReply = !!replyTo;
@@ -175,6 +202,7 @@ export function MessageBubble({
       <Flex justify="end" align="center" gap={4} className="group w-full">
         {menu}
         <Flex vertical align="end" className="max-w-[70%]">
+          {pinnedTag}
           {replyTo && <MessageReplyQuote replyTo={replyTo} mine senderName={senderName} />}
           {body}
           {editedAt && (
@@ -198,6 +226,7 @@ export function MessageBubble({
         <span className="w-8 shrink-0" />
       )}
       <Flex vertical align="start" className="max-w-[70%]">
+        {pinnedTag}
         {replyTo && <MessageReplyQuote replyTo={replyTo} mine={false} senderName={senderName} />}
         {body}
         {editedAt && (

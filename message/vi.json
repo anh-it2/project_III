@@ -70,6 +70,8 @@
       "noUsers": "Chưa có liên hệ",
       "noUnread": "Không có tin nhắn chưa đọc",
       "noRead": "Không có tin nhắn đã đọc",
+      "noResults": "Không có kết quả",
+      "searchPlaceholder": "Tìm trong Messenger",
       "newMessage": "Tin nhắn mới",
       "activeNow": "Đang hoạt động",
       "offline": "Ngoại tuyến",
@@ -303,6 +305,7 @@
     "message": {
       "unsent": "Tin nhắn đã thu hồi",
       "edited": "đã chỉnh sửa",
+      "pinnedLabel": "Đã ghim",
       "replyingTo": "Đang trả lời",
       "photo": "📷 Ảnh",
       "imageAlt": "tệp đính kèm trò chuyện"
@@ -317,10 +320,23 @@
     "actionMenu": {
       "reply": "Trả lời",
       "edit": "Chỉnh sửa",
+      "pin": "Ghim tin nhắn",
+      "unpin": "Bỏ ghim tin nhắn",
+      "pinnedToast": "Đã ghim tin nhắn",
+      "unpinnedToast": "Đã bỏ ghim tin nhắn",
       "unsend": "Thu hồi",
       "unsendConfirmTitle": "Thu hồi tin nhắn?",
       "unsendConfirmDesc": "Tin nhắn này sẽ bị xóa cho mọi người.",
       "unsendError": "Thu hồi thất bại"
+    },
+    "pinnedBanner": {
+      "label": "Tin nhắn đã ghim",
+      "count": "{count, plural, other {# tin nhắn đã ghim}}",
+      "viewAll": "Xem tất cả",
+      "unpin": "Bỏ ghim",
+      "imagePlaceholder": "Ảnh",
+      "filePlaceholder": "Tệp",
+      "videoPlaceholder": "Video"
     },
     "inlineEditor": {
       "cancel": "Hủy",
@@ -346,7 +362,16 @@
       "noSharedMedia": "Chưa có phương tiện nào",
       "privacyTitle": "Quyền riêng tư & hỗ trợ",
       "block": "Chặn",
-      "report": "Báo cáo"
+      "report": "Báo cáo",
+      "mediaSection": {
+        "title": "Phương tiện, tệp và liên kết",
+        "media": "Phương tiện",
+        "files": "Tệp",
+        "links": "Liên kết",
+        "emptyMedia": "Chưa có phương tiện nào.",
+        "emptyFiles": "Chưa có tệp nào.",
+        "emptyLinks": "Chưa có liên kết nào."
+      }
     }
   },
   "Feed": {
