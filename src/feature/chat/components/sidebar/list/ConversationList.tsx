@@ -16,6 +16,8 @@ interface ConversationListProps {
   contacts: ConversationEntry[];
   selectedUserId: string | null;
   currentUserName: string;
+  myId: string;
+  myName: string;
   onSelect: (user: OnlineUserDto) => void;
   unreadMap?: Record<string, boolean>;
 }
@@ -24,6 +26,8 @@ export function ConversationList({
   contacts,
   selectedUserId,
   currentUserName,
+  myId,
+  myName,
   onSelect,
   unreadMap,
 }: ConversationListProps) {
@@ -51,6 +55,8 @@ export function ConversationList({
             active={selectedUserId === c.user.id}
             online={c.online}
             unread={!!unreadMap?.[c.user.id]}
+            myId={myId}
+            myName={myName}
             onClick={() => onSelect(c.user)}
           />
         </div>

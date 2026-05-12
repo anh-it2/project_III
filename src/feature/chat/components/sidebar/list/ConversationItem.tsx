@@ -3,7 +3,9 @@
 import { Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/shared/components/Icon";
+import { buildDmId } from "@/feature/chat/lib/conversation";
 import { pickGradient } from "@/feature/chat/lib/avatar";
+import { ChatMenu } from "@/feature/chat/components/menu/ChatMenu";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import { gradientBg } from "@/shared/utils/gradient";
 
@@ -14,6 +16,8 @@ interface ConversationItemProps {
   active: boolean;
   online?: boolean;
   unread?: boolean;
+  myId: string;
+  myName: string;
   onClick: () => void;
 }
 
@@ -22,6 +26,8 @@ export function ConversationItem({
   active,
   online = true,
   unread = false,
+  myId,
+  myName,
   onClick,
 }: ConversationItemProps) {
   const t = useTranslations("Chat.sidebar");
@@ -30,19 +36,20 @@ export function ConversationItem({
     : online
       ? t("activeNow")
       : t("offline");
+  const conversationId = buildDmId(myId, user.id);
 
   return (
     <Flex
       align="center"
-      gap={12}
+      gap={8}
       onClick={onClick}
-      className="chat-dd-item !w-full"
-      style={{
-        padding: "8px 12px",
-        borderRadius: 10,
-        cursor: "pointer",
-        background: active ? "var(--color-primary-bg)" : "transparent",
-      }}
+      className={
+        "group !w-full !cursor-pointer !rounded-[10px] " +
+        (active
+          ? "!bg-[var(--color-primary-bg)]"
+          : "hover:!bg-[var(--color-bg-tertiary)]")
+      }
+      style={{ padding: "8px 12px" }}
     >
       <div className="relative shrink-0">
         <Flex
@@ -106,6 +113,19 @@ export function ConversationItem({
           }}
         />
       ) : null}
+      <div
+        className="!shrink-0 !opacity-0 transition-opacity group-hover:!opacity-100 focus-within:!opacity-100"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <ChatMenu
+          conversationId={conversationId}
+          peerId={user.id}
+          peerName={user.name}
+          myId={myId}
+          myName={myName}
+          compact
+        />
+      </div>
     </Flex>
   );
 }
