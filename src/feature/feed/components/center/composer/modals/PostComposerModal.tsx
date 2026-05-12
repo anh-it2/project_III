@@ -9,6 +9,7 @@ import { DarkModal } from "@/shared/components/modal/DarkModal";
 import { gradientBg } from "@/shared/utils/gradient";
 import { CURRENT_USER, FEELINGS } from "../../../../data/constants";
 import type { Feeling, FeedPostData } from "../../../../data/types";
+import styles from "./PostComposerModal.module.scss";
 
 const { Text, Title } = Typography;
 
@@ -503,7 +504,7 @@ export function PostComposerModal({
           disabled={!canSubmit}
           block
           size="large"
-          className="!h-10 !font-bold"
+          className={`${styles.submitBtn} !h-10 !rounded-[10px] !font-bold`}
         >
           {isEdit ? t("save") : t("post")}
         </Button>

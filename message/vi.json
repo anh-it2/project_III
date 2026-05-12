@@ -141,6 +141,7 @@
         "cancel": "Hủy",
         "emptyResults": "Không tìm thấy người dùng",
         "activeNow": "Đang hoạt động",
+        "suggested": "Gợi ý",
         "postRef": "Bài #{postId}"
       }
     },

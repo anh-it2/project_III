@@ -71,6 +71,7 @@ function SendToChatBody({ postId, onClose, onSent }: SendToChatBodyProps) {
 
   const q = norm(query);
   const onlineFirst = contacts.filter((c) => !q || norm(c.name).includes(q));
+  const onlineCount = contacts.filter((c) => c.online).length;
 
   const buildShareContent = () => {
     const url =
@@ -136,92 +137,129 @@ function SendToChatBody({ postId, onClose, onSent }: SendToChatBodyProps) {
   const selectedCount = selected.size;
 
   return (
-    <Flex vertical gap={16} className="!w-full">
-      <Flex vertical gap={4}>
-        <Text
-          className="!text-[20px] !font-bold !leading-tight"
-          style={{ color: "var(--color-text)" }}
-        >
-          {t("title")}
-        </Text>
-        <Text className="!text-[13px]" style={{ color: "var(--color-text-muted)" }}>
-          {t("subtitle")}
-        </Text>
+    <div className={styles.container}>
+      <Flex align="center" gap={14} className="!pr-12">
+        <div className={styles.headerIcon}>
+          <Icon name="send" size={22} color="currentColor" />
+        </div>
+        <Flex vertical gap={2} className="!min-w-0 !flex-1">
+          <Text
+            className="!text-[19px] !font-bold !leading-tight"
+            style={{ color: "var(--color-text)" }}
+          >
+            {t("title")}
+          </Text>
+          <Text
+            className="!truncate !text-[13px]"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            {t("subtitle")}
+          </Text>
+        </Flex>
       </Flex>
 
       <Input
         allowClear
-        size="large"
         placeholder={t("searchPlaceholder")}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        prefix={<Icon name="search" size={18} color="var(--color-text-muted)" />}
+        prefix={
+          <Icon
+            name="search"
+            size={18}
+            color="var(--color-text-muted)"
+            className="!mr-1"
+          />
+        }
         className={`${styles.search} !rounded-full`}
       />
 
-      <Flex vertical gap={2} className={`${styles.list} !w-full !overflow-y-auto`}>
-        {onlineFirst.length === 0 ? (
-          <Flex vertical align="center" gap={8} className="!w-full !py-10">
-            <Icon name="search_off" size={32} color="var(--color-text-muted)" />
-            <Text className="!text-[14px]" style={{ color: "var(--color-text-muted)" }}>
-              {t("emptyResults")}
-            </Text>
-          </Flex>
-        ) : (
-          onlineFirst.map((c) => (
-            <ShareChatRow
-              key={c.id}
-              chat={c}
-              selected={selected.has(c.id)}
-              sent={sentIds.has(c.id)}
-              onToggle={() => toggle(c.id)}
-              onSendNow={() => sendOne(c.id)}
-            />
-          ))
-        )}
-      </Flex>
+      <div className={styles.listWrap}>
+        <div className={styles.listHeader}>
+          <Text
+            className="!text-[12px] !font-semibold !uppercase"
+            style={{ color: "var(--color-text-muted)", letterSpacing: "0.5px" }}
+          >
+            {t("suggested")}
+          </Text>
+          {onlineCount > 0 ? (
+            <span className={styles.countChip}>
+              <span
+                className="!inline-block !h-1.5 !w-1.5 !rounded-full"
+                style={{ background: "var(--color-success)" }}
+              />
+              {onlineCount} {t("activeNow")}
+            </span>
+          ) : null}
+        </div>
+        <Flex vertical gap={2} className={`${styles.list} !w-full`}>
+          {onlineFirst.length === 0 ? (
+            <Flex vertical align="center" gap={8} className="!w-full !py-10">
+              <Icon name="search_off" size={32} color="var(--color-text-muted)" />
+              <Text
+                className="!text-[14px]"
+                style={{ color: "var(--color-text-muted)" }}
+              >
+                {t("emptyResults")}
+              </Text>
+            </Flex>
+          ) : (
+            onlineFirst.map((c) => (
+              <ShareChatRow
+                key={c.id}
+                chat={c}
+                selected={selected.has(c.id)}
+                sent={sentIds.has(c.id)}
+                onToggle={() => toggle(c.id)}
+                onSendNow={() => sendOne(c.id)}
+              />
+            ))
+          )}
+        </Flex>
+      </div>
 
-      <Flex vertical gap={8} className="!w-full">
+      <div className={styles.captionWrap}>
         <TextArea
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
           placeholder={t("messagePlaceholder")}
           autoSize={{ minRows: 1, maxRows: 3 }}
-          className={`${styles.caption} !rounded-2xl`}
+          variant="borderless"
+          className={styles.caption}
         />
-        <Flex align="center" justify="space-between" gap={8} className="!w-full">
-          <Text className="!text-[12px]" style={{ color: "var(--color-text-muted)" }}>
-            {t("postRef", { postId })}
-          </Text>
-          <Flex gap={8}>
-            <Button
-              onClick={onClose}
-              className="!h-10 !rounded-full !px-5 !text-[14px] !font-semibold"
-              style={{
-                background: "var(--color-bg-tertiary)",
-                color: "var(--color-text)",
-                borderColor: "var(--color-border)",
-              }}
-            >
-              {t("cancel")}
-            </Button>
-            <Button
-              type="primary"
-              disabled={selectedCount === 0}
-              onClick={sendSelected}
-              className="!h-10 !rounded-full !px-5 !text-[14px] !font-semibold"
-            >
-              <Flex align="center" gap={6}>
-                <Icon name="send" size={16} color="var(--color-on-primary, #fff)" />
-                {selectedCount > 0
-                  ? t("sendCount", { count: selectedCount })
-                  : t("send")}
-              </Flex>
-            </Button>
-          </Flex>
+      </div>
+
+      <div className={styles.footer}>
+        <span className={styles.postRef}>
+          <Icon name="link" size={12} color="var(--color-text-muted)" />
+          {t("postRef", { postId })}
+        </span>
+        <Flex gap={8}>
+          <Button
+            onClick={onClose}
+            className="!h-10 !rounded-full !px-5 !text-[14px] !font-semibold"
+            style={{
+              background: "transparent",
+              color: "var(--color-text)",
+              borderColor: "var(--color-border)",
+            }}
+          >
+            {t("cancel")}
+          </Button>
+          <Button
+            type="primary"
+            disabled={selectedCount === 0}
+            onClick={sendSelected}
+            icon={<Icon name="send" size={16} color="currentColor" />}
+            className={`${styles.sendBtn} !h-10 !rounded-full !px-5 !text-[14px] !font-semibold`}
+          >
+            {selectedCount > 0
+              ? t("sendCount", { count: selectedCount })
+              : t("send")}
+          </Button>
         </Flex>
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 }
 
@@ -238,7 +276,7 @@ export function SendToChatModal({
       bg="var(--color-bg-secondary)"
       borderColor="var(--color-border)"
       rootClassName={styles.modal}
-      width={520}
+      width={540}
       centered
     >
       {open ? (

@@ -1,0 +1,29 @@
+.submitBtn {
+  background: var(--color-primary) !important;
+  color: var(--color-on-primary, #fff) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 6px 16px -8px var(--color-primary) !important;
+  transition: background 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+
+  &:hover:not(:disabled) {
+    background: var(--color-primary-dark) !important;
+    border-color: var(--color-primary-dark) !important;
+    color: var(--color-on-primary, #fff) !important;
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled,
+  &[disabled] {
+    background: var(--color-bg-tertiary) !important;
+    color: var(--color-text-muted) !important;
+    border-color: var(--color-border) !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+    opacity: 1;
+    text-shadow: none !important;
+  }
+}

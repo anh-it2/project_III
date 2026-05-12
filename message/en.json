@@ -141,6 +141,7 @@
         "cancel": "Cancel",
         "emptyResults": "No people found",
         "activeNow": "Active now",
+        "suggested": "Suggested",
         "postRef": "Post #{postId}"
       }
     },
