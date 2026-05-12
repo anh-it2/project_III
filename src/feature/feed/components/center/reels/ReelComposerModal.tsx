@@ -259,13 +259,16 @@ export function ReelComposerModal({
           className="!relative !flex-col !px-4 !py-4 md:!flex-row md:!px-6 md:!py-5"
           style={{ zIndex: 1 }}
         >
-          <Flex vertical align="center" gap={10} className="!w-full md:!w-auto">
+          <Flex
+            vertical
+            align="center"
+            gap={10}
+            className="!w-full md:!w-auto md:!self-stretch md:!min-h-0"
+          >
             <div
-              className="!relative !overflow-hidden !mx-auto"
+              className="!relative !overflow-hidden !mx-auto !aspect-[9/16] !max-h-[70vh] md:!aspect-auto md:!h-auto md:!max-h-none md:!flex-1 md:!min-h-0"
               style={{
                 width: "min(300px, 100%)",
-                aspectRatio: "9 / 16",
-                maxHeight: "70vh",
                 borderRadius: 24,
                 background: "#0a0a0a",
                 border: "1px solid #2e2e2e",
