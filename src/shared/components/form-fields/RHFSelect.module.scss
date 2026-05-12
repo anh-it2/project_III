@@ -22,6 +22,7 @@
 
   :global(.ant-select-selection-placeholder) {
     color: var(--color-text-placeholder) !important;
+    opacity: 1 !important;
   }
 
   :global(.ant-select-arrow),
@@ -36,7 +37,7 @@
 
   &:global(.ant-select-focused) :global(.ant-select-selector) {
     border-color: var(--color-primary) !important;
-    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 15%, transparent) !important;
   }
 
   &:global(.ant-select-status-error) :global(.ant-select-selector) {

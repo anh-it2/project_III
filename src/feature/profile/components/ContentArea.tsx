@@ -11,9 +11,10 @@ import { VideosTab } from "./videos-tab/VideosTab";
 
 interface ContentAreaProps {
   tab: TabId;
+  onEditAbout: () => void;
 }
 
-export function ContentArea({ tab }: ContentAreaProps) {
+export function ContentArea({ tab, onEditAbout }: ContentAreaProps) {
   if (tab === "About") {
     return <AboutTab />;
   }
@@ -36,7 +37,7 @@ export function ContentArea({ tab }: ContentAreaProps) {
       className="!w-full !flex-col !px-4 !py-4 sm:!px-6 lg:!flex-row lg:!px-12 lg:!py-6"
       style={{ background: "var(--color-bg)" }}
     >
-      <Sidebar />
+      <Sidebar onEditAbout={onEditAbout} />
       <MainFeed />
     </Flex>
   );

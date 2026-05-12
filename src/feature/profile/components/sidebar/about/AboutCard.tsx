@@ -7,10 +7,14 @@ import { AboutHeader } from "./AboutHeader";
 import { AboutItem } from "./AboutItem";
 import { CardWrapper } from "../card/CardWrapper";
 
-export function AboutCard() {
+interface AboutCardProps {
+  onEditAbout: () => void;
+}
+
+export function AboutCard({ onEditAbout }: AboutCardProps) {
   return (
     <CardWrapper>
-      <AboutHeader />
+      <AboutHeader onEditClick={onEditAbout} />
       <AboutBio />
       <AboutDivider />
       {ABOUT_ITEMS.map((item) => (

@@ -628,6 +628,7 @@
     },
     "sidebar": {
       "about": "About",
+      "editAbout": "Edit about",
       "bio": "Designing digital experiences that matter. Passionate about human-centered design, accessibility, and building products that bring people together.",
       "friends": "Friends",
       "friendsCount": "4,832 friends",
@@ -719,7 +720,8 @@
       },
       "row": {
         "edit": "Edit",
-        "delete": "Delete"
+        "delete": "Delete",
+        "more": "More options"
       },
       "footer": {
         "cancel": "Cancel",

@@ -1,18 +1,25 @@
 .field {
   color: var(--color-text) !important;
 
-  &:global(.ant-checkbox-wrapper) :global(.ant-checkbox-inner) {
-    background: var(--color-bg-tertiary) !important;
-    border-color: var(--color-border) !important;
-  }
+  :global(.ant-checkbox) {
+    :global(.ant-checkbox-inner) {
+      background: var(--color-bg-tertiary) !important;
+      border: 1.5px solid var(--color-border) !important;
+    }
 
-  :global(.ant-checkbox-checked .ant-checkbox-inner) {
-    background: var(--color-primary) !important;
-    border-color: var(--color-primary) !important;
-  }
+    &:hover :global(.ant-checkbox-inner),
+    &:global(.ant-checkbox-checked):hover :global(.ant-checkbox-inner) {
+      border-color: var(--color-primary) !important;
+    }
 
-  &:hover :global(.ant-checkbox-inner) {
-    border-color: var(--color-primary) !important;
+    &:global(.ant-checkbox-checked) :global(.ant-checkbox-inner) {
+      background: var(--color-primary) !important;
+      border-color: var(--color-primary) !important;
+
+      &::after {
+        border-color: var(--color-on-primary) !important;
+      }
+    }
   }
 }
 

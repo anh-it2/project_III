@@ -16,6 +16,7 @@
 
     &::placeholder {
       color: var(--color-text-placeholder) !important;
+      opacity: 1 !important;
     }
   }
 
@@ -31,7 +32,7 @@
 
   &:global(.ant-picker-focused) {
     border-color: var(--color-primary) !important;
-    box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.15) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 15%, transparent) !important;
   }
 
   &:global(.ant-picker-status-error) {
@@ -61,7 +62,7 @@
 
   :global(.ant-picker-cell-selected .ant-picker-cell-inner) {
     background: var(--color-primary) !important;
-    color: #ffffff !important;
+    color: var(--color-on-primary) !important;
   }
 
   :global(.ant-picker-cell:hover:not(.ant-picker-cell-selected) .ant-picker-cell-inner) {

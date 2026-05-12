@@ -628,6 +628,7 @@
     },
     "sidebar": {
       "about": "Giới thiệu",
+      "editAbout": "Chỉnh sửa giới thiệu",
       "bio": "Thiết kế trải nghiệm số có ý nghĩa. Đam mê thiết kế lấy người dùng làm trung tâm, khả năng tiếp cận và xây dựng sản phẩm gắn kết mọi người.",
       "friends": "Bạn bè",
       "friendsCount": "4.832 bạn bè",
@@ -719,7 +720,8 @@
       },
       "row": {
         "edit": "Chỉnh sửa",
-        "delete": "Xóa"
+        "delete": "Xóa",
+        "more": "Tùy chọn khác"
       },
       "footer": {
         "cancel": "Hủy",

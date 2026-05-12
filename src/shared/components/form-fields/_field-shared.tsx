@@ -14,28 +14,6 @@ export function getIconCls(invalid: boolean) {
     : "absolute pointer-events-none text-[20px] text-[var(--color-text-placeholder)]";
 }
 
-export const INPUT_TEMPLATE_CLASS = [
-  "!h-12 !rounded-[10px] !px-4 !py-0 !text-[15px]",
-  "!bg-white dark:!bg-[var(--color-bg-tertiary)]",
-  "!border !border-[var(--color-border)]",
-  "hover:!border-[var(--color-primary)]",
-  "focus-within:!border-[var(--color-primary)]",
-  "focus-within:!shadow-[0_0_0_2px_rgba(24,119,242,0.15)]",
-  "!text-[var(--color-text)]",
-  "[&_input]:!bg-transparent [&_input]:!text-[15px]",
-  "[&_input]:!text-[var(--color-text)]",
-  "[&_input]:!caret-[var(--color-text)]",
-  "[&_input::placeholder]:!text-[var(--color-text-placeholder)]",
-  "[&_.ant-input]:!bg-transparent",
-  "[&_.ant-input]:!text-[var(--color-text)]",
-  "[&_.ant-input::placeholder]:!text-[var(--color-text-placeholder)]",
-  "[&_.ant-input-prefix]:!me-2.5",
-  "[&_.ant-input-prefix_.anticon]:!text-[var(--color-text-placeholder)]",
-  "[&_.ant-input-prefix_.anticon]:!text-[18px]",
-  "[&_.ant-input-suffix_.anticon]:!text-[var(--color-text-placeholder)]",
-  "[&_.ant-input-suffix_.anticon]:!text-[18px]",
-].join(" ");
-
 export function FieldErrorText({
   invalid,
   message,

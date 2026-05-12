@@ -1,5 +1,6 @@
 "use client";
 
+import { SearchOutlined } from "@ant-design/icons";
 import { Empty, Flex, Input } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -65,12 +66,16 @@ export function FriendsTab() {
           boxShadow: "var(--shadow-md)",
         }}
       >
-        <Input.Search
+        <Input
           allowClear
+          variant="filled"
+          prefix={
+            <SearchOutlined className="!text-[var(--color-text-placeholder)]" />
+          }
           placeholder={t("searchPlaceholder")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="!w-full"
+          className="!h-10 !w-full !rounded-[20px] !bg-[var(--color-bg-tertiary)] !px-3.5 [&_input]:!bg-transparent [&_input]:!text-[14px] [&_input]:!text-[var(--color-text)] [&_input::placeholder]:!text-[var(--color-text-placeholder)]"
         />
         <FilterChips
           active={filter}

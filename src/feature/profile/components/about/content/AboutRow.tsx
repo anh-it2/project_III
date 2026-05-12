@@ -1,10 +1,11 @@
 "use client";
 
-import { Dropdown, Flex, Typography } from "antd";
+import { Button, Dropdown, Flex, Typography } from "antd";
 import type { MenuProps } from "antd";
 import { useTranslations } from "next-intl";
 import { Icon } from "../../Icon";
 import { gradientText, type AboutRowData } from "../../../data/mock";
+import styles from "./AboutRow.module.scss";
 
 const { Text } = Typography;
 
@@ -64,10 +65,24 @@ export function AboutRow({ row, onEdit, onDelete }: AboutRowProps) {
         ) : null}
       </Flex>
       {showMenu ? (
-        <Dropdown menu={{ items, onClick: handleClick }} trigger={["click"]}>
-          <div className="!cursor-pointer !rounded-full !p-1">
-            <Icon name="more_horiz" size={20} color="var(--color-text-muted)" />
-          </div>
+        <Dropdown
+          trigger={["click"]}
+          placement="bottomRight"
+          menu={{ items, onClick: handleClick, className: styles.menu }}
+        >
+          <Button
+            type="text"
+            shape="circle"
+            aria-label={t("more")}
+            className={`${styles.moreBtn} !flex !h-8 !w-8 !items-center !justify-center`}
+            icon={
+              <Icon
+                name="more_horiz"
+                size={20}
+                color="var(--color-text-muted)"
+              />
+            }
+          />
         </Dropdown>
       ) : null}
     </Flex>

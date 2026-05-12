@@ -4,10 +4,10 @@ import { Input } from "antd";
 import { Controller, useFormContext } from "react-hook-form";
 import {
   FieldErrorText,
-  INPUT_TEMPLATE_CLASS,
   RequiredAsterisk,
   getLabelCls,
 } from "./_field-shared";
+import styles from "./RHFTextField.module.scss";
 import type { Props } from "./types";
 
 export function RHFTextField({
@@ -50,7 +50,7 @@ export function RHFTextField({
             status={fieldState.invalid ? "error" : ""}
             prefix={prefixIcon}
             size="large"
-            className={`${INPUT_TEMPLATE_CLASS} ${className ?? ""}`}
+            className={`${styles.field} ${className ?? ""}`}
           />
           <FieldErrorText
             invalid={fieldState.invalid}

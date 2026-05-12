@@ -22,7 +22,7 @@ export function ProfilePage() {
       <CoverSection />
       <HighlightsStrip />
       <StatsAndTabs active={tab} onChange={setTab} />
-      <ContentArea tab={tab} />
+      <ContentArea tab={tab} onEditAbout={() => setTab("About")} />
     </Flex>
   );
 }
