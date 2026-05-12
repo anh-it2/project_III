@@ -31,6 +31,8 @@ interface MessageInputProps {
   onCancelReply?: () => void;
   disabled?: boolean;
   compact?: boolean;
+  goToEmoji?: string;
+  blockedNotice?: string;
 }
 
 const PILL_BTN =
@@ -48,6 +50,8 @@ export function MessageInput({
   onCancelReply,
   disabled = false,
   compact = false,
+  goToEmoji,
+  blockedNotice,
 }: MessageInputProps) {
   const t = useTranslations("Chat");
   const [draft, setDraft] = useState("");
@@ -110,6 +114,24 @@ export function MessageInput({
   const pill = compact ? PILL_BTN_COMPACT : PILL_BTN;
   const sendSize = compact ? "!h-9 !w-9" : "!h-11 !w-11";
   const inputSize = compact ? "!h-9" : "!h-11";
+
+  if (blockedNotice) {
+    return (
+      <div
+        className="border-t border-[var(--color-border)] bg-white px-4 py-3 text-center dark:bg-[#141414]"
+        style={{ color: "var(--color-text-muted)", fontSize: 13 }}
+      >
+        {blockedNotice}
+      </div>
+    );
+  }
+
+  async function handleQuickEmoji() {
+    if (!goToEmoji) return;
+    await onSend(goToEmoji, "text");
+  }
+
+  const showQuickEmoji = !!goToEmoji && !trimmed && !disabled;
 
   return (
     <div className="border-t border-[var(--color-border)] bg-white dark:bg-[#141414]">
@@ -247,20 +269,34 @@ export function MessageInput({
           " !flex-1 !rounded-[22px] !border-0 !bg-[#f0f2f5] !px-4 dark:!bg-[#1f1f1f] [&_input]:!bg-transparent [&_input]:!text-[14px] [&_input]:!text-[var(--color-text)] [&_input::placeholder]:!text-[var(--color-text-placeholder)]"
         }
       />
-      <Button
-        type="primary"
-        icon={<SendOutlined />}
-        onClick={handleSend}
-        disabled={!trimmed || disabled}
-        className={
-          sendSize +
-          " !rounded-full !border-0 !text-[var(--color-on-primary)]"
-        }
-        style={{
-          background:
-            "linear-gradient(90deg, var(--color-primary-dark), var(--color-primary))",
-        }}
-      />
+      {showQuickEmoji ? (
+        <Button
+          type="text"
+          onClick={handleQuickEmoji}
+          disabled={disabled}
+          className={
+            sendSize +
+            " !rounded-full !text-[22px] !flex !items-center !justify-center !bg-transparent hover:!bg-[var(--color-bg-tertiary)]"
+          }
+        >
+          {goToEmoji}
+        </Button>
+      ) : (
+        <Button
+          type="primary"
+          icon={<SendOutlined />}
+          onClick={handleSend}
+          disabled={!trimmed || disabled}
+          className={
+            sendSize +
+            " !rounded-full !border-0 !text-[var(--color-on-primary)]"
+          }
+          style={{
+            background:
+              "linear-gradient(90deg, var(--color-primary-dark), var(--color-primary))",
+          }}
+        />
+      )}
     </div>
     </div>
   );

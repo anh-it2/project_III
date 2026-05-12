@@ -1,0 +1,44 @@
+.list {
+  max-height: 280px;
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-tertiary);
+  padding: 4px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+  }
+}
+
+.checkbox {
+  :global(.ant-checkbox-inner) {
+    background: var(--color-bg-secondary) !important;
+    border-color: var(--color-border) !important;
+  }
+
+  :global(.ant-checkbox-checked .ant-checkbox-inner) {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+  }
+
+  &:hover :global(.ant-checkbox-inner) {
+    border-color: var(--color-primary) !important;
+  }
+}
+
+.empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}

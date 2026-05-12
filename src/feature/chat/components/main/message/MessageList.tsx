@@ -7,6 +7,8 @@ import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import { buildDmId } from "../../../lib/conversation";
 import { useChatStore } from "../../../stores/chat.store";
+import { useConversationSettingsStore } from "../../../stores/conversation-settings.store";
+import { getTheme } from "../../../lib/themes";
 import type { ChatMessage, ReplyContext } from "../../../types";
 import { MessageBubble } from "./bubble/MessageBubble";
 import { TypingIndicator } from "./TypingIndicator";
@@ -39,6 +41,13 @@ export function MessageList({
   const t = useTranslations("Chat.messageList");
   const myId = useAuthStore((s) => s.userId);
   const conversationId = buildDmId(myId, user.id);
+  const settings = useConversationSettingsStore(
+    (s) => s.settings[conversationId],
+  );
+  const theme = getTheme(settings?.themeId);
+  const nicknames = settings?.nicknames ?? {};
+  const displayName = (senderId: string, fallback: string) =>
+    nicknames[senderId] ?? fallback;
   const typingMap = useChatStore((s) => s.typingUsers[conversationId]);
   const readCursor = useChatStore(
     (s) => s.readCursors[conversationId] ?? -1,
@@ -138,6 +147,19 @@ export function MessageList({
             const sameAsPrev =
               !!prev && prev.senderId === m.senderId && !mine;
             const key = messageKey(m);
+            const resolvedSenderName = displayName(
+              m.senderId,
+              m.senderName || user.name,
+            );
+            const resolvedReplyTo = m.replyTo
+              ? {
+                  ...m.replyTo,
+                  senderName: displayName(
+                    m.replyTo.senderId,
+                    m.replyTo.senderName,
+                  ),
+                }
+              : undefined;
             return (
               <div key={key} data-msg-key={key}>
                 <MessageBubble
@@ -145,12 +167,14 @@ export function MessageList({
                   content={m.content}
                   type={m.type}
                   mine={mine}
-                  senderName={m.senderName || user.name}
+                  senderName={resolvedSenderName}
                   senderSeed={user.id}
                   showAvatar={!sameAsPrev}
-                  replyTo={m.replyTo}
+                  replyTo={resolvedReplyTo}
                   editedAt={m.editedAt}
                   deleted={m.deleted}
+                  themeGradient={theme.gradient}
+                  themeOnPrimary={theme.onPrimary}
                   onReply={onReply}
                   onEdit={onEdit}
                   onUnsend={onUnsend}

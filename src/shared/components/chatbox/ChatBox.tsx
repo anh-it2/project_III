@@ -11,6 +11,9 @@ import { useTyping } from "@/feature/chat/hooks/useTyping";
 import { buildDmId } from "@/feature/chat/lib/conversation";
 import { MessageInput } from "@/feature/chat/components/main/input/MessageInput";
 import { MessageList } from "@/feature/chat/components/main/message/MessageList";
+import { ChatMenu } from "@/feature/chat/components/menu/ChatMenu";
+import { useConversationSettingsStore } from "@/feature/chat/stores/conversation-settings.store";
+import { DEFAULT_EMOJI } from "@/feature/chat/lib/themes";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import type { ReplyContext } from "@/feature/chat/types";
 import type { ChatPreview } from "@/shared/data/chats";
@@ -34,12 +37,21 @@ export function ChatBox({ chat }: ChatBoxProps) {
   const markRoomRead = useChatRoomUnreadStore((s) => s.markRead);
 
   const myId = useAuthStore((s) => s.userId);
+  const myName = useAuthStore((s) => s.userName);
   const conversationId = buildDmId(myId, chat.id);
   const { sendMessage, editMessage, unsendMessage, isConnected } =
     useChat(conversationId);
   const { messages, isLoading } = useMessages(conversationId);
   const { notifyTyping, stopTyping } = useTyping(conversationId);
   const [replyTo, setReplyTo] = useState<ReplyContext | null>(null);
+
+  const settings = useConversationSettingsStore(
+    (s) => s.settings[conversationId],
+  );
+  const isBlocked = useConversationSettingsStore((s) => s.isBlocked(chat.id));
+  const peerNickname = settings?.nicknames?.[chat.id];
+  const displayName = peerNickname ?? chat.name;
+  const goToEmoji = settings?.emoji ?? DEFAULT_EMOJI;
 
   const user: OnlineUserDto = { id: chat.id, name: chat.name };
 
@@ -153,7 +165,7 @@ export function ChatBox({ chat }: ChatBoxProps) {
               className="!text-sm !font-semibold !leading-tight"
               style={{ color: "var(--color-text)" }}
             >
-              {chat.name}
+              {displayName}
             </Text>
             <Text
               className="!text-[11px] !leading-tight"
@@ -164,6 +176,16 @@ export function ChatBox({ chat }: ChatBoxProps) {
           </Flex>
         </Flex>
         <Flex align="center" gap={2}>
+          {!minimized && (
+            <ChatMenu
+              conversationId={conversationId}
+              peerId={chat.id}
+              peerName={chat.name}
+              myId={myId}
+              myName={myName}
+              compact
+            />
+          )}
           <Button
             type="text"
             size="small"
@@ -209,7 +231,7 @@ export function ChatBox({ chat }: ChatBoxProps) {
             compact
           />
           <MessageInput
-            recipientName={chat.name}
+            recipientName={displayName}
             onSend={async (content, type) => {
               const ctx = replyTo ?? undefined;
               setReplyTo(null);
@@ -219,8 +241,12 @@ export function ChatBox({ chat }: ChatBoxProps) {
             onStopTyping={stopTyping}
             replyTo={replyTo}
             onCancelReply={() => setReplyTo(null)}
-            disabled={!isConnected}
+            disabled={!isConnected || isBlocked}
             compact
+            goToEmoji={goToEmoji}
+            blockedNotice={
+              isBlocked ? t("blockedNotice", { name: displayName }) : undefined
+            }
           />
         </>
       ) : null}

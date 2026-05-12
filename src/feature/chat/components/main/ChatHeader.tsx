@@ -10,6 +10,7 @@ import { Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import { Avatar } from "../Avatar";
+import { ChatMenu } from "../menu/ChatMenu";
 
 const { Text } = Typography;
 
@@ -18,11 +19,25 @@ const ACTION_BTN_CLASS =
 
 interface ChatHeaderProps {
   user: OnlineUserDto;
+  conversationId: string;
+  peerId: string;
+  peerName: string;
+  myId: string;
+  myName: string;
   onToggleInfo?: () => void;
   onBack?: () => void;
 }
 
-export function ChatHeader({ user, onToggleInfo, onBack }: ChatHeaderProps) {
+export function ChatHeader({
+  user,
+  conversationId,
+  peerId,
+  peerName,
+  myId,
+  myName,
+  onToggleInfo,
+  onBack,
+}: ChatHeaderProps) {
   const t = useTranslations("Chat.header");
   return (
     <div className="flex h-[72px] items-center justify-between border-b border-[var(--color-border)] bg-white px-3 sm:px-6 dark:bg-[#141414]">
@@ -67,6 +82,13 @@ export function ChatHeader({ user, onToggleInfo, onBack }: ChatHeaderProps) {
           icon={<InfoCircleOutlined />}
           className={ACTION_BTN_CLASS}
           onClick={onToggleInfo}
+        />
+        <ChatMenu
+          conversationId={conversationId}
+          peerId={peerId}
+          peerName={peerName}
+          myId={myId}
+          myName={myName}
         />
       </Flex>
     </div>

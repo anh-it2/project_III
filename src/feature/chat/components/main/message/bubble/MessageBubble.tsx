@@ -26,6 +26,8 @@ interface MessageBubbleProps {
   replyTo?: ReplyContext;
   editedAt?: number;
   deleted?: boolean;
+  themeGradient?: [string, string];
+  themeOnPrimary?: string;
   onReply?: (ctx: ReplyContext) => void;
   onEdit?: (id: string, content: string) => Promise<void> | void;
   onUnsend?: (id: string) => Promise<void> | void;
@@ -45,6 +47,8 @@ export function MessageBubble({
   replyTo,
   editedAt,
   deleted,
+  themeGradient,
+  themeOnPrimary,
   onReply,
   onEdit,
   onUnsend,
@@ -146,9 +150,10 @@ export function MessageBubble({
           mine
             ? {
                 ...bubbleRadius,
-                background:
-                  "linear-gradient(90deg, var(--color-primary-dark), var(--color-primary))",
-                color: "var(--color-on-primary)",
+                background: themeGradient
+                  ? `linear-gradient(90deg, ${themeGradient[0]}, ${themeGradient[1]})`
+                  : "linear-gradient(90deg, var(--color-primary-dark), var(--color-primary))",
+                color: themeOnPrimary ?? "var(--color-on-primary)",
                 position: "relative",
               }
             : {

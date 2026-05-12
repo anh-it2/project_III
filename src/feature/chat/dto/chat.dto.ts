@@ -102,7 +102,13 @@ export interface ChatHistoryResponseDTO {
 
 //alway remember that you have to destructure params in function to get variable or function that get to server
 
-export interface ChatClientToServerEvents {
+import type {
+  ConversationSettingsClientEvents,
+  ConversationSettingsServerEvents,
+} from "./conversation-settings.dto";
+
+export interface ChatClientToServerEvents
+  extends ConversationSettingsClientEvents {
   "chat:join": (conversationId: string) => void;
   "chat:leave": (conversationId: string) => void;
   "chat:typing": (data: SendTypingDTO) => void;
@@ -125,7 +131,8 @@ export interface ChatClientToServerEvents {
   ) => void;
 }
 
-export interface ChatServerToClientEvents {
+export interface ChatServerToClientEvents
+  extends ConversationSettingsServerEvents {
   "chat:message": (message: ChatMessageDTO) => void;
   "chat:typing": (data: TypingEventDTO) => void;
   "chat:read": (data: ReadReceiptDto) => void;

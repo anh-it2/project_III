@@ -151,7 +151,78 @@
   },
   "ChatBox": {
     "activeNow": "Đang hoạt động",
-    "offline": "Ngoại tuyến"
+    "offline": "Ngoại tuyến",
+    "blockedNotice": "Bạn đã chặn {name}. Bỏ chặn để gửi tin nhắn."
+  },
+  "ChatMenu": {
+    "viewProfile": "Xem trang cá nhân",
+    "changeTheme": "Đổi chủ đề",
+    "emoji": "Biểu tượng cảm xúc",
+    "nicknames": "Biệt danh",
+    "createGroup": "Tạo nhóm",
+    "e2ee": "Bắt đầu trò chuyện mã hoá đầu cuối",
+    "e2eeOn": "Trò chuyện mã hoá đầu cuối",
+    "mute": "Tắt thông báo",
+    "unmute": "Bật lại thông báo",
+    "block": "Chặn",
+    "unblock": "Bỏ chặn",
+    "muteOn": "Đã tắt thông báo",
+    "muteOff": "Đã bật lại thông báo",
+    "themeModal": {
+      "title": "Chủ đề cuộc trò chuyện",
+      "description": "Chọn chủ đề cho cuộc trò chuyện này. Mọi người trong nhóm đều thấy."
+    },
+    "emojiModal": {
+      "title": "Biểu tượng nhanh",
+      "description": "Chọn biểu tượng hiện trên nút gửi khi ô nhập trống.",
+      "current": "Hiện tại:"
+    },
+    "nicknameModal": {
+      "title": "Biệt danh",
+      "description": "Biệt danh thay thế tên hiển thị trong cuộc trò chuyện này cho mọi người.",
+      "placeholder": "Biệt danh cho {name}",
+      "save": "Lưu",
+      "cancel": "Huỷ",
+      "invalid": "Vui lòng sửa các trường được đánh dấu."
+    },
+    "groupModal": {
+      "title": "Tạo nhóm trò chuyện",
+      "groupNameLabel": "Tên nhóm",
+      "namePlaceholder": "Tên nhóm (tuỳ chọn)",
+      "pickMembers": "Chọn ít nhất 2 thành viên",
+      "noUsers": "Không có người dùng nào trực tuyến",
+      "create": "Tạo ({count})",
+      "cancel": "Huỷ",
+      "needMembers": "Chọn ít nhất 2 thành viên",
+      "notConnected": "Chưa kết nối tới máy chủ",
+      "created": "Đã tạo nhóm",
+      "failed": "Không thể tạo nhóm",
+      "defaultName": "Nhóm mới",
+      "invalid": "Vui lòng chọn ít nhất 2 thành viên."
+    },
+    "e2eeModal": {
+      "title": "Trò chuyện mã hoá đầu cuối",
+      "description": "Tin nhắn sẽ được mã hoá trên thiết bị. Chỉ người có khoá phù hợp mới đọc được.",
+      "startWith": "Bắt đầu chat mã hoá với {name}",
+      "activeWith": "Đang mã hoá với {name}",
+      "start": "Bắt đầu",
+      "stop": "Tắt",
+      "cancel": "Huỷ",
+      "started": "Đã bắt đầu trò chuyện mã hoá",
+      "stopped": "Đã tắt mã hoá",
+      "yourKey": "Khoá của bạn"
+    },
+    "blockModal": {
+      "titleBlock": "Chặn người dùng",
+      "titleUnblock": "Bỏ chặn người dùng",
+      "descBlock": "Chặn {name}? Họ sẽ không thể gửi tin và bạn cũng không gửi được cho họ.",
+      "descUnblock": "Bỏ chặn {name}? Hai bên sẽ có thể nhắn tin trở lại.",
+      "block": "Chặn",
+      "unblock": "Bỏ chặn",
+      "cancel": "Huỷ",
+      "blocked": "Đã chặn",
+      "unblocked": "Đã bỏ chặn"
+    }
   },
   "Notification": {
     "template": {

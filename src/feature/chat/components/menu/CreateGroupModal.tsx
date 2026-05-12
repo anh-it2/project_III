@@ -1,0 +1,127 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Flex, Typography, message as antdMessage } from "antd";
+import { useTranslations } from "next-intl";
+import { useEffect, useMemo } from "react";
+import { FormProvider, useForm, type Resolver } from "react-hook-form";
+import { Icon } from "@/shared/components/Icon";
+import { DarkModal } from "@/shared/components/modal/DarkModal";
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { CreateGroupFields } from "./create-group/CreateGroupFields";
+import { CreateGroupFooter } from "./create-group/CreateGroupFooter";
+import {
+  buildGroupDefaults,
+  buildGroupSchema,
+  type GroupFormValues,
+} from "./create-group/createGroupForm.utils";
+import { getChatSocket } from "../../socket";
+import type { CreateGroupAck } from "../../dto/conversation-settings.dto";
+
+const { Title, Text } = Typography;
+
+interface CreateGroupModalProps {
+  open: boolean;
+  seedPeerId?: string;
+  seedPeerName?: string;
+  onClose: () => void;
+}
+
+export function CreateGroupModal({
+  open,
+  seedPeerId,
+  onClose,
+}: CreateGroupModalProps) {
+  const t = useTranslations("ChatMenu.groupModal");
+  const myId = useAuthStore((s) => s.userId);
+
+  const resolver = useMemo(
+    () =>
+      zodResolver(buildGroupSchema(t("needMembers"))) as unknown as Resolver<
+        GroupFormValues
+      >,
+    [t],
+  );
+
+  const methods = useForm<GroupFormValues>({
+    resolver,
+    defaultValues: buildGroupDefaults(seedPeerId),
+    mode: "onSubmit",
+  });
+
+  useEffect(() => {
+    if (open) {
+      methods.reset(buildGroupDefaults(seedPeerId));
+    }
+  }, [open, seedPeerId, methods]);
+
+  const hasErrors = Object.keys(methods.formState.errors).length > 0;
+  const busy = methods.formState.isSubmitting;
+
+  const handleSave = methods.handleSubmit(async (values) => {
+    const socket = getChatSocket();
+    if (!socket?.connected) {
+      antdMessage.error(t("notConnected"));
+      return;
+    }
+    const tempId = crypto.randomUUID().slice(0, 10);
+    const allMembers = [myId, ...values.memberIds];
+    await new Promise<void>((resolve) => {
+      socket.emit(
+        "group:create",
+        {
+          tempId,
+          name: values.name.trim() || t("defaultName"),
+          memberIds: allMembers,
+        },
+        (res: CreateGroupAck) => {
+          if (res.ok) {
+            antdMessage.success(t("created"));
+            onClose();
+          } else {
+            antdMessage.error(res.error ?? t("failed"));
+          }
+          resolve();
+        },
+      );
+    });
+  });
+
+  return (
+    <DarkModal
+      open={open}
+      onCancel={onClose}
+      width={460}
+      centered
+      bg="var(--color-bg-secondary)"
+      borderColor="var(--color-border)"
+      closeIcon={
+        <Icon name="close" size={20} color="var(--color-text-secondary)" />
+      }
+    >
+      <Flex vertical gap={16} style={{ padding: "24px 28px" }}>
+        <Title
+          level={5}
+          className="!m-0 !leading-tight"
+          style={{ color: "var(--color-text)" }}
+        >
+          {t("title")}
+        </Title>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSave} noValidate>
+            <CreateGroupFields />
+            {hasErrors && (
+              <Text
+                className="!mt-3 !block !text-[13px]"
+                style={{ color: "var(--color-error)" }}
+              >
+                {t("invalid")}
+              </Text>
+            )}
+            <CreateGroupFooter onCancel={onClose} busy={busy} />
+          </form>
+        </FormProvider>
+      </Flex>
+    </DarkModal>
+  );
+}

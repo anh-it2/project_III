@@ -151,7 +151,78 @@
   },
   "ChatBox": {
     "activeNow": "Active now",
-    "offline": "Offline"
+    "offline": "Offline",
+    "blockedNotice": "You blocked {name}. Unblock to send messages."
+  },
+  "ChatMenu": {
+    "viewProfile": "View profile",
+    "changeTheme": "Change theme",
+    "emoji": "Emoji",
+    "nicknames": "Nicknames",
+    "createGroup": "Create group",
+    "e2ee": "Start end-to-end encrypted chat",
+    "e2eeOn": "End-to-end encrypted chat",
+    "mute": "Mute notifications",
+    "unmute": "Unmute notifications",
+    "block": "Block",
+    "unblock": "Unblock",
+    "muteOn": "Notifications muted",
+    "muteOff": "Notifications unmuted",
+    "themeModal": {
+      "title": "Chat theme",
+      "description": "Pick a theme for this conversation. Everyone in the chat will see it."
+    },
+    "emojiModal": {
+      "title": "Quick emoji",
+      "description": "Choose the emoji shown in the send button when your message is empty.",
+      "current": "Current:"
+    },
+    "nicknameModal": {
+      "title": "Nicknames",
+      "description": "Nicknames replace display names in this chat for everyone.",
+      "placeholder": "Nickname for {name}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "invalid": "Please fix the highlighted fields."
+    },
+    "groupModal": {
+      "title": "Create group chat",
+      "groupNameLabel": "Group name",
+      "namePlaceholder": "Group name (optional)",
+      "pickMembers": "Pick at least 2 members",
+      "noUsers": "No users online",
+      "create": "Create ({count})",
+      "cancel": "Cancel",
+      "needMembers": "Pick at least 2 members",
+      "notConnected": "Not connected to chat server",
+      "created": "Group created",
+      "failed": "Failed to create group",
+      "defaultName": "New group",
+      "invalid": "Please pick at least 2 members."
+    },
+    "e2eeModal": {
+      "title": "End-to-end encrypted chat",
+      "description": "Messages will be encrypted on your device. Only participants with matching keys can read them.",
+      "startWith": "Start encrypted chat with {name}",
+      "activeWith": "Encrypted chat active with {name}",
+      "start": "Start",
+      "stop": "Turn off",
+      "cancel": "Cancel",
+      "started": "Encrypted chat started",
+      "stopped": "Encryption turned off",
+      "yourKey": "Your key"
+    },
+    "blockModal": {
+      "titleBlock": "Block user",
+      "titleUnblock": "Unblock user",
+      "descBlock": "Block {name}? They will not be able to message you and you cannot message them.",
+      "descUnblock": "Unblock {name}? You will be able to exchange messages again.",
+      "block": "Block",
+      "unblock": "Unblock",
+      "cancel": "Cancel",
+      "blocked": "User blocked",
+      "unblocked": "User unblocked"
+    }
   },
   "Notification": {
     "template": {
