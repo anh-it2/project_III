@@ -161,11 +161,28 @@ export function MessageList({
           </Flex>
         ) : (
           orderedMessages.map((m, idx, arr) => {
+            const key = messageKey(m);
+            if (m.type === "system") {
+              return (
+                <div
+                  key={key}
+                  data-msg-key={key}
+                  data-msg-id={m.id ?? ""}
+                  className="flex justify-center py-1"
+                >
+                  <Text
+                    className="!text-[12px] !italic"
+                    style={{ color: "var(--color-text-muted)" }}
+                  >
+                    {m.content}
+                  </Text>
+                </div>
+              );
+            }
             const mine = m.senderId === myId;
             const prev = arr[idx - 1];
             const sameAsPrev =
               !!prev && prev.senderId === m.senderId && !mine;
-            const key = messageKey(m);
             const resolvedSenderName = displayName(
               m.senderId,
               m.senderName || user.name,

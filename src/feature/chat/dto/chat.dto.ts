@@ -17,7 +17,7 @@ export interface ChatMessageDTO {
   content: string;
   seq?: number;
   timestamp: number;
-  type: "text" | "image" | "file" | "video";
+  type: "text" | "image" | "file" | "video" | "system";
   replyTo?: ReplyContextDTO;
   editedAt?: number;
   deleted?: boolean;

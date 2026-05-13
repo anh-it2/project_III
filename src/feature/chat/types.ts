@@ -24,7 +24,7 @@ export interface ChatMessage {
   content: string;
   timestamp?: number;
   seq?: number;
-  type: "text" | "image" | "file" | "video";
+  type: "text" | "image" | "file" | "video" | "system";
   status?: MessageStatus;
   queueAt: number;
   replyTo?: ReplyContext;

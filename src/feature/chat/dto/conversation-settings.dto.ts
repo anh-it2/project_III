@@ -166,6 +166,7 @@ export interface GroupLeaveDTO {
 export interface GroupKickDTO {
   conversationId: string;
   targetUserId: string;
+  targetName?: string;
 }
 
 export interface GroupPromoteDTO {

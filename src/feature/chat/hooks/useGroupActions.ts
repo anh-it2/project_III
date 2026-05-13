@@ -54,11 +54,15 @@ export function useGroupActions(conversationId: string) {
   );
 
   const kick = useCallback(
-    (targetUserId: string) =>
+    (targetUserId: string, targetName?: string) =>
       wrap((cb) => {
         const s = getChatSocket();
         if (!s) return cb({ ok: false, error: "no_socket" });
-        s.emit("group:kick", { conversationId, targetUserId }, cb);
+        s.emit(
+          "group:kick",
+          { conversationId, targetUserId, targetName },
+          cb,
+        );
       }),
     [conversationId, wrap],
   );

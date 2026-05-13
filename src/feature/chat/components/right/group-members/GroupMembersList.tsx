@@ -63,7 +63,7 @@ export function GroupMembersList({ group, myId }: GroupMembersListProps) {
       run(on ? t("muted") : t("unmuted"), () => muteMember(id, on)),
     onToggleBlock: (id: string, on: boolean) =>
       run(on ? t("blocked") : t("unblocked"), () => blockMember(id, on)),
-    onKick: (id: string) => run(t("kicked"), () => kick(id)),
+    onKick: (id: string) => run(t("kicked"), () => kick(id, nameOf(id))),
   };
 
   const iconRenderer = (name: string, danger?: boolean) => (
