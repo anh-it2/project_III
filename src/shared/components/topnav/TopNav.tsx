@@ -44,9 +44,7 @@ export function TopNav() {
         <LanguageNavBtn />
         <ChatNavBtn />
         <NotificationNavBtn />
-        <div className="!hidden sm:!block">
-          <UserAvatarBtn />
-        </div>
+        <UserAvatarBtn />
       </Flex>
     </Flex>
   );

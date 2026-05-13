@@ -9,6 +9,7 @@ import { DarkModal } from "@/shared/components/modal/DarkModal";
 import { gradientBg } from "@/shared/utils/gradient";
 import { CURRENT_USER, MUSIC_TRACKS } from "../../../data/constants";
 import type { MusicTrack, ReelData } from "../../../data/types";
+import styles from "./ReelComposerModal.module.scss";
 
 const { Text, Title } = Typography;
 
@@ -106,31 +107,40 @@ export function ReelComposerModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  const handleBeforeUpload = (raw: File) => {
-    const isVideo = raw.type.startsWith("video/");
-    const isImage = raw.type.startsWith("image/");
-    if (!isVideo && !isImage) {
-      message.error(t("errorTypeNotAllowed"));
-      return Upload.LIST_IGNORE;
-    }
-    if (raw.size > 100 * 1024 * 1024) {
-      message.error(t("errorFileTooBig"));
-      return Upload.LIST_IGNORE;
-    }
-    if (mediaUrl) URL.revokeObjectURL(mediaUrl);
-    const url = URL.createObjectURL(raw);
-    rawFileRef.current = raw;
-    setMediaUrl(url);
-    setMediaType(isVideo ? "video" : "image");
-    setFile({
-      uid: String(Date.now()),
-      name: raw.name,
-      status: "done",
-      size: raw.size,
-      type: raw.type,
-    });
-    return false;
-  };
+  const buildBeforeUpload =
+    (lock: "video" | "image" | null) => (raw: File) => {
+      const isVideo = raw.type.startsWith("video/");
+      const isImage = raw.type.startsWith("image/");
+      if (!isVideo && !isImage) {
+        message.error(t("errorTypeNotAllowed"));
+        return Upload.LIST_IGNORE;
+      }
+      if (lock === "video" && !isVideo) {
+        message.error(t("errorOnlyVideo"));
+        return Upload.LIST_IGNORE;
+      }
+      if (lock === "image" && !isImage) {
+        message.error(t("errorOnlyImage"));
+        return Upload.LIST_IGNORE;
+      }
+      if (raw.size > 100 * 1024 * 1024) {
+        message.error(t("errorFileTooBig"));
+        return Upload.LIST_IGNORE;
+      }
+      if (mediaUrl) URL.revokeObjectURL(mediaUrl);
+      const url = URL.createObjectURL(raw);
+      rawFileRef.current = raw;
+      setMediaUrl(url);
+      setMediaType(isVideo ? "video" : "image");
+      setFile({
+        uid: String(Date.now()),
+        name: raw.name,
+        status: "done",
+        size: raw.size,
+        type: raw.type,
+      });
+      return false;
+    };
 
   const handleRemoveMedia = () => {
     if (mediaUrl && mediaUrl.startsWith("blob:")) URL.revokeObjectURL(mediaUrl);
@@ -278,37 +288,42 @@ export function ReelComposerModal({
               {!mediaUrl && (
                 <Upload.Dragger
                   accept="video/*,image/*"
-                  beforeUpload={handleBeforeUpload}
+                  beforeUpload={buildBeforeUpload(null)}
                   showUploadList={false}
                   fileList={file ? [file] : []}
-                  className="!h-full"
+                  className={`${styles.dragger} !h-full`}
                   style={{
                     background:
                       "linear-gradient(160deg, rgba(124,58,237,0.15) 0%, rgba(35,116,225,0.1) 50%, rgba(236,72,153,0.15) 100%)",
                     border: "none",
                   }}
                 >
-                  <Flex vertical align="center" justify="center" gap={14}>
+                  <Flex
+                    vertical
+                    align="center"
+                    justify="center"
+                    className="!gap-2 md:!gap-[14px] !px-2 !h-full !w-full"
+                  >
                     <Flex
                       align="center"
                       justify="center"
-                      className="!h-16 !w-16 !rounded-full"
+                      className="!h-11 !w-11 md:!h-16 md:!w-16 !rounded-full"
                       style={{
                         background: gradientBg(["#7c3aed", "#ec4899"]),
                         boxShadow: "0 10px 30px rgba(124,58,237,0.4)",
                       }}
                     >
-                      <Icon name="add" size={36} color="#FFFFFF" />
+                      <Icon name="add" size={24} color="#FFFFFF" />
                     </Flex>
                     <Flex vertical align="center" gap={2}>
                       <Text
-                        className="!text-base !font-bold"
+                        className="!text-[13px] md:!text-base !font-bold"
                         style={{ color: "#e4e6eb" }}
                       >
                         {t("uploadTitle")}
                       </Text>
                       <Text
-                        className="!text-xs !text-center"
+                        className="!text-[10px] md:!text-xs !text-center"
                         style={{ color: "#9ca3af" }}
                       >
                         {t("uploadSubtitle").split("\n").map((line, i, arr) => (
@@ -319,44 +334,53 @@ export function ReelComposerModal({
                         ))}
                       </Text>
                     </Flex>
-                    <Flex gap={6}>
-                      <Flex
-                        align="center"
-                        gap={4}
-                        className="!rounded-full !px-3 !py-1"
-                        style={{
-                          background: "rgba(255,255,255,0.05)",
-                          border: "1px solid #2e2e2e",
-                        }}
+                    <Flex
+                      gap={8}
+                      justify="center"
+                      align="center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Upload
+                        accept="video/*"
+                        beforeUpload={buildBeforeUpload("video")}
+                        showUploadList={false}
                       >
-                        <Icon name="videocam" size={14} color="#a78bfa" />
-                        <Text
-                          className="!text-[11px] !font-semibold"
-                          style={{ color: "#e4e6eb" }}
+                        <Button
+                          type="primary"
+                          icon={
+                            <Icon name="videocam" size={14} color="#fff" />
+                          }
+                          className="!h-8 !rounded-full !px-3 !font-semibold !border-0"
+                          style={{
+                            background: gradientBg(["#7c3aed", "#a78bfa"]),
+                            boxShadow: "0 4px 12px rgba(124,58,237,0.45)",
+                          }}
                         >
                           {t("video")}
-                        </Text>
-                      </Flex>
-                      <Flex
-                        align="center"
-                        gap={4}
-                        className="!rounded-full !px-3 !py-1"
-                        style={{
-                          background: "rgba(255,255,255,0.05)",
-                          border: "1px solid #2e2e2e",
-                        }}
+                        </Button>
+                      </Upload>
+                      <Upload
+                        accept="image/*"
+                        beforeUpload={buildBeforeUpload("image")}
+                        showUploadList={false}
                       >
-                        <Icon name="image" size={14} color="#60a5fa" />
-                        <Text
-                          className="!text-[11px] !font-semibold"
-                          style={{ color: "#e4e6eb" }}
+                        <Button
+                          type="primary"
+                          icon={
+                            <Icon name="image" size={14} color="#fff" />
+                          }
+                          className="!h-8 !rounded-full !px-3 !font-semibold !border-0"
+                          style={{
+                            background: gradientBg(["#2374e1", "#60a5fa"]),
+                            boxShadow: "0 4px 12px rgba(35,116,225,0.45)",
+                          }}
                         >
                           {t("photo")}
-                        </Text>
-                      </Flex>
+                        </Button>
+                      </Upload>
                     </Flex>
                     <Text
-                      className="!text-[10px]"
+                      className="!hidden md:!block !text-[10px]"
                       style={{ color: "#6b7280" }}
                     >
                       {t("formats")}

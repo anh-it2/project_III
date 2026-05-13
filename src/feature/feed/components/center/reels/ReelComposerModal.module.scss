@@ -1,0 +1,16 @@
+.dragger {
+  :global(.ant-upload.ant-upload-btn) {
+    display: flex !important;
+    height: 100% !important;
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  :global(.ant-upload-drag-container) {
+    display: flex !important;
+    width: 100% !important;
+    height: 100% !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
