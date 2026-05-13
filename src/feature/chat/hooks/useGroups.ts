@@ -1,7 +1,10 @@
 "use client";
 
+import { App } from "antd";
+import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
 import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
 import { getChatSocket } from "../socket";
 import { useChatStore } from "../stores/chat.store";
@@ -27,6 +30,8 @@ function toGroupInfo(dto: GroupCreatedDTO) {
 export function useGroups() {
   const myId = useAuthStore((s) => s.userId);
   const groups = useChatStore((s) => s.groups);
+  const { message } = App.useApp();
+  const t = useTranslations("GroupAdmin.notifications");
 
   useEffect(() => {
     if (!myId) return;
@@ -45,6 +50,16 @@ export function useGroups() {
     const onDeleted = (dto: GroupDeletedDTO) => {
       useChatStore.getState().removeGroup(dto.conversationId);
       useChatRoomUnreadStore.getState().markRead(dto.conversationId);
+      // close any open floating chat box for this conversation
+      useChatBoxesStore.getState().closeChat(dto.conversationId);
+      // toast only when the user did NOT initiate it themselves
+      if (dto.reason === "dissolved") {
+        message.info(t("dissolved"));
+      } else if (dto.reason === "deleted") {
+        message.warning(t("deletedByAdmin"));
+      } else if (dto.reason === "kicked") {
+        message.warning(t("youWereKicked"));
+      }
     };
 
     socket.on("group:created", onCreated);
@@ -55,7 +70,7 @@ export function useGroups() {
       socket.off("group:updated", onUpdated);
       socket.off("group:deleted", onDeleted);
     };
-  }, [myId]);
+  }, [myId, message, t]);
 
   useEffect(() => {
     if (!myId) return;

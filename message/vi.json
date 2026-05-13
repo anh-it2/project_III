@@ -252,6 +252,11 @@
       "cancel": "Huỷ",
       "actionFailed": "Thao tác thất bại"
     },
+    "notifications": {
+      "dissolved": "Nhóm đã giải tán (không đủ thành viên)",
+      "deletedByAdmin": "Nhóm đã bị quản trị viên xoá",
+      "youWereKicked": "Bạn đã bị xoá khỏi nhóm"
+    },
     "transferModal": {
       "title": "Trao quyền quản trị trước khi rời",
       "description": "Bạn là quản trị duy nhất. Chọn thành viên nhận quyền quản trị rồi mới có thể rời nhóm.",

@@ -252,6 +252,11 @@
       "cancel": "Cancel",
       "actionFailed": "Action failed"
     },
+    "notifications": {
+      "dissolved": "Group was dissolved (too few members)",
+      "deletedByAdmin": "Group was deleted by admin",
+      "youWereKicked": "You were removed from the group"
+    },
     "transferModal": {
       "title": "Promote a member before leaving",
       "description": "You're the only admin. Pick someone to take over admin rights, then you can leave.",

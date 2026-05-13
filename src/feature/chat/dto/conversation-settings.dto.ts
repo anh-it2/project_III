@@ -150,8 +150,15 @@ export interface GroupCreatedDTO {
 
 export interface GroupUpdatedDTO extends GroupCreatedDTO {}
 
+export type GroupDeletedReason =
+  | "left"
+  | "kicked"
+  | "deleted"
+  | "dissolved";
+
 export interface GroupDeletedDTO {
   conversationId: string;
+  reason?: GroupDeletedReason;
 }
 
 export interface GroupActionAck {
