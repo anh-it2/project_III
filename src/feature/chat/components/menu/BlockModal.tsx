@@ -1,6 +1,6 @@
 "use client";
 
-import { message as antdMessage } from "antd";
+import { App } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ConfirmModal } from "@/shared/components/modal/ConfirmModal";
@@ -16,6 +16,7 @@ interface BlockModalProps {
 
 export function BlockModal({ open, peerId, peerName, onClose }: BlockModalProps) {
   const t = useTranslations("ChatMenu.blockModal");
+  const { message } = App.useApp();
   const blocked = useConversationSettingsStore((s) => s.isBlocked(peerId));
   const setBlocked = useConversationSettingsStore((s) => s.setBlocked);
   const [busy, setBusy] = useState(false);
@@ -34,7 +35,7 @@ export function BlockModal({ open, peerId, peerName, onClose }: BlockModalProps)
       );
     }
     setBusy(false);
-    antdMessage.success(next ? t("blocked") : t("unblocked"));
+    message.success(next ? t("blocked") : t("unblocked"));
     onClose();
   }
 

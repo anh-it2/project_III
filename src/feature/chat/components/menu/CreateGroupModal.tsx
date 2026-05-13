@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Flex, Typography, message as antdMessage } from "antd";
+import { App, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo } from "react";
 import { FormProvider, useForm, type Resolver } from "react-hook-form";
@@ -33,6 +33,7 @@ export function CreateGroupModal({
   onClose,
 }: CreateGroupModalProps) {
   const t = useTranslations("ChatMenu.groupModal");
+  const { message } = App.useApp();
   const myId = useAuthStore((s) => s.userId);
 
   const resolver = useMemo(
@@ -61,7 +62,7 @@ export function CreateGroupModal({
   const handleSave = methods.handleSubmit(async (values) => {
     const socket = getChatSocket();
     if (!socket?.connected) {
-      antdMessage.error(t("notConnected"));
+      message.error(t("notConnected"));
       return;
     }
     const tempId = crypto.randomUUID().slice(0, 10);
@@ -76,10 +77,10 @@ export function CreateGroupModal({
         },
         (res: CreateGroupAck) => {
           if (res.ok) {
-            antdMessage.success(t("created"));
+            message.success(t("created"));
             onClose();
           } else {
-            antdMessage.error(res.error ?? t("failed"));
+            message.error(res.error ?? t("failed"));
           }
           resolve();
         },

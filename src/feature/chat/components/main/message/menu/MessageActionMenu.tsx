@@ -7,7 +7,7 @@ import {
   MoreOutlined,
   PushpinOutlined,
 } from "@ant-design/icons";
-import { Button, Dropdown, message as antdMessage } from "antd";
+import { App, Button, Dropdown } from "antd";
 import type { MenuProps } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -47,6 +47,7 @@ export function MessageActionMenu({
   placement = "bottomRight",
 }: MessageActionMenuProps) {
   const t = useTranslations("Chat.actionMenu");
+  const { message } = App.useApp();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const canEdit = mine && type === "text" && !!onStartEdit;
   const canUnsend = mine && !!onUnsend;
@@ -95,7 +96,7 @@ export function MessageActionMenu({
     } else if (key === "pin") {
       if (pinned) {
         unpinMessage(conversationId, id);
-        antdMessage.success(t("unpinnedToast"));
+        message.success(t("unpinnedToast"));
       } else {
         pinMessage(conversationId, {
           id,
@@ -106,7 +107,7 @@ export function MessageActionMenu({
           pinnedAt: Date.now(),
           pinnedBy: myId,
         });
-        antdMessage.success(t("pinnedToast"));
+        message.success(t("pinnedToast"));
       }
     }
   }
@@ -117,7 +118,7 @@ export function MessageActionMenu({
       await onUnsend(id);
       setConfirmOpen(false);
     } catch {
-      antdMessage.error(t("unsendError"));
+      message.error(t("unsendError"));
     }
   }
 

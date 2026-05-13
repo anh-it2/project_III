@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Flex, Image as AntImage, Input, Popover, Upload, message as antdMessage } from "antd";
+import { App, Button, Flex, Image as AntImage, Input, Popover, Upload } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { EmojiPicker } from "@/feature/chat/components/main/input/EmojiPicker";
@@ -23,6 +23,7 @@ export function CommentInput({
 }: CommentInputProps) {
   const t = useTranslations("Post");
   const tChat = useTranslations("Chat");
+  const { message } = App.useApp();
   const [value, setValue] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [emojiOpen, setEmojiOpen] = useState(false);
@@ -49,11 +50,11 @@ export function CommentInput({
 
   async function handleImage(file: File) {
     if (!file.type.startsWith("image/")) {
-      antdMessage.error(tChat("input.errorImageType"));
+      message.error(tChat("input.errorImageType"));
       return false;
     }
     if (file.size > CHAT_IMAGE_MAX_BYTES) {
-      antdMessage.error(tChat("input.errorImageTooLarge"));
+      message.error(tChat("input.errorImageTooLarge"));
       return false;
     }
     try {
@@ -61,7 +62,7 @@ export function CommentInput({
       const url = await uploadChatImage(file);
       setImageUrl(url);
     } catch {
-      antdMessage.error(tChat("input.errorUploadFailed"));
+      message.error(tChat("input.errorUploadFailed"));
     } finally {
       setUploading(false);
     }

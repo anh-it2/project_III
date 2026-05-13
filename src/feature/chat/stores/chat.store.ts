@@ -1,6 +1,47 @@
 import { create } from "zustand";
-import { ChatState, match } from "./chat.store.type";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { ChatState, match, type PinnedMessageInfo } from "./chat.store.type";
+import type { ConversationSettingsDTO } from "../dto/conversation-settings.dto";
+
+const LEGACY_SETTINGS_KEY = "chat-conversation-settings";
+const LEGACY_PINNED_KEY = "chat-pinned-messages";
+
+interface PersistedConversation {
+  settings?: ConversationSettingsDTO;
+  pinned?: PinnedMessageInfo[];
+}
+
+interface PersistedShape {
+  optimisticMessages?: ChatState["optimisticMessages"];
+  readCursors?: ChatState["readCursors"];
+  blockedUsers?: ChatState["blockedUsers"];
+  conversations?: Record<string, PersistedConversation>;
+}
+
+function ensure(
+  state: ChatState["settings"],
+  conversationId: string,
+): ConversationSettingsDTO {
+  return state[conversationId] ?? { conversationId };
+}
+
+function readLegacy<T>(key: string): T | undefined {
+  if (typeof localStorage === "undefined") return undefined;
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw);
+    return (parsed?.state ?? parsed) as T;
+  } catch {
+    return undefined;
+  }
+}
+
+function clearLegacy() {
+  if (typeof localStorage === "undefined") return;
+  localStorage.removeItem(LEGACY_SETTINGS_KEY);
+  localStorage.removeItem(LEGACY_PINNED_KEY);
+}
 
 export const useChatStore = create<ChatState>()(
   persist(
@@ -8,6 +49,9 @@ export const useChatStore = create<ChatState>()(
       optimisticMessages: {},
       typingUsers: {},
       readCursors: {},
+      settings: {},
+      blockedUsers: {},
+      pinned: {},
 
       addOptimisticMessage: (conversationId, message) => {
         set((state) => ({
@@ -140,12 +184,7 @@ export const useChatStore = create<ChatState>()(
         });
       },
 
-      setTyping: (
-        conversationId: string,
-        userId: string,
-        userName: string,
-        isTyping: boolean,
-      ) => {
+      setTyping: (conversationId, userId, userName, isTyping) => {
         set((state) => {
           const conv = { ...(state.typingUsers[conversationId] || {}) };
           if (isTyping) {
@@ -159,7 +198,7 @@ export const useChatStore = create<ChatState>()(
         });
       },
 
-      clearTyping: (conversationId: string, userId: string) => {
+      clearTyping: (conversationId, userId) => {
         set((state) => {
           const conv = { ...(state.typingUsers[conversationId] || {}) };
           delete conv[userId];
@@ -213,15 +252,207 @@ export const useChatStore = create<ChatState>()(
           };
         });
       },
+
+      setAll: (conversationId, data) =>
+        set((state) => ({
+          settings: { ...state.settings, [conversationId]: data },
+        })),
+
+      setTheme: (conversationId, themeId) =>
+        set((state) => {
+          const cur = ensure(state.settings, conversationId);
+          return {
+            settings: {
+              ...state.settings,
+              [conversationId]: { ...cur, themeId },
+            },
+          };
+        }),
+
+      setEmoji: (conversationId, emoji) =>
+        set((state) => {
+          const cur = ensure(state.settings, conversationId);
+          return {
+            settings: {
+              ...state.settings,
+              [conversationId]: { ...cur, emoji },
+            },
+          };
+        }),
+
+      setNickname: (conversationId, userId, nickname) =>
+        set((state) => {
+          const cur = ensure(state.settings, conversationId);
+          const nicknames = { ...(cur.nicknames ?? {}) };
+          if (nickname.trim().length === 0) delete nicknames[userId];
+          else nicknames[userId] = nickname.trim();
+          return {
+            settings: {
+              ...state.settings,
+              [conversationId]: { ...cur, nicknames },
+            },
+          };
+        }),
+
+      setMuted: (conversationId, muted, mutedUntil) =>
+        set((state) => {
+          const cur = ensure(state.settings, conversationId);
+          return {
+            settings: {
+              ...state.settings,
+              [conversationId]: { ...cur, muted, mutedUntil },
+            },
+          };
+        }),
+
+      setBlocked: (userId, blocked) =>
+        set((state) => {
+          const next = { ...state.blockedUsers };
+          if (blocked) next[userId] = true;
+          else delete next[userId];
+          return { blockedUsers: next };
+        }),
+
+      setE2EE: (conversationId, e2ee, publicKey) =>
+        set((state) => {
+          const cur = ensure(state.settings, conversationId);
+          return {
+            settings: {
+              ...state.settings,
+              [conversationId]: {
+                ...cur,
+                e2ee,
+                e2eePublicKey: publicKey ?? cur.e2eePublicKey,
+              },
+            },
+          };
+        }),
+
+      isBlocked: (userId) => !!get().blockedUsers[userId],
+
+      getSettings: (conversationId) =>
+        get().settings[conversationId] ?? { conversationId },
+
+      getNickname: (conversationId, userId) =>
+        get().settings[conversationId]?.nicknames?.[userId],
+
+      isMuted: (conversationId) => {
+        const s = get().settings[conversationId];
+        if (!s?.muted) return false;
+        if (s.mutedUntil && s.mutedUntil < Date.now()) return false;
+        return true;
+      },
+
+      pinMessage: (conversationId, message) =>
+        set((state) => {
+          const list = state.pinned[conversationId] ?? [];
+          if (list.some((m) => m.id === message.id)) return state;
+          return {
+            pinned: {
+              ...state.pinned,
+              [conversationId]: [message, ...list],
+            },
+          };
+        }),
+
+      unpinMessage: (conversationId, messageId) =>
+        set((state) => {
+          const list = state.pinned[conversationId] ?? [];
+          const next = list.filter((m) => m.id !== messageId);
+          return {
+            pinned: { ...state.pinned, [conversationId]: next },
+          };
+        }),
+
+      isPinned: (conversationId, messageId) =>
+        (get().pinned[conversationId] ?? []).some((m) => m.id === messageId),
+
+      getPinned: (conversationId) => get().pinned[conversationId] ?? [],
     }),
     {
       name: "chat-storage",
       storage: createJSONStorage(() => localStorage),
+      version: 2,
 
-      partialize: (state) => ({
-        optimisticMessages: state.optimisticMessages,
-        readCursors: state.readCursors,
-      }),
+      partialize: (state) => {
+        const ids = new Set<string>([
+          ...Object.keys(state.settings),
+          ...Object.keys(state.pinned),
+        ]);
+        const conversations: Record<string, PersistedConversation> = {};
+        for (const id of ids) {
+          const entry: PersistedConversation = {};
+          if (state.settings[id]) entry.settings = state.settings[id];
+          if (state.pinned[id]?.length) entry.pinned = state.pinned[id];
+          conversations[id] = entry;
+        }
+        return {
+          optimisticMessages: state.optimisticMessages,
+          readCursors: state.readCursors,
+          blockedUsers: state.blockedUsers,
+          conversations,
+        } as unknown as ChatState;
+      },
+
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as PersistedShape;
+        const settings: ChatState["settings"] = {};
+        const pinned: ChatState["pinned"] = {};
+        for (const [id, entry] of Object.entries(p.conversations ?? {})) {
+          if (entry.settings) settings[id] = entry.settings;
+          if (entry.pinned) pinned[id] = entry.pinned;
+        }
+        return {
+          ...current,
+          optimisticMessages: p.optimisticMessages ?? current.optimisticMessages,
+          readCursors: p.readCursors ?? current.readCursors,
+          blockedUsers: p.blockedUsers ?? current.blockedUsers,
+          settings,
+          pinned,
+        };
+      },
+
+      migrate: (persistedState, version) => {
+        if (version >= 2) return persistedState as ChatState;
+
+        const prev = (persistedState ?? {}) as {
+          optimisticMessages?: ChatState["optimisticMessages"];
+          readCursors?: ChatState["readCursors"];
+        };
+
+        const legacySettings = readLegacy<{
+          settings?: ChatState["settings"];
+          blockedUsers?: ChatState["blockedUsers"];
+        }>(LEGACY_SETTINGS_KEY);
+        const legacyPinned = readLegacy<{
+          pinned?: ChatState["pinned"];
+        }>(LEGACY_PINNED_KEY);
+
+        const settings = legacySettings?.settings ?? {};
+        const pinned = legacyPinned?.pinned ?? {};
+        const blockedUsers = legacySettings?.blockedUsers ?? {};
+
+        const ids = new Set<string>([
+          ...Object.keys(settings),
+          ...Object.keys(pinned),
+        ]);
+        const conversations: Record<string, PersistedConversation> = {};
+        for (const id of ids) {
+          const entry: PersistedConversation = {};
+          if (settings[id]) entry.settings = settings[id];
+          if (pinned[id]?.length) entry.pinned = pinned[id];
+          conversations[id] = entry;
+        }
+
+        clearLegacy();
+
+        return {
+          optimisticMessages: prev.optimisticMessages ?? {},
+          readCursors: prev.readCursors ?? {},
+          blockedUsers,
+          conversations,
+        } as unknown as ChatState;
+      },
     },
   ),
 );

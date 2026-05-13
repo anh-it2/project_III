@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { notification as antdNotification } from "antd";
+import { App } from "antd";
 import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { getNotificationSocket } from "../socket";
@@ -25,8 +25,7 @@ import { Icon } from "@/shared/components/Icon";
 /**
  * Mount once at top-level (e.g. NotificationNavBtn). Attaches socket listeners,
  * fetches initial list on (re)connect, fires antd notification toast on push,
- * and exposes emit/read actions. Render the returned `contextHolder` once in
- * the tree to enable the antd notification API.
+ * and exposes emit/read actions. Requires antd `App` wrapper in the tree.
  */
 export function useNotifications() {
   const tTpl = useTranslations("Notification.template");
@@ -38,13 +37,9 @@ export function useNotifications() {
   const { setAll, addOne, markRead, markAllRead } =
     useNotificationStore.getState();
 
-  const [api, contextHolder] = antdNotification.useNotification({
-    placement: "topRight",
-    duration: 4.5,
-    stack: { threshold: 3 },
-  });
-  const apiRef = useRef(api);
-  apiRef.current = api;
+  const { notification } = App.useApp();
+  const apiRef = useRef(notification);
+  apiRef.current = notification;
 
   // first render hides past notifications. Suppress toast until initial list resolves.
   const initialFetchedRef = useRef(false);
@@ -157,5 +152,5 @@ export function useNotifications() {
     socket.emit("notification:read-all", (_ack: NotificationActionAck) => {});
   }, [socket, isConnected, markAllRead]);
 
-  return { isConnected, emit, readOne, readAll, contextHolder };
+  return { isConnected, emit, readOne, readAll };
 }

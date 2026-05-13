@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Dropdown, Typography, message } from "antd";
+import { App, Button, Dropdown, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Icon } from "../Icon";
@@ -41,7 +41,7 @@ export function ShareMenu({
   onShareToFeed,
 }: ShareMenuProps) {
   const t = useTranslations("Post");
-  const [api, contextHolder] = message.useMessage();
+  const { message: api } = App.useApp();
   const [open, setOpen] = useState(false);
   const [sendModalOpen, setSendModalOpen] = useState(false);
 
@@ -96,7 +96,6 @@ export function ShareMenu({
 
   return (
     <>
-      {contextHolder}
       <Dropdown
         trigger={["click"]}
         placement="topRight"

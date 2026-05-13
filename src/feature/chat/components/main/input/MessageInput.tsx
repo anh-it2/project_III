@@ -8,7 +8,7 @@ import {
   SendOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
-import { Button, Flex, Input, Popover, Typography, Upload, message as antdMessage } from "antd";
+import { App, Button, Flex, Input, Popover, Typography, Upload } from "antd";
 import type { InputRef } from "antd";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
@@ -54,6 +54,7 @@ export function MessageInput({
   blockedNotice,
 }: MessageInputProps) {
   const t = useTranslations("Chat");
+  const { message } = App.useApp();
   const [draft, setDraft] = useState("");
   const [uploading, setUploading] = useState(false);
   const [gifOpen, setGifOpen] = useState(false);
@@ -92,11 +93,11 @@ export function MessageInput({
 
   async function handleImage(file: File) {
     if (!file.type.startsWith("image/")) {
-      antdMessage.error(t("input.errorImageType"));
+      message.error(t("input.errorImageType"));
       return false;
     }
     if (file.size > CHAT_IMAGE_MAX_BYTES) {
-      antdMessage.error(t("input.errorImageTooLarge"));
+      message.error(t("input.errorImageTooLarge"));
       return false;
     }
     try {
@@ -104,7 +105,7 @@ export function MessageInput({
       const url = await uploadChatImage(file);
       await onSend(url, "image");
     } catch {
-      antdMessage.error(t("input.errorUploadFailed"));
+      message.error(t("input.errorUploadFailed"));
     } finally {
       setUploading(false);
     }

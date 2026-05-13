@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Dropdown, message as antdMessage } from "antd";
+import { App, Button, Dropdown } from "antd";
 import type { MenuProps } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -43,6 +43,7 @@ export function ChatMenu({
   compact = false,
 }: ChatMenuProps) {
   const t = useTranslations("ChatMenu");
+  const { message } = App.useApp();
   const router = useRouter();
   const [openModal, setOpenModal] = useState<ModalKind>(null);
   const { settings, setMuted } = useConversationSettings(conversationId);
@@ -52,7 +53,7 @@ export function ChatMenu({
   async function handleMute() {
     const next = !muted;
     await setMuted(next);
-    antdMessage.success(next ? t("muteOn") : t("muteOff"));
+    message.success(next ? t("muteOn") : t("muteOff"));
   }
 
   const items: MenuProps["items"] = [

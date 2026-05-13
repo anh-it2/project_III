@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Flex, Typography, message as antdMessage } from "antd";
+import { App, Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Icon } from "@/shared/components/Icon";
@@ -23,6 +23,7 @@ export function E2EEModal({
   onClose,
 }: E2EEModalProps) {
   const t = useTranslations("ChatMenu.e2eeModal");
+  const { message } = App.useApp();
   const { settings, setE2EE } = useConversationSettings(conversationId);
   const [busy, setBusy] = useState(false);
   const enabled = !!settings.e2ee;
@@ -31,7 +32,7 @@ export function E2EEModal({
     setBusy(true);
     await setE2EE(!enabled);
     setBusy(false);
-    antdMessage.success(!enabled ? t("started") : t("stopped"));
+    message.success(!enabled ? t("started") : t("stopped"));
     onClose();
   }
 

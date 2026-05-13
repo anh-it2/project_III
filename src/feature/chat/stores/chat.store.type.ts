@@ -1,9 +1,24 @@
 import { ChatMessage, MessageStatus } from "../types";
+import type { ConversationSettingsDTO } from "../dto/conversation-settings.dto";
+
+export interface PinnedMessageInfo {
+  id: string;
+  content: string;
+  type: "text" | "image" | "file" | "video";
+  senderId: string;
+  senderName: string;
+  pinnedAt: number;
+  pinnedBy: string;
+}
 
 export interface ChatState {
   optimisticMessages: Record<string, ChatMessage[]>;
   typingUsers: Record<string, Record<string, string>>;
   readCursors: Record<string, number>;
+
+  settings: Record<string, ConversationSettingsDTO>;
+  blockedUsers: Record<string, true>;
+  pinned: Record<string, PinnedMessageInfo[]>;
 
   addOptimisticMessage: (conversationId: string, message: ChatMessage) => void;
   reconcileAck: (
@@ -46,6 +61,31 @@ export interface ChatState {
     content: string,
     editedAt: number,
   ) => void;
+
+  setAll: (conversationId: string, data: ConversationSettingsDTO) => void;
+  setTheme: (conversationId: string, themeId: string) => void;
+  setEmoji: (conversationId: string, emoji: string) => void;
+  setNickname: (
+    conversationId: string,
+    userId: string,
+    nickname: string,
+  ) => void;
+  setMuted: (
+    conversationId: string,
+    muted: boolean,
+    mutedUntil?: number,
+  ) => void;
+  setBlocked: (userId: string, blocked: boolean) => void;
+  setE2EE: (conversationId: string, e2ee: boolean, publicKey?: string) => void;
+  isBlocked: (userId: string) => boolean;
+  getSettings: (conversationId: string) => ConversationSettingsDTO;
+  getNickname: (conversationId: string, userId: string) => string | undefined;
+  isMuted: (conversationId: string) => boolean;
+
+  pinMessage: (conversationId: string, message: PinnedMessageInfo) => void;
+  unpinMessage: (conversationId: string, messageId: string) => void;
+  isPinned: (conversationId: string, messageId: string) => boolean;
+  getPinned: (conversationId: string) => PinnedMessageInfo[];
 }
 
 export function match(

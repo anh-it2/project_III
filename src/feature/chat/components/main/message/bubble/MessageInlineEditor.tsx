@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Flex, Input, message as antdMessage } from "antd";
+import { App, Button, Flex, Input } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -16,6 +16,7 @@ export function MessageInlineEditor({
   onCancel,
 }: MessageInlineEditorProps) {
   const t = useTranslations("Chat.inlineEditor");
+  const { message } = App.useApp();
   const [draft, setDraft] = useState(initial);
   const [saving, setSaving] = useState(false);
 
@@ -29,7 +30,7 @@ export function MessageInlineEditor({
       setSaving(true);
       await onSave(next);
     } catch {
-      antdMessage.error(t("editError"));
+      message.error(t("editError"));
     } finally {
       setSaving(false);
     }
