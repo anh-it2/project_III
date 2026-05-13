@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  EditOutlined,
   LogoutOutlined,
   MoreOutlined,
   UserOutlined,
+  UsergroupAddOutlined,
 } from "@ant-design/icons";
-import { Button, Dropdown, Typography } from "antd";
+import { Button, Dropdown, Tooltip, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useNavigation } from "@/shared/hooks/useNavigation";
 
@@ -17,9 +17,10 @@ const ICON_BTN_CLASS =
 
 interface SidebarHeaderProps {
   onLogout: () => void;
+  onCreateGroup?: () => void;
 }
 
-export function SidebarHeader({ onLogout }: SidebarHeaderProps) {
+export function SidebarHeader({ onLogout, onCreateGroup }: SidebarHeaderProps) {
   const t = useTranslations("Chat.sidebar");
   const nav = useNavigation();
   return (
@@ -49,11 +50,14 @@ export function SidebarHeader({ onLogout }: SidebarHeaderProps) {
         </Text>
       </div>
       <div className="flex items-center gap-2">
-        <Button
-          type="text"
-          icon={<EditOutlined />}
-          className={ICON_BTN_CLASS}
-        />
+        <Tooltip title={t("createGroup")}>
+          <Button
+            type="text"
+            icon={<UsergroupAddOutlined />}
+            onClick={onCreateGroup}
+            className={ICON_BTN_CLASS}
+          />
+        </Tooltip>
         <Dropdown
           trigger={["click"]}
           menu={{

@@ -7,45 +7,60 @@ import { buildDmId } from "@/feature/chat/lib/conversation";
 import { pickGradient } from "@/feature/chat/lib/avatar";
 import { ChatMenu } from "@/feature/chat/components/menu/ChatMenu";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
+import type { GroupInfo } from "@/feature/chat/stores/chat.store.type";
 import { gradientBg } from "@/shared/utils/gradient";
 
 const { Text } = Typography;
 
-interface ConversationItemProps {
-  user: OnlineUserDto;
-  active: boolean;
-  online?: boolean;
-  unread?: boolean;
-  myId: string;
-  myName: string;
-  onClick: () => void;
-}
+type ConversationItemProps =
+  | {
+      kind: "dm";
+      user: OnlineUserDto;
+      active: boolean;
+      online?: boolean;
+      unread?: boolean;
+      myId: string;
+      myName: string;
+      onClick: () => void;
+    }
+  | {
+      kind: "group";
+      group: GroupInfo;
+      active: boolean;
+      unread?: boolean;
+      myId: string;
+      myName: string;
+      onClick: () => void;
+    };
 
-export function ConversationItem({
-  user,
-  active,
-  online = true,
-  unread = false,
-  myId,
-  myName,
-  onClick,
-}: ConversationItemProps) {
+export function ConversationItem(props: ConversationItemProps) {
   const t = useTranslations("Chat.sidebar");
-  const lastMessage = unread
-    ? t("newMessage")
-    : online
-      ? t("activeNow")
-      : t("offline");
-  const conversationId = buildDmId(myId, user.id);
+  const isDm = props.kind === "dm";
+  const id = isDm ? props.user.id : props.group.conversationId;
+  const name = isDm ? props.user.name : props.group.name;
+  const online = isDm ? props.online ?? true : false;
+  const unread = !!props.unread;
+  const lastMessage = isDm
+    ? unread
+      ? t("newMessage")
+      : online
+        ? t("activeNow")
+        : t("offline")
+    : unread
+      ? t("newMessage")
+      : t("memberCount", { count: props.group.memberIds.length });
+  const conversationId = isDm
+    ? buildDmId(props.myId, props.user.id)
+    : props.group.conversationId;
 
   return (
     <Flex
       align="center"
       gap={8}
-      onClick={onClick}
+      onClick={props.onClick}
       className={
         "group !w-full !cursor-pointer !rounded-[10px] " +
-        (active
+        (props.active
           ? "!bg-[var(--color-primary-bg)]"
           : "hover:!bg-[var(--color-bg-tertiary)]")
       }
@@ -59,12 +74,12 @@ export function ConversationItem({
           style={{
             width: 52,
             height: 52,
-            background: gradientBg([...pickGradient(user.id)]),
+            background: gradientBg([...pickGradient(id)]),
           }}
         >
-          <Icon name="person" size={28} color="#FFFFFF" />
+          <Icon name={isDm ? "person" : "group"} size={28} color="#FFFFFF" />
         </Flex>
-        {online ? (
+        {isDm && online ? (
           <span
             className="absolute"
             style={{
@@ -85,10 +100,10 @@ export function ConversationItem({
           className="!text-sm"
           style={{
             color: "var(--color-text)",
-            fontWeight: unread ? 700 : active ? 600 : 500,
+            fontWeight: unread ? 700 : props.active ? 600 : 500,
           }}
         >
-          {user.name}
+          {name}
         </Text>
         <Text
           ellipsis
@@ -119,11 +134,12 @@ export function ConversationItem({
       >
         <ChatMenu
           conversationId={conversationId}
-          peerId={user.id}
-          peerName={user.name}
-          myId={myId}
-          myName={myName}
+          peerId={id}
+          peerName={name}
+          myId={props.myId}
+          myName={props.myName}
           compact
+          isGroup={!isDm}
         />
       </div>
     </Flex>

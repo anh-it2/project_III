@@ -21,6 +21,7 @@ export interface ChatMessageDTO {
   replyTo?: ReplyContextDTO;
   editedAt?: number;
   deleted?: boolean;
+  error?: string;
 }
 
 export interface MessageEditedDTO {

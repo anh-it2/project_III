@@ -11,6 +11,17 @@ export interface PinnedMessageInfo {
   pinnedBy: string;
 }
 
+export interface GroupInfo {
+  conversationId: string;
+  name: string;
+  memberIds: string[];
+  adminIds: string[];
+  mutedMembers: string[];
+  blockedMembers: string[];
+  createdAt: number;
+  createdBy: string;
+}
+
 export interface ChatState {
   optimisticMessages: Record<string, ChatMessage[]>;
   typingUsers: Record<string, Record<string, string>>;
@@ -20,6 +31,7 @@ export interface ChatState {
   blockedUsers: Record<string, true>;
   blockedByUsers: Record<string, true>;
   pinned: Record<string, PinnedMessageInfo[]>;
+  groups: Record<string, GroupInfo>;
 
   addOptimisticMessage: (conversationId: string, message: ChatMessage) => void;
   reconcileAck: (
@@ -89,6 +101,11 @@ export interface ChatState {
   unpinMessage: (conversationId: string, messageId: string) => void;
   isPinned: (conversationId: string, messageId: string) => boolean;
   getPinned: (conversationId: string) => PinnedMessageInfo[];
+
+  upsertGroup: (group: GroupInfo) => void;
+  removeGroup: (conversationId: string) => void;
+  getGroup: (conversationId: string) => GroupInfo | undefined;
+  listGroups: () => GroupInfo[];
 }
 
 export function match(

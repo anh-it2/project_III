@@ -9,39 +9,49 @@ import { useMessages } from "../../hooks/useMessage";
 import { useTyping } from "../../hooks/useTyping";
 import { buildDmId } from "../../lib/conversation";
 import { DEFAULT_EMOJI } from "../../lib/themes";
+import { useChatStore } from "../../stores/chat.store";
 import { useConversationSettingsStore } from "../../stores/conversation-settings.store";
 import type { ReplyContext } from "../../types";
+import type { SelectedConversation } from "../../types/conversation";
 import { ChatHeader } from "./ChatHeader";
 import { EmptyChat } from "./EmptyChat";
 import { MessageInput } from "./input/MessageInput";
 import { MessageList } from "./message/MessageList";
 
 interface ChatMainProps {
-  user: OnlineUserDto | null;
+  selection: SelectedConversation | null;
   onToggleInfo?: () => void;
   onBack?: () => void;
 }
 
-export function ChatMain({ user, onToggleInfo, onBack }: ChatMainProps) {
-  if (!user) return <EmptyChat />;
+export function ChatMain({ selection, onToggleInfo, onBack }: ChatMainProps) {
+  if (!selection) return <EmptyChat />;
   return (
-    <ActiveChat user={user} onToggleInfo={onToggleInfo} onBack={onBack} />
+    <ActiveChat
+      selection={selection}
+      onToggleInfo={onToggleInfo}
+      onBack={onBack}
+    />
   );
 }
 
 function ActiveChat({
-  user,
+  selection,
   onToggleInfo,
   onBack,
 }: {
-  user: OnlineUserDto;
+  selection: SelectedConversation;
   onToggleInfo?: () => void;
   onBack?: () => void;
 }) {
   const t = useTranslations("ChatBox");
   const myId = useAuthStore((s) => s.userId);
   const myName = useAuthStore((s) => s.userName);
-  const conversationId = buildDmId(myId, user.id);
+  const isDm = selection.kind === "dm";
+  const conversationId = isDm
+    ? buildDmId(myId, selection.user.id)
+    : selection.group.conversationId;
+  const peerIdForDm = isDm ? selection.user.id : null;
   const { sendMessage, editMessage, unsendMessage, isConnected } =
     useChat(conversationId);
   const { messages, isLoading } = useMessages(conversationId);
@@ -51,26 +61,42 @@ function ActiveChat({
   const settings = useConversationSettingsStore(
     (s) => s.settings[conversationId],
   );
-  const isBlocked = useConversationSettingsStore((s) => s.isBlocked(user.id));
-  const isBlockedBy = useConversationSettingsStore((s) => s.isBlockedBy(user.id));
-  const peerNickname = settings?.nicknames?.[user.id];
-  const displayName = peerNickname ?? user.name;
+  const isBlocked = useConversationSettingsStore((s) =>
+    peerIdForDm ? s.isBlocked(peerIdForDm) : false,
+  );
+  const isBlockedBy = useConversationSettingsStore((s) =>
+    peerIdForDm ? s.isBlockedBy(peerIdForDm) : false,
+  );
+  const isMutedInGroup = useChatStore((s) =>
+    !isDm
+      ? !!s.groups[conversationId]?.mutedMembers?.includes(myId)
+      : false,
+  );
+  const peerNickname =
+    isDm && peerIdForDm ? settings?.nicknames?.[peerIdForDm] : undefined;
+  const rawName = isDm ? selection.user.name : selection.group.name;
+  const displayName = peerNickname ?? rawName;
   const goToEmoji = settings?.emoji ?? DEFAULT_EMOJI;
+
+  // MessageList still needs a "user" placeholder for the empty state / avatars.
+  // For groups we synthesize one from the group's identity.
+  const listUser: OnlineUserDto = isDm
+    ? { ...selection.user, name: displayName }
+    : { id: conversationId, name: displayName };
 
   return (
     <section className="flex h-full flex-1 flex-col">
       <ChatHeader
-        user={{ ...user, name: displayName }}
+        selection={selection}
+        displayName={displayName}
         conversationId={conversationId}
-        peerId={user.id}
-        peerName={user.name}
         myId={myId}
         myName={myName}
         onToggleInfo={onToggleInfo}
         onBack={onBack}
       />
       <MessageList
-        user={user}
+        user={listUser}
         messages={messages}
         isLoading={isLoading}
         onReply={setReplyTo}
@@ -88,14 +114,16 @@ function ActiveChat({
         onStopTyping={stopTyping}
         replyTo={replyTo}
         onCancelReply={() => setReplyTo(null)}
-        disabled={!isConnected || isBlocked || isBlockedBy}
+        disabled={!isConnected || isBlocked || isBlockedBy || isMutedInGroup}
         goToEmoji={goToEmoji}
         blockedNotice={
           isBlocked
             ? t("blockedNotice", { name: displayName })
             : isBlockedBy
               ? t("blockedByNotice", { name: displayName })
-              : undefined
+              : isMutedInGroup
+                ? t("groupMutedNotice")
+                : undefined
         }
       />
     </section>

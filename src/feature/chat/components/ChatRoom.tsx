@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
-import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import { usePresenceStore } from "@/feature/presence/stores/presence.store";
 import { useRouter } from "@/i18n/navigation";
 import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
 import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
+import { useChatStore } from "../stores/chat.store";
+import type { SelectedConversation } from "../types/conversation";
 import { ChatMain } from "./main/ChatMain";
 import { ChatRightPanel } from "./right/ChatRightPanel";
 import { ChatSidebar } from "./sidebar/ChatSidebar";
@@ -16,11 +17,12 @@ export function ChatRoom() {
   const { userName, removeLogginedUser } = useAuthStore();
   const onlineUsers = usePresenceStore((s) => s.onlineUsers);
   const knownUsers = usePresenceStore((s) => s.knownUsers);
+  const groupsMap = useChatStore((s) => s.groups);
   const closeAllChatBoxes = useChatBoxesStore((s) => s.closeAll);
   const setActivePeer = useChatRoomUnreadStore((s) => s.setActivePeer);
   const unreadMap = useChatRoomUnreadStore((s) => s.unread);
 
-  const [selected, setSelected] = useState<OnlineUserDto | null>(null);
+  const [selected, setSelected] = useState<SelectedConversation | null>(null);
   const [showRightPanel, setShowRightPanel] = useState(false);
 
   const contacts = useMemo(() => {
@@ -30,14 +32,42 @@ export function ChatRoom() {
       .sort((a, b) => Number(b.online) - Number(a.online));
   }, [onlineUsers, knownUsers]);
 
+  const groups = useMemo(
+    () => Object.values(groupsMap).sort((a, b) => b.createdAt - a.createdAt),
+    [groupsMap],
+  );
+
   useEffect(() => {
     closeAllChatBoxes();
   }, [closeAllChatBoxes]);
 
   useEffect(() => {
-    setActivePeer(selected?.id ?? null);
+    const key =
+      selected?.kind === "dm"
+        ? selected.user.id
+        : selected?.kind === "group"
+          ? selected.group.conversationId
+          : null;
+    setActivePeer(key);
     return () => setActivePeer(null);
-  }, [selected?.id, setActivePeer]);
+  }, [selected, setActivePeer]);
+
+  // clear selection if currently-selected group got deleted / user kicked / left
+  useEffect(() => {
+    if (selected?.kind !== "group") return;
+    if (!groupsMap[selected.group.conversationId]) {
+      setSelected(null);
+    }
+  }, [selected, groupsMap]);
+
+  // keep selected.group in sync with store updates
+  useEffect(() => {
+    if (selected?.kind !== "group") return;
+    const fresh = groupsMap[selected.group.conversationId];
+    if (fresh && fresh !== selected.group) {
+      setSelected({ kind: "group", group: fresh });
+    }
+  }, [selected, groupsMap]);
 
   function handleLogout() {
     removeLogginedUser();
@@ -45,10 +75,15 @@ export function ChatRoom() {
   }
 
   const hasSelection = !!selected;
+  const selectedId =
+    selected?.kind === "dm"
+      ? selected.user.id
+      : selected?.kind === "group"
+        ? selected.group.conversationId
+        : null;
 
   return (
     <div className="relative flex h-screen min-h-screen overflow-hidden bg-[#fafbfc] dark:bg-[#0a0a0a]">
-      {/* mobile: single-column slider; desktop: static flex */}
       <div className="relative h-full w-full overflow-hidden md:flex md:w-auto md:flex-1">
         <div
           className={
@@ -58,7 +93,8 @@ export function ChatRoom() {
         >
           <ChatSidebar
             contacts={contacts}
-            selectedUserId={selected?.id ?? null}
+            groups={groups}
+            selectedId={selectedId}
             currentUserName={userName}
             onSelect={setSelected}
             onLogout={handleLogout}
@@ -73,13 +109,12 @@ export function ChatRoom() {
           }
         >
           <ChatMain
-            user={selected}
+            selection={selected}
             onToggleInfo={() => setShowRightPanel((v) => !v)}
             onBack={() => setSelected(null)}
           />
         </main>
 
-        {/* right panel (md+): inline column, width animates so main shrinks */}
         <div
           className={
             "hidden md:block md:shrink-0 overflow-hidden transition-[width] duration-300 ease-out " +
@@ -87,12 +122,11 @@ export function ChatRoom() {
           }
         >
           <div className="h-full w-[340px]">
-            <ChatRightPanel user={selected} />
+            <ChatRightPanel selection={selected} />
           </div>
         </div>
       </div>
 
-      {/* right panel (mobile): overlay drawer with backdrop */}
       <div
         className={
           "fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 md:hidden " +
@@ -108,7 +142,7 @@ export function ChatRoom() {
           (showRightPanel ? "translate-x-0" : "translate-x-full")
         }
       >
-        <ChatRightPanel user={selected} />
+        <ChatRightPanel selection={selected} />
       </div>
     </div>
   );

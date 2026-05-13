@@ -14,7 +14,9 @@ export function CreateGroupFooter({ onCancel, busy }: CreateGroupFooterProps) {
   const t = useTranslations("ChatMenu.groupModal");
   const { control } = useFormContext<GroupFormValues>();
   const memberIds = useWatch({ control, name: "memberIds" }) ?? [];
+  const name = useWatch({ control, name: "name" }) ?? "";
   const count = memberIds.length;
+  const canSubmit = name.trim().length > 0 && count >= 2;
 
   return (
     <Flex justify="end" gap={8} className="!mt-5">
@@ -33,6 +35,7 @@ export function CreateGroupFooter({ onCancel, busy }: CreateGroupFooterProps) {
         type="primary"
         htmlType="submit"
         loading={busy}
+        disabled={!canSubmit || busy}
         style={{ fontWeight: 600 }}
       >
         {t("create", { count })}

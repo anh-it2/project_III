@@ -1,8 +1,11 @@
 import { z } from "zod";
 
-export function buildGroupSchema(needMembersMessage: string) {
+export function buildGroupSchema(
+  needMembersMessage: string,
+  needNameMessage: string,
+) {
   return z.object({
-    name: z.string().max(60),
+    name: z.string().trim().min(1, needNameMessage).max(60),
     memberIds: z.array(z.string()).min(2, needMembersMessage),
   });
 }

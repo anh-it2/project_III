@@ -38,16 +38,16 @@ export function CreateGroupModal({
 
   const resolver = useMemo(
     () =>
-      zodResolver(buildGroupSchema(t("needMembers"))) as unknown as Resolver<
-        GroupFormValues
-      >,
+      zodResolver(
+        buildGroupSchema(t("needMembers"), t("needName")),
+      ) as unknown as Resolver<GroupFormValues>,
     [t],
   );
 
   const methods = useForm<GroupFormValues>({
     resolver,
     defaultValues: buildGroupDefaults(seedPeerId),
-    mode: "onSubmit",
+    mode: "onChange",
   });
 
   useEffect(() => {
@@ -68,6 +68,16 @@ export function CreateGroupModal({
     const tempId = crypto.randomUUID().slice(0, 10);
     const allMembers = [myId, ...values.memberIds];
     await new Promise<void>((resolve) => {
+      let done = false;
+      const finish = (fn: () => void) => {
+        if (done) return;
+        done = true;
+        fn();
+        resolve();
+      };
+      const timer = setTimeout(() => {
+        finish(() => message.error(t("failed")));
+      }, 8000);
       socket.emit(
         "group:create",
         {
@@ -76,13 +86,15 @@ export function CreateGroupModal({
           memberIds: allMembers,
         },
         (res: CreateGroupAck) => {
-          if (res.ok) {
-            message.success(t("created"));
-            onClose();
-          } else {
-            message.error(res.error ?? t("failed"));
-          }
-          resolve();
+          clearTimeout(timer);
+          finish(() => {
+            if (res.ok) {
+              message.success(t("created"));
+              onClose();
+            } else {
+              message.error(res.error ?? t("failed"));
+            }
+          });
         },
       );
     });

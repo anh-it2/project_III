@@ -2,6 +2,7 @@
 
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { useGlobalChatUnread } from "@/feature/chat/hooks/useGlobalChatUnread";
+import { useGroups } from "@/feature/chat/hooks/useGroups";
 import { useReportPostListener } from "@/feature/admin/hooks/useReportPostListener";
 import { useRouter } from "@/i18n/navigation";
 import { ChatBoxes } from "@/shared/components/chatbox/ChatBoxes";
@@ -31,6 +32,7 @@ export default function ProtectedLayout({
   }, [hydrated, isLoggined, router]);
 
   useGlobalChatUnread();
+  useGroups();
   useReportPostListener();
 
   if (!hydrated || !isLoggined) return null;

@@ -15,6 +15,7 @@ interface PersistedShape {
   blockedUsers?: ChatState["blockedUsers"];
   blockedByUsers?: ChatState["blockedByUsers"];
   conversations?: Record<string, PersistedConversation>;
+  groups?: ChatState["groups"];
 }
 
 function ensure(
@@ -34,6 +35,7 @@ export const useChatStore = create<ChatState>()(
       blockedUsers: {},
       blockedByUsers: {},
       pinned: {},
+      groups: {},
 
       addOptimisticMessage: (conversationId, message) => {
         set((state) => ({
@@ -360,6 +362,26 @@ export const useChatStore = create<ChatState>()(
         (get().pinned[conversationId] ?? []).some((m) => m.id === messageId),
 
       getPinned: (conversationId) => get().pinned[conversationId] ?? [],
+
+      upsertGroup: (group) =>
+        set((state) => ({
+          groups: { ...state.groups, [group.conversationId]: group },
+        })),
+
+      removeGroup: (conversationId) =>
+        set((state) => {
+          if (!state.groups[conversationId]) return state;
+          const next = { ...state.groups };
+          delete next[conversationId];
+          return { groups: next };
+        }),
+
+      getGroup: (conversationId) => get().groups[conversationId],
+
+      listGroups: () =>
+        Object.values(get().groups).sort(
+          (a, b) => b.createdAt - a.createdAt,
+        ),
     }),
     {
       name: "chat-storage",
@@ -385,6 +407,7 @@ export const useChatStore = create<ChatState>()(
           blockedUsers: state.blockedUsers,
           blockedByUsers: state.blockedByUsers,
           conversations,
+          groups: state.groups,
         } as unknown as ChatState;
       },
 
@@ -399,6 +422,19 @@ export const useChatStore = create<ChatState>()(
           if (entry.optimisticMessages)
             optimisticMessages[id] = entry.optimisticMessages;
         }
+        const groups: ChatState["groups"] = {};
+        for (const [id, g] of Object.entries(p.groups ?? {})) {
+          groups[id] = {
+            conversationId: g.conversationId,
+            name: g.name,
+            memberIds: g.memberIds ?? [],
+            adminIds: g.adminIds ?? [g.createdBy].filter(Boolean),
+            mutedMembers: g.mutedMembers ?? [],
+            blockedMembers: g.blockedMembers ?? [],
+            createdAt: g.createdAt,
+            createdBy: g.createdBy,
+          };
+        }
         return {
           ...current,
           optimisticMessages,
@@ -407,6 +443,7 @@ export const useChatStore = create<ChatState>()(
           blockedByUsers: p.blockedByUsers ?? current.blockedByUsers,
           settings,
           pinned,
+          groups,
         };
       },
     },

@@ -215,11 +215,57 @@
     "writeComment": "Write a comment...",
     "send": "Send"
   },
+  "GroupAdmin": {
+    "members": {
+      "title": "Members ({count})",
+      "you": "you",
+      "adminBadge": "Admin",
+      "mutedTag": "Muted",
+      "blockedTag": "Blocked",
+      "promote": "Make admin",
+      "promoted": "Promoted to admin",
+      "mute": "Mute member",
+      "unmute": "Unmute member",
+      "muted": "Member muted",
+      "unmuted": "Member unmuted",
+      "block": "Block member",
+      "unblock": "Unblock member",
+      "blocked": "Member blocked",
+      "unblocked": "Member unblocked",
+      "kick": "Remove from group",
+      "kicked": "Member removed",
+      "actionFailed": "Action failed"
+    },
+    "actions": {
+      "leaveGroup": "Leave group",
+      "deleteGroup": "Delete group",
+      "leftGroup": "You left the group",
+      "deletedGroup": "Group deleted",
+      "leaveTitle": "Leave group?",
+      "leaveDesc": "Are you sure you want to leave \"{name}\"?",
+      "leaveOk": "Leave",
+      "deleteTitle": "Delete group?",
+      "deleteDesc": "Delete \"{name}\" for everyone? This cannot be undone.",
+      "deleteOk": "Delete",
+      "cancel": "Cancel",
+      "actionFailed": "Action failed"
+    },
+    "transferModal": {
+      "title": "Promote a member before leaving",
+      "description": "You're the only admin. Pick someone to take over admin rights, then you can leave.",
+      "noCandidates": "No eligible members.",
+      "promote": "Promote",
+      "promoted": "Member promoted",
+      "failed": "Promotion failed",
+      "cancel": "Cancel"
+    }
+  },
   "ChatBox": {
     "activeNow": "Active now",
     "offline": "Offline",
     "blockedNotice": "You blocked {name}. Unblock to send messages.",
-    "blockedByNotice": "{name} blocked you. You can't send messages."
+    "blockedByNotice": "{name} blocked you. You can't send messages.",
+    "groupMutedNotice": "You have been muted in this group."
   },
   "ChatMenu": {
     "viewProfile": "View profile",
@@ -261,6 +307,7 @@
       "create": "Create ({count})",
       "cancel": "Cancel",
       "needMembers": "Pick at least 2 members",
+      "needName": "Group name is required",
       "notConnected": "Not connected to chat server",
       "created": "Group created",
       "failed": "Failed to create group",
@@ -325,11 +372,14 @@
       "unreadLabel": "Unread",
       "signedInAs": "Signed in as",
       "you": "you",
-      "waiting": "Waiting for others to come online…"
+      "waiting": "Waiting for others to come online…",
+      "createGroup": "New group chat",
+      "memberCount": "{count} members"
     },
     "header": {
       "activeNow": "Active now",
-      "offline": "Offline"
+      "offline": "Offline",
+      "memberCount": "{count} members"
     },
     "empty": {
       "title": "Your messages",
@@ -389,6 +439,7 @@
     },
     "right": {
       "empty": "Pick a conversation to see profile details.",
+      "memberCount": "{count} members",
       "audio": "Audio",
       "video": "Video",
       "mute": "Mute",

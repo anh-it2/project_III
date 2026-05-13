@@ -29,6 +29,13 @@ export function useGlobalChatUnread() {
       }
       if (useChatStore.getState().isBlocked(dto.senderId)) return;
       const { activePeerId, markUnread } = useChatRoomUnreadStore.getState();
+      const isGroup = dto.conversationId.startsWith("group:");
+      if (isGroup) {
+        if (dto.conversationId === activePeerId) return;
+        if (useChatStore.getState().isMuted(dto.conversationId)) return;
+        markUnread(dto.conversationId);
+        return;
+      }
       if (dto.senderId === activePeerId) return;
       const conversationId = buildDmId(myId, dto.senderId);
       if (useChatStore.getState().isMuted(conversationId)) return;

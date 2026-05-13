@@ -215,11 +215,57 @@
     "writeComment": "Viết bình luận...",
     "send": "Gửi"
   },
+  "GroupAdmin": {
+    "members": {
+      "title": "Thành viên ({count})",
+      "you": "bạn",
+      "adminBadge": "Quản trị",
+      "mutedTag": "Đã tắt tiếng",
+      "blockedTag": "Đã chặn",
+      "promote": "Đặt làm quản trị",
+      "promoted": "Đã trao quyền quản trị",
+      "mute": "Tắt tiếng thành viên",
+      "unmute": "Bỏ tắt tiếng",
+      "muted": "Đã tắt tiếng thành viên",
+      "unmuted": "Đã bỏ tắt tiếng",
+      "block": "Chặn thành viên",
+      "unblock": "Bỏ chặn thành viên",
+      "blocked": "Đã chặn thành viên",
+      "unblocked": "Đã bỏ chặn thành viên",
+      "kick": "Xoá khỏi nhóm",
+      "kicked": "Đã xoá thành viên",
+      "actionFailed": "Thao tác thất bại"
+    },
+    "actions": {
+      "leaveGroup": "Rời khỏi nhóm",
+      "deleteGroup": "Xoá nhóm",
+      "leftGroup": "Bạn đã rời khỏi nhóm",
+      "deletedGroup": "Đã xoá nhóm",
+      "leaveTitle": "Rời nhóm?",
+      "leaveDesc": "Bạn chắc chắn muốn rời \"{name}\"?",
+      "leaveOk": "Rời",
+      "deleteTitle": "Xoá nhóm?",
+      "deleteDesc": "Xoá \"{name}\" cho tất cả thành viên? Không thể hoàn tác.",
+      "deleteOk": "Xoá",
+      "cancel": "Huỷ",
+      "actionFailed": "Thao tác thất bại"
+    },
+    "transferModal": {
+      "title": "Trao quyền quản trị trước khi rời",
+      "description": "Bạn là quản trị duy nhất. Chọn thành viên nhận quyền quản trị rồi mới có thể rời nhóm.",
+      "noCandidates": "Không có thành viên phù hợp.",
+      "promote": "Trao quyền",
+      "promoted": "Đã trao quyền cho thành viên",
+      "failed": "Trao quyền thất bại",
+      "cancel": "Huỷ"
+    }
+  },
   "ChatBox": {
     "activeNow": "Đang hoạt động",
     "offline": "Ngoại tuyến",
     "blockedNotice": "Bạn đã chặn {name}. Bỏ chặn để gửi tin nhắn.",
-    "blockedByNotice": "{name} đã chặn bạn. Bạn không thể gửi tin nhắn."
+    "blockedByNotice": "{name} đã chặn bạn. Bạn không thể gửi tin nhắn.",
+    "groupMutedNotice": "Bạn đã bị chặn gửi tin nhắn trong nhóm này."
   },
   "ChatMenu": {
     "viewProfile": "Xem trang cá nhân",
@@ -261,6 +307,7 @@
       "create": "Tạo ({count})",
       "cancel": "Huỷ",
       "needMembers": "Chọn ít nhất 2 thành viên",
+      "needName": "Vui lòng nhập tên nhóm",
       "notConnected": "Chưa kết nối tới máy chủ",
       "created": "Đã tạo nhóm",
       "failed": "Không thể tạo nhóm",
@@ -325,11 +372,14 @@
       "unreadLabel": "Chưa đọc",
       "signedInAs": "Đã đăng nhập với",
       "you": "bạn",
-      "waiting": "Đang chờ người khác trực tuyến…"
+      "waiting": "Đang chờ người khác trực tuyến…",
+      "createGroup": "Tạo nhóm chat",
+      "memberCount": "{count} thành viên"
     },
     "header": {
       "activeNow": "Đang hoạt động",
-      "offline": "Ngoại tuyến"
+      "offline": "Ngoại tuyến",
+      "memberCount": "{count} thành viên"
     },
     "empty": {
       "title": "Tin nhắn của bạn",
@@ -389,6 +439,7 @@
     },
     "right": {
       "empty": "Chọn cuộc trò chuyện để xem chi tiết hồ sơ.",
+      "memberCount": "{count} thành viên",
       "audio": "Gọi thoại",
       "video": "Gọi video",
       "mute": "Tắt tiếng",

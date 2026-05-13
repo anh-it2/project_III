@@ -110,6 +110,14 @@ export function useChat(conversationId: string) {
             replyTo,
           ),
           (ack: ChatMessageDTO) => {
+            if (ack.error) {
+              useChatStore
+                .getState()
+                .removeOptimisticMessage(conversationId, {
+                  tempId: optimisticMessage.tempId,
+                });
+              return reject(new Error(ack.error));
+            }
             reconcileAck(conversationId, optimisticMessage.tempId, {
               id: ack.id,
               timestamp: ack.timestamp,

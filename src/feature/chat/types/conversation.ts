@@ -1,3 +1,10 @@
+import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
+import type { GroupInfo } from "../stores/chat.store.type";
+
+export type SelectedConversation =
+  | { kind: "dm"; user: OnlineUserDto }
+  | { kind: "group"; group: GroupInfo };
+
 export type AvatarKind = "initials" | "groups" | "forum";
 
 export interface Conversation {

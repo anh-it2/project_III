@@ -23,6 +23,7 @@ interface ChatMenuProps {
   myId: string;
   myName: string;
   compact?: boolean;
+  isGroup?: boolean;
 }
 
 type ModalKind =
@@ -41,6 +42,7 @@ export function ChatMenu({
   myId,
   myName,
   compact = false,
+  isGroup = false,
 }: ChatMenuProps) {
   const t = useTranslations("ChatMenu");
   const { message } = App.useApp();
@@ -57,69 +59,97 @@ export function ChatMenu({
     message.success(next ? t("muteOn") : t("muteOff"));
   }
 
-  const items: MenuProps["items"] = [
-    {
-      key: "profile",
-      label: t("viewProfile"),
-      icon: <Icon name="person" size={18} color="var(--color-text)" />,
-      onClick: () => router.push(`/profile/${peerId}`),
-    },
-    {
-      key: "theme",
-      label: t("changeTheme"),
-      icon: <Icon name="palette" size={18} color="var(--color-primary)" />,
-      onClick: () => setOpenModal("theme"),
-    },
-    {
-      key: "emoji",
-      label: t("emoji"),
-      icon: <Icon name="thumb_up" size={18} color="var(--color-primary)" />,
-      onClick: () => setOpenModal("emoji"),
-    },
-    {
-      key: "nickname",
-      label: t("nicknames"),
-      icon: <Icon name="edit" size={18} color="var(--color-text)" />,
-      onClick: () => setOpenModal("nickname"),
-    },
-    { type: "divider" },
-    {
-      key: "group",
-      label: t("createGroup"),
-      icon: <Icon name="group_add" size={18} color="var(--color-text)" />,
-      onClick: () => setOpenModal("group"),
-    },
-    {
-      key: "e2ee",
-      label: settings.e2ee ? t("e2eeOn") : t("e2ee"),
-      icon: <Icon name="lock" size={18} color="var(--color-text)" />,
-      onClick: () => setOpenModal("e2ee"),
-    },
-    { type: "divider" },
-    {
-      key: "mute",
-      label: muted ? t("unmute") : t("mute"),
-      icon: (
-        <Icon
-          name={muted ? "notifications_active" : "notifications_off"}
-          size={18}
-          color="var(--color-text)"
-        />
-      ),
-      onClick: handleMute,
-    },
-    ...(isBlockedBy
-      ? []
-      : [
-          {
-            key: "block",
-            label: isBlocked ? t("unblock") : t("block"),
-            icon: <Icon name="block" size={18} color="var(--color-error)" />,
-            danger: true,
-            onClick: () => setOpenModal("block"),
-          },
-        ]),
-  ];
+  const items: MenuProps["items"] = isGroup
+    ? [
+        {
+          key: "theme",
+          label: t("changeTheme"),
+          icon: <Icon name="palette" size={18} color="var(--color-primary)" />,
+          onClick: () => setOpenModal("theme"),
+        },
+        {
+          key: "emoji",
+          label: t("emoji"),
+          icon: <Icon name="thumb_up" size={18} color="var(--color-primary)" />,
+          onClick: () => setOpenModal("emoji"),
+        },
+        { type: "divider" },
+        {
+          key: "mute",
+          label: muted ? t("unmute") : t("mute"),
+          icon: (
+            <Icon
+              name={muted ? "notifications_active" : "notifications_off"}
+              size={18}
+              color="var(--color-text)"
+            />
+          ),
+          onClick: handleMute,
+        },
+      ]
+    : [
+        {
+          key: "profile",
+          label: t("viewProfile"),
+          icon: <Icon name="person" size={18} color="var(--color-text)" />,
+          onClick: () => router.push(`/profile/${peerId}`),
+        },
+        {
+          key: "theme",
+          label: t("changeTheme"),
+          icon: <Icon name="palette" size={18} color="var(--color-primary)" />,
+          onClick: () => setOpenModal("theme"),
+        },
+        {
+          key: "emoji",
+          label: t("emoji"),
+          icon: <Icon name="thumb_up" size={18} color="var(--color-primary)" />,
+          onClick: () => setOpenModal("emoji"),
+        },
+        {
+          key: "nickname",
+          label: t("nicknames"),
+          icon: <Icon name="edit" size={18} color="var(--color-text)" />,
+          onClick: () => setOpenModal("nickname"),
+        },
+        { type: "divider" },
+        {
+          key: "group",
+          label: t("createGroup"),
+          icon: <Icon name="group_add" size={18} color="var(--color-text)" />,
+          onClick: () => setOpenModal("group"),
+        },
+        {
+          key: "e2ee",
+          label: settings.e2ee ? t("e2eeOn") : t("e2ee"),
+          icon: <Icon name="lock" size={18} color="var(--color-text)" />,
+          onClick: () => setOpenModal("e2ee"),
+        },
+        { type: "divider" },
+        {
+          key: "mute",
+          label: muted ? t("unmute") : t("mute"),
+          icon: (
+            <Icon
+              name={muted ? "notifications_active" : "notifications_off"}
+              size={18}
+              color="var(--color-text)"
+            />
+          ),
+          onClick: handleMute,
+        },
+        ...(isBlockedBy
+          ? []
+          : [
+              {
+                key: "block",
+                label: isBlocked ? t("unblock") : t("block"),
+                icon: <Icon name="block" size={18} color="var(--color-error)" />,
+                danger: true,
+                onClick: () => setOpenModal("block"),
+              },
+            ]),
+      ];
 
   return (
     <>
