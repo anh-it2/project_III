@@ -2,11 +2,9 @@
 
 import { Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { isAdminUserName } from "@/feature/admin/lib/isAdmin";
-import { NAV_ROWS, NAV_ROWS_MORE, SHORTCUTS } from "../../data/constants";
-import { SeeMoreRow } from "./SeeMoreRow";
+import { NAV_ROWS, SHORTCUTS } from "../../data/constants";
 import { ShortcutItem } from "./ShortcutItem";
 import { SidebarRow } from "./SidebarRow";
 import { UserRow } from "./UserRow";
@@ -20,7 +18,6 @@ interface LeftSidebarProps {
 export function LeftSidebar({ embedded = false }: LeftSidebarProps) {
   const t = useTranslations("Feed.leftSidebar");
   const tAdmin = useTranslations("Admin");
-  const [expanded, setExpanded] = useState(false);
   const userName = useAuthStore((s) => s.userName);
   const isAdmin = isAdminUserName(userName);
 
@@ -55,18 +52,6 @@ export function LeftSidebar({ embedded = false }: LeftSidebarProps) {
           href={row.href}
         />
       ))}
-      {expanded &&
-        NAV_ROWS_MORE.map((row) => (
-          <SidebarRow
-            key={row.id}
-            icon={row.icon}
-            label={row.label}
-            iconBg={row.iconBg}
-            active={row.active}
-            href={row.href}
-          />
-        ))}
-      <SeeMoreRow expanded={expanded} onToggle={() => setExpanded((v) => !v)} />
 
       <div
         className="!my-2 !h-px !w-full"

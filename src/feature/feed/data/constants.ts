@@ -30,21 +30,8 @@ export const CENTER_TABS: CenterTab[] = [
 
 export const NAV_ROWS: NavRow[] = [
   { id: "friends", icon: "group", label: "Friends", iconBg: "#2374e1", href: "/friends" },
-  { id: "memories", icon: "history", label: "Memories", iconBg: "#3578e5" },
   { id: "saved", icon: "bookmark", label: "Saved", iconBg: "#a855f7", href: "/saved" },
-  { id: "groups", icon: "groups", label: "Groups", iconBg: "#2374e1" },
-  { id: "video", icon: "smart_display", label: "Video", iconBg: "#2374e1" },
-  { id: "marketplace", icon: "storefront", label: "Marketplace", iconBg: "#3578e5" },
-  { id: "feeds", icon: "dynamic_feed", label: "Feeds", iconBg: "#10b981" },
-];
-
-export const NAV_ROWS_MORE: NavRow[] = [
   { id: "reels", icon: "movie", label: "Reels", iconBg: "#ec4899", href: "/reels" },
-  { id: "events", icon: "event", label: "Events", iconBg: "#f02849" },
-  { id: "ads", icon: "ads_click", label: "Ads Manager", iconBg: "#0ea5e9" },
-  { id: "pages", icon: "flag", label: "Pages", iconBg: "#f7b928" },
-  { id: "gaming", icon: "sports_esports", label: "Gaming", iconBg: "#7c3aed" },
-  { id: "fundraisers", icon: "volunteer_activism", label: "Fundraisers", iconBg: "#f43f5e" },
 ];
 
 export const SHORTCUTS: ShortcutRow[] = [
