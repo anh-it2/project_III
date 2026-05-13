@@ -1,21 +1,17 @@
 "use client";
 
-import { App, Button, Flex, Typography } from "antd";
+import { App, Flex, Typography } from "antd";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { REEL_RECOMMENDS } from "@/feature/feed/data/constants";
 import { useSavedReels } from "@/feature/feed/data/useSavedReels";
 import { useUserReels } from "@/feature/feed/data/useUserReels";
-import { Icon } from "@/shared/components/Icon";
-import { useNavigation } from "@/shared/hooks/useNavigation";
+import { TopNav } from "@/shared/components/topnav/TopNav";
 import { ReelFullCard } from "./ReelFullCard";
-
-const { Title } = Typography;
 
 export function ReelsPage() {
   const t = useTranslations("Feed.reelsPage");
-  const nav = useNavigation();
   const searchParams = useSearchParams();
   const focusId = searchParams.get("id");
   const { reels: userReels } = useUserReels();
@@ -46,41 +42,19 @@ export function ReelsPage() {
   };
 
   return (
-    <div
-      className="!relative !w-full"
-      style={{ background: "#000", height: "100dvh" }}
+    <Flex
+      vertical
+      className="!min-h-screen !w-full"
+      style={{ background: "var(--color-bg)" }}
     >
-      <Flex
-        align="center"
-        justify="space-between"
-        className="!absolute !top-0 !left-0 !right-0 !z-30 !px-3 !py-2 sm:!px-6"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)",
-        }}
-      >
-        <Flex align="center" gap={8}>
-          <Button
-            type="text"
-            shape="circle"
-            aria-label={t("back")}
-            onClick={() => nav.push("/")}
-            icon={<Icon name="arrow_back" size={20} color="#fff" />}
-            className="!h-9 !w-9"
-            style={{ background: "rgba(0,0,0,0.35)" }}
-          />
-          <Title
-            level={4}
-            className="!m-0 !text-[18px] !font-bold !text-white"
-          >
-            {t("title")}
-          </Title>
-        </Flex>
-      </Flex>
-
+      <TopNav />
       <div
-        className="!h-full !w-full !overflow-y-auto !snap-y !snap-mandatory no-scrollbar"
-        style={{ scrollBehavior: "smooth" }}
+        className="!w-full !overflow-y-auto !snap-y !snap-mandatory no-scrollbar"
+        style={{
+          height: "calc(100dvh - 64px)",
+          background: "#000",
+          scrollBehavior: "smooth",
+        }}
       >
         {items.length === 0 ? (
           <Flex
@@ -129,6 +103,6 @@ export function ReelsPage() {
           )
         )}
       </div>
-    </div>
+    </Flex>
   );
 }

@@ -114,7 +114,7 @@ export function ReelFullCard(props: Props) {
     <div
       ref={containerRef}
       className="!relative !w-full !snap-start !snap-always"
-      style={{ height: "100dvh", background: "#000" }}
+      style={{ height: "calc(100dvh - 64px)", background: "#000" }}
     >
       <Flex
         align="center"
