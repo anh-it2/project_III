@@ -7,6 +7,7 @@ import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
 import type { ChatMessageDTO } from "../dto/chat.dto";
 import { buildDmId } from "../lib/conversation";
 import { getChatSocket } from "../socket";
+import { useChatStore } from "../stores/chat.store";
 
 export function useGlobalChatUnread() {
   const myId = useAuthStore((s) => s.userId);
@@ -22,6 +23,8 @@ export function useGlobalChatUnread() {
       if (dto.senderId === myId) return;
       const { activePeerId, markUnread } = useChatRoomUnreadStore.getState();
       if (dto.senderId === activePeerId) return;
+      const conversationId = buildDmId(myId, dto.senderId);
+      if (useChatStore.getState().isMuted(conversationId)) return;
       markUnread(dto.senderId);
     };
 
