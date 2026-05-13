@@ -2,17 +2,15 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { ChatState, match, type PinnedMessageInfo } from "./chat.store.type";
 import type { ConversationSettingsDTO } from "../dto/conversation-settings.dto";
-
-const LEGACY_SETTINGS_KEY = "chat-conversation-settings";
-const LEGACY_PINNED_KEY = "chat-pinned-messages";
+import type { ChatMessage } from "../types";
 
 interface PersistedConversation {
   settings?: ConversationSettingsDTO;
   pinned?: PinnedMessageInfo[];
+  optimisticMessages?: ChatMessage[];
 }
 
 interface PersistedShape {
-  optimisticMessages?: ChatState["optimisticMessages"];
   readCursors?: ChatState["readCursors"];
   blockedUsers?: ChatState["blockedUsers"];
   conversations?: Record<string, PersistedConversation>;
@@ -23,24 +21,6 @@ function ensure(
   conversationId: string,
 ): ConversationSettingsDTO {
   return state[conversationId] ?? { conversationId };
-}
-
-function readLegacy<T>(key: string): T | undefined {
-  if (typeof localStorage === "undefined") return undefined;
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return undefined;
-    const parsed = JSON.parse(raw);
-    return (parsed?.state ?? parsed) as T;
-  } catch {
-    return undefined;
-  }
-}
-
-function clearLegacy() {
-  if (typeof localStorage === "undefined") return;
-  localStorage.removeItem(LEGACY_SETTINGS_KEY);
-  localStorage.removeItem(LEGACY_PINNED_KEY);
 }
 
 export const useChatStore = create<ChatState>()(
@@ -372,22 +352,23 @@ export const useChatStore = create<ChatState>()(
     {
       name: "chat-storage",
       storage: createJSONStorage(() => localStorage),
-      version: 2,
 
       partialize: (state) => {
         const ids = new Set<string>([
           ...Object.keys(state.settings),
           ...Object.keys(state.pinned),
+          ...Object.keys(state.optimisticMessages),
         ]);
         const conversations: Record<string, PersistedConversation> = {};
         for (const id of ids) {
           const entry: PersistedConversation = {};
           if (state.settings[id]) entry.settings = state.settings[id];
           if (state.pinned[id]?.length) entry.pinned = state.pinned[id];
+          if (state.optimisticMessages[id]?.length)
+            entry.optimisticMessages = state.optimisticMessages[id];
           conversations[id] = entry;
         }
         return {
-          optimisticMessages: state.optimisticMessages,
           readCursors: state.readCursors,
           blockedUsers: state.blockedUsers,
           conversations,
@@ -398,60 +379,21 @@ export const useChatStore = create<ChatState>()(
         const p = (persisted ?? {}) as PersistedShape;
         const settings: ChatState["settings"] = {};
         const pinned: ChatState["pinned"] = {};
+        const optimisticMessages: ChatState["optimisticMessages"] = {};
         for (const [id, entry] of Object.entries(p.conversations ?? {})) {
           if (entry.settings) settings[id] = entry.settings;
           if (entry.pinned) pinned[id] = entry.pinned;
+          if (entry.optimisticMessages)
+            optimisticMessages[id] = entry.optimisticMessages;
         }
         return {
           ...current,
-          optimisticMessages: p.optimisticMessages ?? current.optimisticMessages,
+          optimisticMessages,
           readCursors: p.readCursors ?? current.readCursors,
           blockedUsers: p.blockedUsers ?? current.blockedUsers,
           settings,
           pinned,
         };
-      },
-
-      migrate: (persistedState, version) => {
-        if (version >= 2) return persistedState as ChatState;
-
-        const prev = (persistedState ?? {}) as {
-          optimisticMessages?: ChatState["optimisticMessages"];
-          readCursors?: ChatState["readCursors"];
-        };
-
-        const legacySettings = readLegacy<{
-          settings?: ChatState["settings"];
-          blockedUsers?: ChatState["blockedUsers"];
-        }>(LEGACY_SETTINGS_KEY);
-        const legacyPinned = readLegacy<{
-          pinned?: ChatState["pinned"];
-        }>(LEGACY_PINNED_KEY);
-
-        const settings = legacySettings?.settings ?? {};
-        const pinned = legacyPinned?.pinned ?? {};
-        const blockedUsers = legacySettings?.blockedUsers ?? {};
-
-        const ids = new Set<string>([
-          ...Object.keys(settings),
-          ...Object.keys(pinned),
-        ]);
-        const conversations: Record<string, PersistedConversation> = {};
-        for (const id of ids) {
-          const entry: PersistedConversation = {};
-          if (settings[id]) entry.settings = settings[id];
-          if (pinned[id]?.length) entry.pinned = pinned[id];
-          conversations[id] = entry;
-        }
-
-        clearLegacy();
-
-        return {
-          optimisticMessages: prev.optimisticMessages ?? {},
-          readCursors: prev.readCursors ?? {},
-          blockedUsers,
-          conversations,
-        } as unknown as ChatState;
       },
     },
   ),
