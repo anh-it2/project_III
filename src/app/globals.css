@@ -184,6 +184,19 @@ body {
               color var(--transition-base);
 }
 
+.ant-switch {
+  transition: background 0.2s, background-color 0.2s !important;
+}
+.ant-switch .ant-switch-handle,
+.ant-switch .ant-switch-handle::before {
+  transition: all 0.2s cubic-bezier(0.34, 0.69, 0.1, 1) !important;
+}
+.ant-switch .ant-switch-inner,
+.ant-switch .ant-switch-inner-checked,
+.ant-switch .ant-switch-inner-unchecked {
+  transition: margin 0.2s !important;
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }

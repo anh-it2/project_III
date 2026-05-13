@@ -225,19 +225,19 @@ export function ReelComposerModal({
         <Flex
           align="center"
           justify="space-between"
-          className="!relative !px-4 !py-3 md:!px-6 md:!py-4"
+          className="!relative !px-3 !py-2 md:!px-6 md:!py-4"
           style={{ borderBottom: "1px solid #2e2e2e", zIndex: 1 }}
         >
-          <Flex align="center" gap={10}>
+          <Flex align="center" gap={8}>
             <Flex
               align="center"
               justify="center"
-              className="!h-9 !w-9 !rounded-xl"
+              className="!h-8 !w-8 md:!h-9 md:!w-9 !rounded-xl"
               style={{
                 background: gradientBg(["#7c3aed", "#ec4899"]),
               }}
             >
-              <Icon name="movie" size={20} color="#fff" />
+              <Icon name="movie" size={18} color="#fff" />
             </Flex>
             <Flex vertical gap={0}>
               <Title
@@ -256,19 +256,18 @@ export function ReelComposerModal({
 
         <Flex
           gap={20}
-          className="!relative !flex-col !px-4 !py-4 md:!flex-row md:!px-6 md:!py-5"
+          className="!relative !flex-col !px-3 !py-3 md:!flex-row md:!px-6 md:!py-5"
           style={{ zIndex: 1 }}
         >
           <Flex
             vertical
             align="center"
-            gap={10}
+            gap={8}
             className="!w-full md:!w-auto md:!self-stretch md:!min-h-0"
           >
             <div
-              className="!relative !overflow-hidden !mx-auto !aspect-[9/16] !max-h-[70vh] md:!aspect-auto md:!h-auto md:!max-h-none md:!flex-1 md:!min-h-0"
+              className="!relative !overflow-hidden !mx-auto !aspect-[9/16] !max-h-[32vh] md:!aspect-auto md:!h-auto md:!max-h-none md:!flex-1 md:!min-h-0 !w-[min(170px,100%)] md:!w-[min(300px,100%)]"
               style={{
-                width: "min(300px, 100%)",
                 borderRadius: 24,
                 background: "#0a0a0a",
                 border: "1px solid #2e2e2e",
@@ -373,7 +372,7 @@ export function ReelComposerModal({
                   loop
                   muted
                   playsInline
-                  className="!h-full !w-full !object-cover"
+                  className="!h-full !w-full !bg-black !object-contain"
                 />
               )}
               {mediaUrl && mediaType === "image" && (
@@ -381,7 +380,7 @@ export function ReelComposerModal({
                 <img
                   src={mediaUrl}
                   alt="reel preview"
-                  className="!h-full !w-full !object-cover"
+                  className="!h-full !w-full !bg-black !object-contain"
                 />
               )}
               {mediaUrl && (
@@ -479,7 +478,7 @@ export function ReelComposerModal({
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 placeholder={t("captionPlaceholder")}
-                rows={3}
+                autoSize={{ minRows: 2, maxRows: 4 }}
                 maxLength={300}
                 showCount
                 style={{
@@ -614,8 +613,7 @@ export function ReelComposerModal({
               <Flex
                 vertical
                 gap={4}
-                className="!overflow-y-auto !flex-1"
-                style={{ maxHeight: 280, paddingRight: 4 }}
+                className="!overflow-y-auto !flex-1 !max-h-[140px] md:!max-h-[280px] !pr-1"
               >
                 {filteredTracks.length === 0 && (
                   <Flex
@@ -715,7 +713,7 @@ export function ReelComposerModal({
           justify="space-between"
           gap={8}
           wrap="wrap"
-          className="!relative !px-4 !py-3 md:!px-6"
+          className="!relative !px-3 !py-2 md:!px-6 md:!py-3"
           style={{
             borderTop: "1px solid #2e2e2e",
             background: "#161616",

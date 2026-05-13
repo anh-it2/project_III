@@ -104,7 +104,7 @@ export function ChatBox({ chat }: ChatBoxProps) {
       vertical
       className="!w-[calc(100vw-16px)] sm:!w-[328px]"
       style={{
-        height: minimized ? 56 : 440,
+        height: minimized ? 56 : "min(440px, calc(100dvh - 72px))",
         background: "var(--color-bg-secondary)",
         border: "1px solid var(--color-border)",
         borderTopLeftRadius: 12,

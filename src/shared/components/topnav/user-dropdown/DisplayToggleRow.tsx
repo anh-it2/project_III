@@ -24,25 +24,32 @@ export function DisplayToggleRow({
     <Flex align="center" gap={12} className="!py-2">
       <Flex
         align="center"
-        justify="center"
-        className="!h-9 !w-9 !shrink-0 !rounded-full"
-        style={{ background: "var(--color-bg-tertiary)" }}
+        gap={12}
+        onClick={() => onChange(!checked)}
+        className="!flex-1 !min-w-0 !cursor-pointer"
       >
-        <Icon name={icon} size={20} color="var(--color-text)" />
-      </Flex>
-      <Flex vertical className="!flex-1 !min-w-0">
-        <Text
-          className="!text-[15px] !font-semibold"
-          style={{ color: "var(--color-text)" }}
+        <Flex
+          align="center"
+          justify="center"
+          className="!h-9 !w-9 !shrink-0 !rounded-full"
+          style={{ background: "var(--color-bg-tertiary)" }}
         >
-          {title}
-        </Text>
-        <Text
-          className="!text-[12px]"
-          style={{ color: "var(--color-text-muted)" }}
-        >
-          {description}
-        </Text>
+          <Icon name={icon} size={20} color="var(--color-text)" />
+        </Flex>
+        <Flex vertical className="!flex-1 !min-w-0">
+          <Text
+            className="!text-[15px] !font-semibold"
+            style={{ color: "var(--color-text)" }}
+          >
+            {title}
+          </Text>
+          <Text
+            className="!text-[12px]"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            {description}
+          </Text>
+        </Flex>
       </Flex>
       <Switch checked={checked} onChange={onChange} />
     </Flex>

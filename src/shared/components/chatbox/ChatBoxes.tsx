@@ -1,26 +1,24 @@
 "use client";
 
-import { usePathname } from "@/i18n/navigation";
 import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
+import { useLayoutFlagsStore } from "@/shared/stores/layoutFlags.store";
 import { ChatBox } from "./ChatBox";
-
-function hasRightSidebar(pathname: string): boolean {
-  return pathname === "/";
-}
 
 export function ChatBoxes() {
   const openChats = useChatBoxesStore((s) => s.openChats);
-  const pathname = usePathname();
+  const rightSidebarMounted = useLayoutFlagsStore(
+    (s) => s.rightSidebarMounted,
+  );
 
   if (openChats.length === 0) return null;
 
-  const xlOffset = hasRightSidebar(pathname)
+  const xlOffset = rightSidebarMounted
     ? "xl:!right-[344px]"
     : "xl:!right-6";
 
   return (
     <div
-      className={`!fixed !bottom-0 !right-2 sm:!right-6 ${xlOffset} !z-[1000] !flex !items-end !gap-3 !pointer-events-none [&>*:nth-child(n+2)]:!hidden sm:[&>*:nth-child(n+2)]:!flex`}
+      className={`!fixed !bottom-0 !right-2 sm:!right-6 ${xlOffset} !z-[1000] !flex !max-w-[calc(100vw-16px)] !items-end !gap-3 !pointer-events-none [&>*:nth-child(n+2)]:!hidden sm:[&>*:nth-child(n+2)]:!flex`}
     >
       {openChats.map((chat) => (
         <div key={chat.id} style={{ pointerEvents: "auto" }}>

@@ -1,11 +1,22 @@
 "use client";
 
 import { Flex } from "antd";
+import { useEffect } from "react";
+import { useLayoutFlagsStore } from "@/shared/stores/layoutFlags.store";
 import { BirthdaysSection } from "./BirthdaysSection";
 import { ContactsSection } from "./ContactsSection";
 import { SponsoredSection } from "./SponsoredSection";
 
 export function RightSidebar() {
+  const setRightSidebarMounted = useLayoutFlagsStore(
+    (s) => s.setRightSidebarMounted,
+  );
+
+  useEffect(() => {
+    setRightSidebarMounted(true);
+    return () => setRightSidebarMounted(false);
+  }, [setRightSidebarMounted]);
+
   return (
     <Flex
       vertical
