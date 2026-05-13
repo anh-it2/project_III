@@ -686,6 +686,12 @@
       "editProfile": "Chỉnh sửa hồ sơ",
       "share": "Chia sẻ"
     },
+    "share": {
+      "copyLinkDesc": "Sao chép liên kết hồ sơ này",
+      "sendModalTitle": "Gửi hồ sơ tới...",
+      "sendModalSubtitle": "Chọn người hoặc nhóm để chia sẻ hồ sơ này.",
+      "profileRef": "Hồ sơ · {name}"
+    },
     "sidebar": {
       "about": "Giới thiệu",
       "editAbout": "Chỉnh sửa giới thiệu",

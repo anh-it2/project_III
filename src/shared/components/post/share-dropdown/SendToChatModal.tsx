@@ -21,11 +21,17 @@ interface SendToChatModalProps {
   open: boolean;
   onClose: () => void;
   onSent: (recipientIds: string[]) => void;
-  postId: string;
+  shareUrl: string;
+  refLabel: string;
+  title?: string;
+  subtitle?: string;
 }
 
 interface SendToChatBodyProps {
-  postId: string;
+  shareUrl: string;
+  refLabel: string;
+  title?: string;
+  subtitle?: string;
   onClose: () => void;
   onSent: (recipientIds: string[]) => void;
 }
@@ -34,7 +40,14 @@ function norm(s: string) {
   return s.trim().toLowerCase();
 }
 
-function SendToChatBody({ postId, onClose, onSent }: SendToChatBodyProps) {
+function SendToChatBody({
+  shareUrl,
+  refLabel,
+  title,
+  subtitle,
+  onClose,
+  onSent,
+}: SendToChatBodyProps) {
   const t = useTranslations("Post.shareDropdown.sendModal");
   const tNav = useTranslations("Topnav.chat");
   const [query, setQuery] = useState("");
@@ -74,12 +87,8 @@ function SendToChatBody({ postId, onClose, onSent }: SendToChatBodyProps) {
   const onlineCount = contacts.filter((c) => c.online).length;
 
   const buildShareContent = () => {
-    const url =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/posts/${postId}`
-        : `/posts/${postId}`;
     const trimmed = caption.trim();
-    return trimmed ? `${trimmed}\n${url}` : url;
+    return trimmed ? `${trimmed}\n${shareUrl}` : shareUrl;
   };
 
   const toggle = (id: string) => {
@@ -147,13 +156,13 @@ function SendToChatBody({ postId, onClose, onSent }: SendToChatBodyProps) {
             className="!text-[19px] !font-bold !leading-tight"
             style={{ color: "var(--color-text)" }}
           >
-            {t("title")}
+            {title ?? t("title")}
           </Text>
           <Text
             className="!truncate !text-[13px]"
             style={{ color: "var(--color-text-muted)" }}
           >
-            {t("subtitle")}
+            {subtitle ?? t("subtitle")}
           </Text>
         </Flex>
       </Flex>
@@ -232,7 +241,7 @@ function SendToChatBody({ postId, onClose, onSent }: SendToChatBodyProps) {
       <div className={styles.footer}>
         <span className={styles.postRef}>
           <Icon name="link" size={12} color="var(--color-text-muted)" />
-          {t("postRef", { postId })}
+          {refLabel}
         </span>
         <Flex gap={8}>
           <Button
@@ -267,7 +276,10 @@ export function SendToChatModal({
   open,
   onClose,
   onSent,
-  postId,
+  shareUrl,
+  refLabel,
+  title,
+  subtitle,
 }: SendToChatModalProps) {
   return (
     <DarkModal
@@ -280,7 +292,14 @@ export function SendToChatModal({
       centered
     >
       {open ? (
-        <SendToChatBody postId={postId} onClose={onClose} onSent={onSent} />
+        <SendToChatBody
+          shareUrl={shareUrl}
+          refLabel={refLabel}
+          title={title}
+          subtitle={subtitle}
+          onClose={onClose}
+          onSent={onSent}
+        />
       ) : null}
     </DarkModal>
   );

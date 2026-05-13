@@ -45,10 +45,14 @@ export function ShareMenu({
   const [open, setOpen] = useState(false);
   const [sendModalOpen, setSendModalOpen] = useState(false);
 
+  const postUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/posts/${postId}`
+      : `/posts/${postId}`;
+
   function handleAction(action: ShareAction, label: string) {
     if (action === "copy") {
-      const url = `${window.location.origin}/posts/${postId}`;
-      void navigator.clipboard.writeText(url);
+      void navigator.clipboard.writeText(postUrl);
       api.success(t("linkCopied"));
       onShared();
       setOpen(false);
@@ -126,7 +130,8 @@ export function ShareMenu({
         open={sendModalOpen}
         onClose={() => setSendModalOpen(false)}
         onSent={handleSent}
-        postId={postId}
+        shareUrl={postUrl}
+        refLabel={t("shareDropdown.sendModal.postRef", { postId })}
       />
     </>
   );
