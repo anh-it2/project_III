@@ -21,6 +21,7 @@ const { Text } = Typography;
 
 interface ChatDropdownContentProps {
   onClose: () => void;
+  onCreateGroup: () => void;
 }
 
 interface ContactEntry {
@@ -28,7 +29,7 @@ interface ContactEntry {
   online: boolean;
 }
 
-export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
+export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownContentProps) {
   const t = useTranslations("Topnav.chat");
   const nav = useNavigation();
   const onlineUsers = usePresenceStore((s) => s.onlineUsers);
@@ -133,6 +134,7 @@ export function ChatDropdownContent({ onClose }: ChatDropdownContentProps) {
         contacts={contacts}
         onExpand={goSeeAll}
         onPickUser={handleItemClick}
+        onCreateGroup={onCreateGroup}
       />
       <div className="!w-full" style={{ padding: "0 12px 8px 12px" }}>
         <Input

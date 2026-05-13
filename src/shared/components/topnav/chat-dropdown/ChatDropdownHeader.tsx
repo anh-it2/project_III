@@ -12,12 +12,14 @@ interface ChatDropdownHeaderProps {
   contacts: ComposeContact[];
   onExpand: () => void;
   onPickUser: (entry: ComposeContact) => void;
+  onCreateGroup: () => void;
 }
 
 export function ChatDropdownHeader({
   contacts,
   onExpand,
   onPickUser,
+  onCreateGroup,
 }: ChatDropdownHeaderProps) {
   const t = useTranslations("Topnav.chat");
   const [composeOpen, setComposeOpen] = useState(false);
@@ -41,6 +43,21 @@ export function ChatDropdownHeader({
         {t("header")}
       </Text>
       <Flex align="center" gap={4}>
+        <Button
+          type="text"
+          shape="circle"
+          onClick={onCreateGroup}
+          className="!flex !h-8 !w-8 !items-center !justify-center !p-0"
+          style={{ background: "var(--color-bg-tertiary)" }}
+          aria-label={t("newGroup")}
+          title={t("newGroup")}
+        >
+          <Icon
+            name="group_add"
+            size={18}
+            color="var(--color-text-secondary)"
+          />
+        </Button>
         <Button
           type="text"
           shape="circle"

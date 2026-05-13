@@ -3,12 +3,14 @@
 import { Badge, Button } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/shared/components/Icon";
+import { CreateGroupModal } from "@/feature/chat/components/menu/CreateGroupModal";
 import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
 import { ChatDropdownContent } from "./chat-dropdown/ChatDropdownContent";
 import styles from "./NavBtn.module.scss";
 
 export function ChatNavBtn() {
   const [open, setOpen] = useState(false);
+  const [groupOpen, setGroupOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const unreadCount = useChatRoomUnreadStore(
     (s) => Object.values(s.unread).filter(Boolean).length,
@@ -60,9 +62,19 @@ export function ChatNavBtn() {
       </Badge>
       {open ? (
         <div className="!fixed !top-14 !right-2 sm:!right-4 lg:!right-8 !z-[1000]">
-          <ChatDropdownContent onClose={() => setOpen(false)} />
+          <ChatDropdownContent
+            onClose={() => setOpen(false)}
+            onCreateGroup={() => {
+              setOpen(false);
+              setGroupOpen(true);
+            }}
+          />
         </div>
       ) : null}
+      <CreateGroupModal
+        open={groupOpen}
+        onClose={() => setGroupOpen(false)}
+      />
     </div>
   );
 }
