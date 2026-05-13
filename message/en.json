@@ -531,7 +531,23 @@
       "removeDesc": "This post will be permanently removed from your timeline.",
       "remove": "Remove",
       "cancel": "Cancel",
-      "removed": "Post removed"
+      "removed": "Post removed",
+      "reportModal": {
+        "title": "Report this post",
+        "description": "Tell us why this post should be reviewed. A moderator will look into it.",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Describe the issue (spam, harassment, false info, etc.)",
+        "fixRequired": "Please fix the highlighted fields.",
+        "validation": {
+          "required": "A reason is required",
+          "min": "Please write at least 10 characters"
+        },
+        "cancel": "Cancel",
+        "submit": "Send report",
+        "submitted": "Report sent to moderators",
+        "failed": "Could not send report. Try again.",
+        "notLoggedIn": "You must be logged in to report a post"
+      }
     },
     "postComposer": {
       "create": "Create post",
@@ -813,6 +829,37 @@
       "music": "Music",
       "photos": "Photos",
       "new": "New"
+    }
+  },
+  "Admin": {
+    "sidebarLabel": "Reported posts",
+    "title": "Reported posts",
+    "description": "Posts reported by users land here in real time. Approve to remove the post, or reject to dismiss the report and keep the post visible.",
+    "connected": "Live",
+    "disconnected": "Offline",
+    "empty": "No reports in this tab.",
+    "reportedBy": "Reported by {name}",
+    "reasonLabel": "Reason",
+    "reportedPost": "Reported post",
+    "approveBtn": "Approve & remove",
+    "rejectBtn": "Reject report",
+    "approveTitle": "Approve this report?",
+    "approveDesc": "The post will be removed and the report cleared from the queue.",
+    "rejectTitle": "Reject this report?",
+    "rejectDesc": "The report will be cleared and the post will remain visible.",
+    "cancel": "Cancel",
+    "newReportTitle": "New report",
+    "newReportDesc": "{name} reported a post by {owner}",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "tabs": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "all": "All"
     }
   }
 }

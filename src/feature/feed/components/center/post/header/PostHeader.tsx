@@ -26,6 +26,7 @@ interface PostHeaderProps {
   onEdit?: () => void;
   onSaveToggle?: () => void;
   onPinToggle?: () => void;
+  onReport?: () => void;
 }
 
 export function PostHeader({
@@ -41,6 +42,7 @@ export function PostHeader({
   onEdit,
   onSaveToggle,
   onPinToggle,
+  onReport,
 }: PostHeaderProps) {
   const t = useTranslations("Feed.post");
   const tTime = useTranslations("Notification.time");
@@ -148,6 +150,7 @@ export function PostHeader({
             if (key === "edit" && onEdit) onEdit();
             if (key === "save" && onSaveToggle) onSaveToggle();
             if (key === "pin" && onPinToggle) onPinToggle();
+            if (key === "report" && onReport) onReport();
           },
         }}
       >

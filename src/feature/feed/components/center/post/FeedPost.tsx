@@ -12,6 +12,7 @@ import { useSavedPosts } from "../../../data/useSavedReels";
 import { useReelComposer } from "../../../lib/reelComposer";
 import { buildSharedPost } from "../../../lib/sharedPost";
 import type { FeedPostData } from "../../../data/types";
+import { ReportReasonModal } from "@/feature/admin/components/ReportReasonModal";
 import { PostActions } from "./footer/PostActions";
 import { PostComposerModal } from "../composer/modals/PostComposerModal";
 import { PostHeader } from "./header/PostHeader";
@@ -45,6 +46,7 @@ export function FeedPost({
   const postSaved = isSaved(post.id);
   const [editOpen, setEditOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [reaction, setReaction] = useState<ReactionId | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState(false);
@@ -148,6 +150,11 @@ export function FeedPost({
               }
             : undefined
         }
+        onReport={
+          post.author.name === CURRENT_USER.name
+            ? undefined
+            : () => setReportOpen(true)
+        }
       />
       {post.text ? <PostText text={post.text} /> : null}
       {post.sharedFrom ? (
@@ -215,6 +222,11 @@ export function FeedPost({
           }}
         />
       )}
+      <ReportReasonModal
+        open={reportOpen}
+        post={post}
+        onClose={() => setReportOpen(false)}
+      />
     </Flex>
   );
 }

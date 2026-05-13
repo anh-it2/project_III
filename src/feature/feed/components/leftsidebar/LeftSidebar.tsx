@@ -3,6 +3,8 @@
 import { Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { isAdminUserName } from "@/feature/admin/lib/isAdmin";
 import { NAV_ROWS, NAV_ROWS_MORE, SHORTCUTS } from "../../data/constants";
 import { SeeMoreRow } from "./SeeMoreRow";
 import { ShortcutItem } from "./ShortcutItem";
@@ -17,7 +19,10 @@ interface LeftSidebarProps {
 
 export function LeftSidebar({ embedded = false }: LeftSidebarProps) {
   const t = useTranslations("Feed.leftSidebar");
+  const tAdmin = useTranslations("Admin");
   const [expanded, setExpanded] = useState(false);
+  const userName = useAuthStore((s) => s.userName);
+  const isAdmin = isAdminUserName(userName);
 
   return (
     <Flex
@@ -32,6 +37,14 @@ export function LeftSidebar({ embedded = false }: LeftSidebarProps) {
       }}
     >
       <UserRow />
+      {isAdmin && (
+        <SidebarRow
+          icon="shield_person"
+          label={tAdmin("sidebarLabel")}
+          iconBg="#ef4444"
+          href="/admin"
+        />
+      )}
       {NAV_ROWS.map((row) => (
         <SidebarRow
           key={row.id}

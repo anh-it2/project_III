@@ -531,7 +531,23 @@
       "removeDesc": "Bài viết sẽ bị xóa vĩnh viễn khỏi dòng thời gian của bạn.",
       "remove": "Xóa",
       "cancel": "Hủy",
-      "removed": "Đã xóa bài viết"
+      "removed": "Đã xóa bài viết",
+      "reportModal": {
+        "title": "Báo cáo bài viết",
+        "description": "Hãy cho chúng tôi biết lý do bạn báo cáo bài viết này. Quản trị viên sẽ xem xét.",
+        "reasonLabel": "Lý do",
+        "reasonPlaceholder": "Mô tả vấn đề (spam, quấy rối, thông tin sai, ...)",
+        "fixRequired": "Vui lòng điền các trường bắt buộc.",
+        "validation": {
+          "required": "Bạn cần nhập lý do",
+          "min": "Lý do phải có ít nhất 10 ký tự"
+        },
+        "cancel": "Hủy",
+        "submit": "Gửi báo cáo",
+        "submitted": "Đã gửi báo cáo tới quản trị viên",
+        "failed": "Không thể gửi báo cáo. Vui lòng thử lại.",
+        "notLoggedIn": "Bạn cần đăng nhập để báo cáo bài viết"
+      }
     },
     "postComposer": {
       "create": "Tạo bài viết",
@@ -813,6 +829,37 @@
       "music": "Âm nhạc",
       "photos": "Ảnh",
       "new": "Mới"
+    }
+  },
+  "Admin": {
+    "sidebarLabel": "Bài viết bị báo cáo",
+    "title": "Bài viết bị báo cáo",
+    "description": "Bài viết bị người dùng báo cáo sẽ xuất hiện ở đây theo thời gian thực. Duyệt để gỡ bài, từ chối để giữ bài và xóa báo cáo.",
+    "connected": "Đang kết nối",
+    "disconnected": "Mất kết nối",
+    "empty": "Chưa có báo cáo nào ở mục này.",
+    "reportedBy": "Báo cáo bởi {name}",
+    "reasonLabel": "Lý do",
+    "reportedPost": "Bài viết bị báo cáo",
+    "approveBtn": "Duyệt & gỡ bài",
+    "rejectBtn": "Từ chối báo cáo",
+    "approveTitle": "Duyệt báo cáo này?",
+    "approveDesc": "Bài viết sẽ bị gỡ và báo cáo được xóa khỏi hàng đợi.",
+    "rejectTitle": "Từ chối báo cáo này?",
+    "rejectDesc": "Báo cáo sẽ được xóa và bài viết vẫn hiển thị bình thường.",
+    "cancel": "Hủy",
+    "newReportTitle": "Báo cáo mới",
+    "newReportDesc": "{name} đã báo cáo bài viết của {owner}",
+    "status": {
+      "pending": "Đang chờ",
+      "approved": "Đã duyệt",
+      "rejected": "Đã từ chối"
+    },
+    "tabs": {
+      "pending": "Đang chờ",
+      "approved": "Đã duyệt",
+      "rejected": "Đã từ chối",
+      "all": "Tất cả"
     }
   }
 }

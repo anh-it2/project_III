@@ -12,6 +12,10 @@ import {
   disposeNotification,
   initNotification,
 } from "@/feature/notification/socket";
+import {
+  disposeReport,
+  initReport,
+} from "@/feature/admin/socket";
 
 function useAuthReady() {
   const isLoggined = useAuthStore((s) => s.isLoggined);
@@ -33,10 +37,12 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       initPresence();
       initChat();
       initNotification();
+      initReport();
     } else {
       disposePresence();
       disposeChat();
       disposeNotification();
+      disposeReport();
       disposeAll();
     }
   }, [hydrated, isLoggined]);
