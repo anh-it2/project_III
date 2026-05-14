@@ -1,5 +1,5 @@
 import type { MenuProps } from "antd";
-import type { GroupInfo } from "../../../stores/chat.store.type";
+import type { GroupInfo } from "../../../../stores/chat.store.type";
 
 export interface MemberRowState {
   memberId: string;

@@ -10,8 +10,8 @@ import {
 import { App, Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { useConversationSettings } from "../../hooks/useConversationSettings";
-import { useChatSearchStore } from "../../stores/chat-search.store";
+import { useConversationSettings } from "../../../hooks/useConversationSettings";
+import { useChatSearchStore } from "../../../stores/chat-search.store";
 
 const { Text } = Typography;
 

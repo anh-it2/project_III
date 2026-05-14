@@ -8,13 +8,13 @@ import { Icon } from "@/shared/components/Icon";
 import { useRouter } from "@/i18n/navigation";
 import { useConversationSettings } from "../../hooks/useConversationSettings";
 import { useConversationSettingsStore } from "../../stores/conversation-settings.store";
-import { BlockModal } from "./BlockModal";
 import styles from "./ChatMenu.module.scss";
-import { CreateGroupModal } from "./CreateGroupModal";
-import { E2EEModal } from "./E2EEModal";
-import { EmojiModal } from "./EmojiModal";
-import { NicknameModal } from "./NicknameModal";
-import { ThemeModal } from "./ThemeModal";
+import { BlockModal } from "./modals/BlockModal";
+import { CreateGroupModal } from "./modals/CreateGroupModal";
+import { E2EEModal } from "./modals/E2EEModal";
+import { EmojiModal } from "./modals/EmojiModal";
+import { NicknameModal } from "./modals/NicknameModal";
+import { ThemeModal } from "./modals/ThemeModal";
 
 interface ChatMenuProps {
   conversationId: string;

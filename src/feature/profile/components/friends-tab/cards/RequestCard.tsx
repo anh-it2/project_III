@@ -2,8 +2,8 @@
 
 import { Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
-import type { FriendRequest } from "../../data/mock";
-import { FriendAvatar } from "./FriendAvatar";
+import type { FriendRequest } from "../../../data/mock";
+import { FriendAvatar } from "../shared/FriendAvatar";
 
 const { Text } = Typography;
 

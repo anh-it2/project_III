@@ -78,8 +78,7 @@ export function NewChatCompose({ contacts, onPick }: NewChatComposeProps) {
               align="center"
               gap={10}
               onClick={() => onPick(c)}
-              className="chat-dd-item !w-full"
-              style={{ padding: "6px 8px", borderRadius: 8, cursor: "pointer" }}
+              className="group !w-full !cursor-pointer !rounded-[8px] !px-2 !py-1.5 !transition-colors hover:!bg-[var(--color-bg-tertiary)]"
             >
               <div className="relative shrink-0">
                 <Flex

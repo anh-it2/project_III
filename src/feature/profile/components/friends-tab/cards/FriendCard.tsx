@@ -3,8 +3,8 @@
 import { Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/shared/components/Icon";
-import type { Friend } from "../../data/mock";
-import { FriendAvatar } from "./FriendAvatar";
+import type { Friend } from "../../../data/mock";
+import { FriendAvatar } from "../shared/FriendAvatar";
 
 const { Text } = Typography;
 

@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { ConfirmModal } from "@/shared/components/modal/ConfirmModal";
-import { useGroupActions } from "../../hooks/useGroupActions";
-import type { GroupInfo } from "../../stores/chat.store.type";
+import { useGroupActions } from "../../../hooks/useGroupActions";
+import type { GroupInfo } from "../../../stores/chat.store.type";
 import { TransferAdminModal } from "./TransferAdminModal";
 
 interface GroupActionsPanelProps {

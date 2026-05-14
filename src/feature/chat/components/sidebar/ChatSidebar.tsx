@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
-import { CreateGroupModal } from "../menu/CreateGroupModal";
+import { CreateGroupModal } from "../menu/modals/CreateGroupModal";
 import type { GroupInfo } from "../../stores/chat.store.type";
 import type { SelectedConversation } from "../../types/conversation";
 import { ConversationList, type ConversationEntry } from "./list/ConversationList";

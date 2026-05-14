@@ -2,10 +2,10 @@
 
 import { Typography } from "antd";
 import { useTranslations } from "next-intl";
-import { MediaFilesLinks } from "./media-files-links";
-import { GroupActionsPanel } from "./GroupActionsPanel";
-import { GroupMembersList } from "./group-members/GroupMembersList";
-import { useChatStore } from "../../stores/chat.store";
+import { MediaFilesLinks } from "../media-files-links";
+import { GroupActionsPanel } from "../group/GroupActionsPanel";
+import { GroupMembersList } from "../group/group-members/GroupMembersList";
+import { useChatStore } from "../../../stores/chat.store";
 
 const { Text } = Typography;
 

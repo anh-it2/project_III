@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { DarkModal } from "@/shared/components/modal/DarkModal";
 import { usePresenceStore } from "@/feature/presence/stores/presence.store";
-import { useGroupActions } from "../../hooks/useGroupActions";
-import type { GroupInfo } from "../../stores/chat.store.type";
+import { useGroupActions } from "../../../hooks/useGroupActions";
+import type { GroupInfo } from "../../../stores/chat.store.type";
 
 const { Title, Text } = Typography;
 

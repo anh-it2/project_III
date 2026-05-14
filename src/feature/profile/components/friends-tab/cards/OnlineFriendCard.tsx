@@ -4,7 +4,7 @@ import { Button, Flex, Tooltip, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/shared/components/Icon";
 import type { ChatPreview } from "@/shared/data/chats";
-import { FriendAvatar } from "./FriendAvatar";
+import { FriendAvatar } from "../shared/FriendAvatar";
 import styles from "./OnlineFriendCard.module.scss";
 
 const { Text } = Typography;

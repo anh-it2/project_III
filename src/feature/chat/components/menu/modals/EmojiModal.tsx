@@ -4,9 +4,9 @@ import { Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/shared/components/Icon";
 import { DarkModal } from "@/shared/components/modal/DarkModal";
-import { useConversationSettings } from "../../hooks/useConversationSettings";
-import { DEFAULT_EMOJI } from "../../lib/themes";
-import { EmojiPicker } from "../main/input/EmojiPicker";
+import { useConversationSettings } from "../../../hooks/useConversationSettings";
+import { DEFAULT_EMOJI } from "../../../lib/themes";
+import { EmojiPicker } from "../../main/input/EmojiPicker";
 
 const { Title, Text } = Typography;
 

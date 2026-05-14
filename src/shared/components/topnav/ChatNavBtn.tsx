@@ -3,7 +3,7 @@
 import { Badge, Button } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/shared/components/Icon";
-import { CreateGroupModal } from "@/feature/chat/components/menu/CreateGroupModal";
+import { CreateGroupModal } from "@/feature/chat/components/menu/modals/CreateGroupModal";
 import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
 import { ChatDropdownContent } from "./chat-dropdown/ChatDropdownContent";
 import styles from "./NavBtn.module.scss";

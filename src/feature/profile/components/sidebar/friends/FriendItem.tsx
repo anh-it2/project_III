@@ -2,7 +2,7 @@
 
 import { Flex, Typography } from "antd";
 import type { Friend } from "../../../data/mock";
-import { FriendAvatar } from "../../friends-tab/FriendAvatar";
+import { FriendAvatar } from "../../friends-tab/shared/FriendAvatar";
 import { useIsFriendOnline } from "../../../hooks/useFriendOnline";
 
 const { Text } = Typography;

@@ -72,6 +72,8 @@
   },
   "Topnav": {
     "search": "Tìm kiếm trên Facebook...",
+    "searchEmpty": "Nhập tên để tìm kiếm",
+    "searchNoResults": "Không có người dùng nào khớp",
     "openMenu": "Mở menu",
     "toggleTheme": "Chuyển chế độ sáng/tối",
     "accountMenu": "Menu tài khoản",

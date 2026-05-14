@@ -72,6 +72,8 @@
   },
   "Topnav": {
     "search": "Search Facebook...",
+    "searchEmpty": "Type a name to search",
+    "searchNoResults": "No people match",
     "openMenu": "Open menu",
     "toggleTheme": "Toggle theme",
     "accountMenu": "Account menu",

@@ -4,8 +4,8 @@ import { Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/shared/components/Icon";
 import { DarkModal } from "@/shared/components/modal/DarkModal";
-import { CHAT_THEMES } from "../../lib/themes";
-import { useConversationSettings } from "../../hooks/useConversationSettings";
+import { CHAT_THEMES } from "../../../lib/themes";
+import { useConversationSettings } from "../../../hooks/useConversationSettings";
 
 const { Title, Text } = Typography;
 

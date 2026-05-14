@@ -4,8 +4,8 @@ import { FlagOutlined, StopOutlined } from "@ant-design/icons";
 import { Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { BlockModal } from "../menu/BlockModal";
-import { useConversationSettingsStore } from "../../stores/conversation-settings.store";
+import { BlockModal } from "../../menu/modals/BlockModal";
+import { useConversationSettingsStore } from "../../../stores/conversation-settings.store";
 
 const { Text } = Typography;
 

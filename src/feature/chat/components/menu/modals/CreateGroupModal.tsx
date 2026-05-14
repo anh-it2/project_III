@@ -15,8 +15,8 @@ import {
   buildGroupSchema,
   type GroupFormValues,
 } from "./create-group/createGroupForm.utils";
-import { getChatSocket } from "../../socket";
-import type { CreateGroupAck } from "../../dto/conversation-settings.dto";
+import { getChatSocket } from "../../../socket";
+import type { CreateGroupAck } from "../../../dto/conversation-settings.dto";
 
 const { Title, Text } = Typography;
 

@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { usePresenceStore } from "@/feature/presence/stores/presence.store";
-import { useGroupActions } from "../../../hooks/useGroupActions";
-import type { GroupInfo } from "../../../stores/chat.store.type";
+import { useGroupActions } from "../../../../hooks/useGroupActions";
+import type { GroupInfo } from "../../../../stores/chat.store.type";
 import { GroupMemberRow } from "./GroupMemberRow";
 import {
   buildMemberMenuItems,

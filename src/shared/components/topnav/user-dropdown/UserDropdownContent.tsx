@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { useProfileMeta } from "@/feature/profile/components/edit/data/useProfileMeta";
 import { useNavigation } from "@/shared/hooks/useNavigation";
 import { gradientBg } from "@/shared/utils/gradient";
 import { CURRENT_USER } from "@/feature/feed/data/constants";
@@ -25,9 +26,12 @@ export function UserDropdownContent({ onClose }: UserDropdownContentProps) {
   const router = useNavigation();
   const userName = useAuthStore((s) => s.userName);
   const removeLogginedUser = useAuthStore((s) => s.removeLogginedUser);
+  const { meta, hydrated } = useProfileMeta();
   const [panel, setPanel] = useState<Panel>("main");
 
-  const displayName = userName || CURRENT_USER.name;
+  const profileName = hydrated && meta.name ? meta.name : "";
+  const displayName = profileName || userName || CURRENT_USER.name;
+  const avatarUrl = hydrated ? meta.avatarUrl : "";
   const initial = (displayName?.trim()[0] ?? CURRENT_USER.initial).toUpperCase();
 
   function handleLogout() {
@@ -70,8 +74,9 @@ export function UserDropdownContent({ onClose }: UserDropdownContentProps) {
       >
         <Avatar
           size={56}
+          src={avatarUrl || undefined}
           style={{
-            background: gradientBg(CURRENT_USER.gradient),
+            background: avatarUrl ? undefined : gradientBg(CURRENT_USER.gradient),
             fontWeight: 700,
             fontSize: 22,
           }}

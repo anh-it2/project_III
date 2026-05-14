@@ -9,8 +9,8 @@ import { z } from "zod";
 import { Icon } from "@/shared/components/Icon";
 import { RHFTextField } from "@/shared/components/form-fields/RHFTextField";
 import { DarkModal } from "@/shared/components/modal/DarkModal";
-import { Avatar } from "../Avatar";
-import { useConversationSettings } from "../../hooks/useConversationSettings";
+import { Avatar } from "../../Avatar";
+import { useConversationSettings } from "../../../hooks/useConversationSettings";
 
 const { Title, Text } = Typography;
 

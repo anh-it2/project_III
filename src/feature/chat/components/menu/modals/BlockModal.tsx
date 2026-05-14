@@ -5,10 +5,10 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { ConfirmModal } from "@/shared/components/modal/ConfirmModal";
-import { useConversationSettingsStore } from "../../stores/conversation-settings.store";
-import { buildDmId } from "../../lib/conversation";
-import { buildBlockMarker } from "../../lib/blockMarker";
-import { getChatSocket } from "../../socket";
+import { useConversationSettingsStore } from "../../../stores/conversation-settings.store";
+import { buildDmId } from "../../../lib/conversation";
+import { buildBlockMarker } from "../../../lib/blockMarker";
+import { getChatSocket } from "../../../socket";
 
 interface BlockModalProps {
   open: boolean;

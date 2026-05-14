@@ -1,6 +1,9 @@
 "use client";
 
 import { Flex, Typography } from "antd";
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { ChatMenu } from "@/feature/chat/components/menu/ChatMenu";
+import { buildDmId } from "@/feature/chat/lib/conversation";
 import { Icon } from "@/shared/components/Icon";
 import type { ChatPreview } from "@/shared/data/chats";
 import { gradientBg } from "@/shared/utils/gradient";
@@ -18,17 +21,16 @@ export function ChatDropdownItem({
   onClick,
   isGroup = false,
 }: ChatDropdownItemProps) {
+  const myId = useAuthStore((s) => s.userId);
+  const myName = useAuthStore((s) => s.userName);
+  const conversationId = isGroup ? chat.id : buildDmId(myId, chat.id);
+
   return (
     <Flex
       align="center"
       gap={12}
       onClick={onClick}
-      className="chat-dd-item !w-full"
-      style={{
-        padding: "8px 12px",
-        borderRadius: 10,
-        cursor: "pointer",
-      }}
+      className="group !w-full !cursor-pointer !rounded-[10px] !px-3 !py-2 !transition-colors hover:!bg-[var(--color-bg-tertiary)]"
     >
       <div className="relative shrink-0">
         <Flex
@@ -96,6 +98,20 @@ export function ChatDropdownItem({
           }}
         />
       ) : null}
+      <div
+        className="!shrink-0 !opacity-0 transition-opacity group-hover:!opacity-100 focus-within:!opacity-100"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <ChatMenu
+          conversationId={conversationId}
+          peerId={chat.id}
+          peerName={chat.name}
+          myId={myId}
+          myName={myName}
+          compact
+          isGroup={isGroup}
+        />
+      </div>
     </Flex>
   );
 }

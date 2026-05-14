@@ -12,13 +12,13 @@ import {
   FRIEND_SUGGESTIONS,
 } from "../../data/mock";
 import { useOnlineNameSet } from "../../hooks/useFriendOnline";
-import { BirthdayItem } from "./BirthdayItem";
-import { FilterChips, type FriendsFilter } from "./FilterChips";
-import { FriendCard } from "./FriendCard";
-import { OnlineFriendCard } from "./OnlineFriendCard";
-import { RequestCard } from "./RequestCard";
-import { SectionHeader } from "./SectionHeader";
-import { SuggestionCard } from "./SuggestionCard";
+import { BirthdayItem } from "./cards/BirthdayItem";
+import { FriendCard } from "./cards/FriendCard";
+import { OnlineFriendCard } from "./cards/OnlineFriendCard";
+import { RequestCard } from "./cards/RequestCard";
+import { SuggestionCard } from "./cards/SuggestionCard";
+import { FilterChips, type FriendsFilter } from "./shared/FilterChips";
+import { SectionHeader } from "./shared/SectionHeader";
 
 function norm(s: string) {
   return s.trim().toLowerCase();

@@ -2,7 +2,7 @@
 
 import { Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
-import { FriendAvatar } from "@/feature/profile/components/friends-tab/FriendAvatar";
+import { FriendAvatar } from "@/feature/profile/components/friends-tab/shared/FriendAvatar";
 import type { FriendSuggestion } from "@/feature/profile/data/mock";
 import { Icon } from "@/shared/components/Icon";
 

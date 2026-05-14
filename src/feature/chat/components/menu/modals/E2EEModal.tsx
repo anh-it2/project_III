@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { DarkModal } from "@/shared/components/modal/DarkModal";
-import { useConversationSettings } from "../../hooks/useConversationSettings";
+import { useConversationSettings } from "../../../hooks/useConversationSettings";
 
 const { Title, Text } = Typography;
 

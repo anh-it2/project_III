@@ -10,7 +10,7 @@ import { useChatStore } from "../stores/chat.store";
 import { usePendingChatSelectionStore } from "../stores/pending-selection.store";
 import type { SelectedConversation } from "../types/conversation";
 import { ChatMain } from "./main/ChatMain";
-import { ChatRightPanel } from "./right/ChatRightPanel";
+import { ChatRightPanel } from "./right/panels/ChatRightPanel";
 import { ChatSidebar } from "./sidebar/ChatSidebar";
 
 export function ChatRoom() {
