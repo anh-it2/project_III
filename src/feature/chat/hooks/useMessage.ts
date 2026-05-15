@@ -130,6 +130,11 @@ export function useMessages(conversationId: string) {
     getNextPageParam: (lastPage) =>
       lastPage.hasMore ? lastPage.nextCursor : undefined,
     enabled: isConnected && !!conversationId,
+    // global staleTime is 30s; while a conversation is closed its socket
+    // listeners are gone, so reactions/edits/unsends made meanwhile are
+    // missed. Re-fetch history on every (re)open to resync server truth.
+    staleTime: 0,
+    refetchOnMount: "always",
 
     // flatten newest-first: page[0] is newest, within a page newest-first too
     select: (raw): ChatMessage[] => {

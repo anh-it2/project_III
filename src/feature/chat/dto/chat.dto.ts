@@ -57,6 +57,9 @@ export interface ReactionAck {
 export interface ReactionBroadcastDTO {
   conversationId: string;
   messageId: string;
+  // sender of the reacted-to message — lets clients announce only when
+  // someone reacts to *your* message.
+  messageOwnerId: string;
   userId: string;
   userName: string;
   emoji: ReactionKey | null;

@@ -111,6 +111,7 @@
       "noResults": "No matches",
       "searchPlaceholder": "Search Messenger",
       "newMessage": "New message",
+      "newReaction": "New reaction",
       "activeNow": "Active now",
       "offline": "Offline",
       "memberCount": "{count} members",

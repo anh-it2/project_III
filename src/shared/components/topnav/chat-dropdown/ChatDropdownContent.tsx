@@ -37,14 +37,21 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
   const groupsMap = useChatStore((s) => s.groups);
   const openChat = useChatBoxesStore((s) => s.openChat);
   const unreadMap = useChatRoomUnreadStore((s) => s.unread);
+  const kindMap = useChatRoomUnreadStore((s) => s.kind);
+  const lastActivity = useChatRoomUnreadStore((s) => s.lastActivity);
   const markRead = useChatRoomUnreadStore((s) => s.markRead);
   const [tab, setTab] = useState<DropdownTabKey>("all");
   const [query, setQuery] = useState("");
 
   const groups = useMemo<GroupInfo[]>(
     () =>
-      Object.values(groupsMap).sort((a, b) => b.createdAt - a.createdAt),
-    [groupsMap],
+      Object.values(groupsMap).sort(
+        (a, b) =>
+          (lastActivity[b.conversationId] ?? 0) -
+            (lastActivity[a.conversationId] ?? 0) ||
+          b.createdAt - a.createdAt,
+      ),
+    [groupsMap, lastActivity],
   );
 
   const visibleGroups = useMemo(() => {
@@ -79,8 +86,12 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
     const onlineIds = new Set(onlineUsers.map((u) => u.id));
     return knownUsers
       .map((u) => ({ user: u, online: onlineIds.has(u.id) }))
-      .sort((a, b) => Number(b.online) - Number(a.online));
-  }, [onlineUsers, knownUsers]);
+      .sort(
+        (a, b) =>
+          (lastActivity[b.user.id] ?? 0) - (lastActivity[a.user.id] ?? 0) ||
+          Number(b.online) - Number(a.online),
+      );
+  }, [onlineUsers, knownUsers, lastActivity]);
 
   const visibleContacts = useMemo(() => {
     const byTab =
@@ -167,7 +178,9 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
         {visibleGroups.map((g) => {
           const unread = !!unreadMap[g.conversationId];
           const lastMessage = unread
-            ? t("newMessage")
+            ? kindMap[g.conversationId] === "reaction"
+              ? t("newReaction")
+              : t("newMessage")
             : t("memberCount", { count: g.memberIds.length });
           return (
             <ChatDropdownItem
@@ -205,7 +218,9 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
           visibleContacts.map((c) => {
             const unread = !!unreadMap[c.user.id];
             const lastMessage = unread
-              ? t("newMessage")
+              ? kindMap[c.user.id] === "reaction"
+                ? t("newReaction")
+                : t("newMessage")
               : c.online
                 ? t("activeNow")
                 : t("offline");
