@@ -8,6 +8,20 @@ export interface ReplyContextDTO {
   type: "text" | "image" | "file" | "video";
 }
 
+export type ReactionKey =
+  | "like"
+  | "love"
+  | "haha"
+  | "wow"
+  | "sad"
+  | "angry";
+
+export interface MessageReactionDTO {
+  userId: string;
+  userName: string;
+  emoji: ReactionKey;
+}
+
 export interface ChatMessageDTO {
   id: string;
   tempId: string;
@@ -21,7 +35,31 @@ export interface ChatMessageDTO {
   replyTo?: ReplyContextDTO;
   editedAt?: number;
   deleted?: boolean;
+  reactions?: MessageReactionDTO[];
   error?: string;
+}
+
+// client → server: set/replace/remove the current user's reaction.
+// emoji = null removes it. One reaction per user per message.
+export interface ReactMessageDTO {
+  conversationId: string;
+  messageId: string;
+  emoji: ReactionKey | null;
+}
+
+export interface ReactionAck {
+  ok: boolean;
+  error?: string;
+}
+
+// server → conversation room: a user's reaction changed.
+// emoji = null means the user removed their reaction.
+export interface ReactionBroadcastDTO {
+  conversationId: string;
+  messageId: string;
+  userId: string;
+  userName: string;
+  emoji: ReactionKey | null;
 }
 
 export interface MessageEditedDTO {
@@ -142,6 +180,10 @@ export interface ChatClientToServerEvents
     data: { conversationId: string },
     ack: (res: PinnedReplayDTO) => void,
   ) => void;
+  "chat:react": (
+    data: ReactMessageDTO,
+    ack: (res: ReactionAck) => void,
+  ) => void;
 }
 
 export interface PinnedMessageDTO {
@@ -195,4 +237,5 @@ export interface ChatServerToClientEvents
   "chat:pinned": (data: PinnedMessageDTO) => void;
   "chat:unpinned": (data: MessageUnpinnedBroadcastDTO) => void;
   "chat:pins-replay": (data: PinnedReplayDTO) => void;
+  "chat:reacted": (data: ReactionBroadcastDTO) => void;
 }

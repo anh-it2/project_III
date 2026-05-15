@@ -407,6 +407,15 @@
       "unsent": "Message unsent",
       "edited": "edited",
       "pinnedLabel": "Pinned",
+      "reactions": {
+        "add": "React",
+        "like": "Like",
+        "love": "Love",
+        "haha": "Haha",
+        "wow": "Wow",
+        "sad": "Sad",
+        "angry": "Angry"
+      },
       "replyingTo": "Replying to",
       "photo": "📷 Photo",
       "imageAlt": "chat attachment"

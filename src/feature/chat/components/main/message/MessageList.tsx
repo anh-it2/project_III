@@ -9,7 +9,7 @@ import { buildDmId } from "../../../lib/conversation";
 import { useChatStore } from "../../../stores/chat.store";
 import { useConversationSettingsStore } from "../../../stores/conversation-settings.store";
 import { getTheme } from "../../../lib/themes";
-import type { ChatMessage, ReplyContext } from "../../../types";
+import type { ChatMessage, ReactionKey, ReplyContext } from "../../../types";
 import { MessageBubble } from "./bubble/MessageBubble";
 import { PinnedBanner } from "./PinnedBanner";
 import { TypingIndicator } from "./TypingIndicator";
@@ -24,6 +24,7 @@ interface MessageListProps {
   onReply?: (ctx: ReplyContext) => void;
   onEdit?: (id: string, content: string) => Promise<void> | void;
   onUnsend?: (id: string) => Promise<void> | void;
+  onReact?: (id: string, emoji: ReactionKey | null) => void;
 }
 
 function messageKey(m: ChatMessage) {
@@ -38,6 +39,7 @@ export function MessageList({
   onReply,
   onEdit,
   onUnsend,
+  onReact,
 }: MessageListProps) {
   const t = useTranslations("Chat.messageList");
   const myId = useAuthStore((s) => s.userId);
@@ -213,9 +215,11 @@ export function MessageList({
                   deleted={m.deleted}
                   themeGradient={theme.gradient}
                   themeOnPrimary={theme.onPrimary}
+                  reactions={m.reactions}
                   onReply={onReply}
                   onEdit={onEdit}
                   onUnsend={onUnsend}
+                  onReact={onReact}
                 />
               </div>
             );

@@ -56,7 +56,7 @@ function ActiveChat({
   const peerIdForDm = isDm ? selection.user.id : null;
   const { sendMessage, editMessage, unsendMessage, isConnected } =
     useChat(conversationId);
-  const { messages, isLoading } = useMessages(conversationId);
+  const { messages, isLoading, reactMessage } = useMessages(conversationId);
   const { notifyTyping, stopTyping } = useTyping(conversationId);
   const [replyTo, setReplyTo] = useState<ReplyContext | null>(null);
 
@@ -131,6 +131,7 @@ function ActiveChat({
         onReply={setReplyTo}
         onEdit={editMessage}
         onUnsend={unsendMessage}
+        onReact={reactMessage}
       />
       <MessageInput
         recipientName={displayName}

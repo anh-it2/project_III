@@ -15,6 +15,20 @@ export interface ReplyContext {
   type: "text" | "image" | "file" | "video";
 }
 
+export type ReactionKey =
+  | "like"
+  | "love"
+  | "haha"
+  | "wow"
+  | "sad"
+  | "angry";
+
+export interface MessageReaction {
+  userId: string;
+  userName: string;
+  emoji: ReactionKey;
+}
+
 export interface ChatMessage {
   id?: string;
   tempId: string;
@@ -30,6 +44,7 @@ export interface ChatMessage {
   replyTo?: ReplyContext;
   editedAt?: number;
   deleted?: boolean;
+  reactions?: MessageReaction[];
 }
 
 export interface HistoryMessagePage {

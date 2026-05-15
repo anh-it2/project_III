@@ -11,12 +11,37 @@ import {
   MessageUnsentDTO,
   PinnedMessageDTO,
   PinnedReplayDTO,
+  ReactionAck,
+  ReactionBroadcastDTO,
   ReadReceiptDto,
 } from "../dto/chat.dto";
 import { useChatStore } from "../stores/chat.store";
 import { toMessage, toMessages } from "../dto/chat.mapper";
 import { isBlockMarker, parseBlockMarker } from "../lib/blockMarker";
+import { applyReaction } from "../lib/reactions";
+import type { MessageReaction, ReactionKey } from "../types";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
+
+/** Replace the reactions array of one message (by id) in the query cache. */
+function patchReactions(
+  data: HistoryInfinteData | undefined,
+  messageId: string,
+  next: MessageReaction[],
+): HistoryInfinteData | undefined {
+  if (!data) return data;
+  let changed = false;
+  const pages = data.pages.map((page) => {
+    const messages = page.messages.map((msg) => {
+      if (msg.id === messageId) {
+        changed = true;
+        return { ...msg, reactions: next };
+      }
+      return msg;
+    });
+    return { ...page, messages };
+  });
+  return changed ? { ...data, pages } : data;
+}
 
 export function useMessages(conversationId: string) {
   const chatSocket = getChatSocket();
@@ -282,6 +307,32 @@ export function useMessages(conversationId: string) {
       );
     };
 
+    const handleReacted = (dto: ReactionBroadcastDTO) => {
+      if (dto.conversationId !== conversationId) return;
+      queryClient.setQueryData<HistoryInfinteData>(
+        ["chat:messages", conversationId],
+        (old) => {
+          if (!old) return old;
+          // find current reactions for this message, then apply the change
+          let cur: MessageReaction[] | undefined;
+          for (const page of old.pages) {
+            const hit = page.messages.find((m) => m.id === dto.messageId);
+            if (hit) {
+              cur = hit.reactions;
+              break;
+            }
+          }
+          const next = applyReaction(
+            cur,
+            dto.userId,
+            dto.userName,
+            dto.emoji,
+          );
+          return patchReactions(old, dto.messageId, next);
+        },
+      );
+    };
+
     const handlePinned = (dto: PinnedMessageDTO) => {
       if (dto.conversationId !== conversationId) return;
       useChatStore.getState().pinMessage(conversationId, {
@@ -326,6 +377,7 @@ export function useMessages(conversationId: string) {
     chatSocket.on("chat:pinned", handlePinned);
     chatSocket.on("chat:unpinned", handleUnpinned);
     chatSocket.on("chat:pins-replay", handlePinsReplay);
+    chatSocket.on("chat:reacted", handleReacted);
 
     // request authoritative pin list when entering a conversation
     chatSocket.emit(
@@ -342,8 +394,51 @@ export function useMessages(conversationId: string) {
       chatSocket.off("chat:pinned", handlePinned);
       chatSocket.off("chat:unpinned", handleUnpinned);
       chatSocket.off("chat:pins-replay", handlePinsReplay);
+      chatSocket.off("chat:reacted", handleReacted);
     };
   }, [chatSocket, conversationId, isConnected, queryClient]);
+
+  // toggle/replace the current user's reaction on a message.
+  // emoji = null removes it. Optimistic: patch cache, rollback if NAK.
+  const reactMessage = useCallback(
+    (messageId: string, emoji: ReactionKey | null) => {
+      if (!chatSocket) return;
+      const { userId: myId, userName: myName } = useAuthStore.getState();
+      if (!myId) return;
+
+      let prev: MessageReaction[] | undefined;
+      queryClient.setQueryData<HistoryInfinteData>(
+        ["chat:messages", conversationId],
+        (old) => {
+          if (!old) return old;
+          for (const page of old.pages) {
+            const hit = page.messages.find((m) => m.id === messageId);
+            if (hit) {
+              prev = hit.reactions;
+              break;
+            }
+          }
+          const next = applyReaction(prev, myId, myName, emoji);
+          return patchReactions(old, messageId, next);
+        },
+      );
+
+      if (!chatSocket.connected) return;
+      chatSocket.emit(
+        "chat:react",
+        { conversationId, messageId, emoji },
+        (ack: ReactionAck) => {
+          if (ack.ok) return;
+          // rollback to the pre-optimistic snapshot
+          queryClient.setQueryData<HistoryInfinteData>(
+            ["chat:messages", conversationId],
+            (old) => patchReactions(old, messageId, prev ?? []),
+          );
+        },
+      );
+    },
+    [chatSocket, conversationId, queryClient],
+  );
 
   // per-conversation selector — avoid re-render on unrelated conv changes
   const optimisticForConv = useChatStore(
@@ -377,5 +472,6 @@ export function useMessages(conversationId: string) {
     hasNextPage: hasNextPage ?? false,
     isFetchingNextPage,
     isLoading,
+    reactMessage,
   };
 }

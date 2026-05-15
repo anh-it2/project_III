@@ -21,6 +21,7 @@ export function toMessage(dto: ChatMessageDTO): ChatMessage {
     replyTo: dto.replyTo,
     editedAt: dto.editedAt,
     deleted: dto.deleted,
+    reactions: dto.reactions,
   };
 }
 

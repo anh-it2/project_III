@@ -132,15 +132,14 @@ export function useConversationSettings(conversationId: string) {
 
   const setMuted = useCallback(
     async (muted: boolean, mutedUntil?: number) => {
+      // Notification mute is a CLIENT-ONLY preference: it only suppresses the
+      // unread badge (see useGlobalChatUnread -> useChatStore.isMuted). We must
+      // NOT emit "settings:mute" to the server — the backend treats that as a
+      // delivery mute and stops sending chat:message for the conversation,
+      // which kills new messages in an open chat box.
       setMutedLocal(conversationId, muted, mutedUntil);
-      if (!socket?.connected) return;
-      socket.emit(
-        "settings:mute",
-        { conversationId, muted, mutedUntil },
-        () => undefined,
-      );
     },
-    [conversationId, socket, setMutedLocal],
+    [conversationId, setMutedLocal],
   );
 
   const setE2EE = useCallback(

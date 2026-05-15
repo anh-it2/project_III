@@ -43,7 +43,7 @@ export function ChatBox({ chat }: ChatBoxProps) {
   const conversationId = isGroup ? chat.id : buildDmId(myId, chat.id);
   const { sendMessage, editMessage, unsendMessage, isConnected } =
     useChat(conversationId);
-  const { messages, isLoading } = useMessages(conversationId);
+  const { messages, isLoading, reactMessage } = useMessages(conversationId);
   const { notifyTyping, stopTyping } = useTyping(conversationId);
   const [replyTo, setReplyTo] = useState<ReplyContext | null>(null);
 
@@ -252,6 +252,7 @@ export function ChatBox({ chat }: ChatBoxProps) {
             onReply={setReplyTo}
             onEdit={editMessage}
             onUnsend={unsendMessage}
+            onReact={reactMessage}
             compact
           />
           <MessageInput

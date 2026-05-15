@@ -3,17 +3,22 @@
 import { Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Icon } from "@/shared/components/Icon";
-import { extractFirstInternalPostId } from "../../../../lib/messageLinks";
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { groupReactions } from "../../../../lib/reactions";
 import { usePinnedMessagesStore } from "../../../../stores/pinned-messages.store";
-import type { ReplyContext } from "../../../../types";
-import { Avatar } from "../../../Avatar";
-import { MessageActionMenu } from "../menu/MessageActionMenu";
-import { MessageImage } from "./MessageImage";
+import type {
+  MessageReaction,
+  ReactionKey,
+  ReplyContext,
+} from "../../../../types";
+import { ReactionsBar } from "../reaction/ReactionsBar";
+import { MessageActions } from "./MessageActions";
+import { MessageAvatar } from "./MessageAvatar";
+import { MessageBody } from "./MessageBody";
+import { MessageDeleted } from "./MessageDeleted";
 import { MessageInlineEditor } from "./MessageInlineEditor";
-import { MessageText } from "./MessageText";
+import { MessagePinnedTag } from "./MessagePinnedTag";
 import { MessageReplyQuote } from "./MessageReplyQuote";
-import { PostLinkPreview } from "./PostLinkPreview";
 
 const { Text } = Typography;
 
@@ -32,13 +37,12 @@ interface MessageBubbleProps {
   deleted?: boolean;
   themeGradient?: [string, string];
   themeOnPrimary?: string;
+  reactions?: MessageReaction[];
   onReply?: (ctx: ReplyContext) => void;
   onEdit?: (id: string, content: string) => Promise<void> | void;
   onUnsend?: (id: string) => Promise<void> | void;
+  onReact?: (id: string, emoji: ReactionKey | null) => void;
 }
-
-const BUBBLE_BASE = "max-w-[70%]";
-const TEXT_PADDING = "px-4 py-3";
 
 export function MessageBubble({
   id,
@@ -55,54 +59,35 @@ export function MessageBubble({
   deleted,
   themeGradient,
   themeOnPrimary,
+  reactions,
   onReply,
   onEdit,
   onUnsend,
+  onReact,
 }: MessageBubbleProps) {
   const t = useTranslations("Chat.message");
   const [editing, setEditing] = useState(false);
-  const isImage = type === "image";
+  const myId = useAuthStore((s) => s.userId);
+  const myReaction = groupReactions(reactions, myId).mine;
   const isPinned = usePinnedMessagesStore((s) =>
     id ? s.pinned[conversationId]?.some((m) => m.id === id) ?? false : false,
   );
 
   if (deleted) {
     return (
-      <Flex
-        justify={mine ? "end" : "start"}
-        align="end"
-        gap={8}
-        className="w-full"
-      >
-        {!mine &&
-          (showAvatar ? (
-            <Avatar name={senderName} seed={senderSeed ?? senderName} size={32} />
-          ) : (
-            <span className="w-8 shrink-0" />
-          ))}
-        <div
-          className={BUBBLE_BASE + " " + TEXT_PADDING + " rounded-[20px] border border-dashed"}
-          style={{
-            borderColor: "var(--color-border)",
-            background: "transparent",
-          }}
-        >
-          <Text
-            italic
-            className="!text-[13px]"
-            style={{ color: "var(--color-text-muted)" }}
-          >
-            {t("unsent")}
-          </Text>
-        </div>
-      </Flex>
+      <MessageDeleted
+        mine={mine}
+        showAvatar={showAvatar}
+        senderName={senderName}
+        senderSeed={senderSeed}
+      />
     );
   }
 
   if (editing && id && onEdit) {
     return (
       <Flex justify={mine ? "end" : "start"} className="w-full">
-        <div className={BUBBLE_BASE + " w-full"}>
+        <div className="w-full max-w-[70%]">
           <MessageInlineEditor
             initial={content}
             onSave={async (next) => {
@@ -116,8 +101,8 @@ export function MessageBubble({
     );
   }
 
-  const menu = id ? (
-    <MessageActionMenu
+  const actions = id ? (
+    <MessageActions
       id={id}
       conversationId={conversationId}
       senderId={senderId}
@@ -126,116 +111,67 @@ export function MessageBubble({
       content={content}
       senderName={senderName}
       senderSeed={senderSeed}
+      myReaction={myReaction}
       onReply={onReply}
       onStartEdit={onEdit ? () => setEditing(true) : undefined}
       onUnsend={onUnsend}
-      placement={mine ? "bottomLeft" : "bottomRight"}
+      onReact={onReact}
     />
   ) : null;
 
-  const pinnedTag = isPinned ? (
-    <Flex align="center" gap={4} className={mine ? "!self-end" : "!self-start"}>
-      <Icon
-        name="push_pin"
-        size={11}
-        color="var(--color-text-muted)"
-      />
-      <Text
-        className="!text-[10px] !font-medium"
-        style={{ color: "var(--color-text-muted)" }}
-      >
-        {t("pinnedLabel")}
-      </Text>
-    </Flex>
-  ) : null;
-
-  const hasReply = !!replyTo;
-  const bubbleRadius = {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    ...(mine
-      ? { borderBottomRightRadius: 6, ...(hasReply ? { borderTopRightRadius: 4 } : {}) }
-      : { borderBottomLeftRadius: 6, ...(hasReply ? { borderTopLeftRadius: 4 } : {}) }),
-  } as const;
-
-  const sharedPostId = !isImage ? extractFirstInternalPostId(content) : null;
-
-  const body = isImage ? (
-    <div
-      className="overflow-hidden"
-      style={{ ...bubbleRadius, position: "relative" }}
-    >
-      <MessageImage src={content} />
-    </div>
-  ) : (
-    <Flex vertical gap={6} className="!w-full">
-      <div
-        className={TEXT_PADDING + (mine ? " shadow-sm" : " border")}
-        style={
-          mine
-            ? {
-                ...bubbleRadius,
-                background: themeGradient
-                  ? `linear-gradient(90deg, ${themeGradient[0]}, ${themeGradient[1]})`
-                  : "linear-gradient(90deg, var(--color-primary-dark), var(--color-primary))",
-                color: themeOnPrimary ?? "var(--color-on-primary)",
-                position: "relative",
-              }
-            : {
-                ...bubbleRadius,
-                background: "var(--color-bg-secondary)",
-                borderColor: "var(--color-border)",
-                position: "relative",
-              }
-        }
-      >
-        <MessageText content={content} mine={mine} />
-      </div>
-      {sharedPostId ? <PostLinkPreview postId={sharedPostId} /> : null}
-    </Flex>
-  );
-
-  if (mine) {
-    return (
-      <Flex justify="end" align="center" gap={4} className="group w-full">
-        {menu}
-        <Flex vertical align="end" className="max-w-[70%]">
-          {pinnedTag}
-          {replyTo && <MessageReplyQuote replyTo={replyTo} mine senderName={senderName} />}
-          {body}
-          {editedAt && (
-            <Text
-              className="!mt-0.5 !text-[11px]"
-              style={{ color: "var(--color-text-muted)" }}
-            >
-              {t("edited")}
-            </Text>
-          )}
-        </Flex>
-      </Flex>
-    );
-  }
-
   return (
-    <Flex justify="start" align="center" gap={4} className="group w-full">
-      {showAvatar ? (
-        <Avatar name={senderName} seed={senderSeed ?? senderName} size={32} />
-      ) : (
-        <span className="w-8 shrink-0" />
+    <Flex
+      justify={mine ? "end" : "start"}
+      align="center"
+      gap={4}
+      className="group w-full"
+    >
+      {!mine && (
+        <MessageAvatar
+          show={showAvatar}
+          name={senderName}
+          seed={senderSeed}
+        />
       )}
-      <Flex vertical align="start" className="max-w-[70%]">
-        {pinnedTag}
-        {replyTo && <MessageReplyQuote replyTo={replyTo} mine={false} senderName={senderName} />}
-        {body}
+      {mine && actions}
+      <Flex
+        vertical
+        align={mine ? "end" : "start"}
+        className="max-w-[70%]"
+      >
+        {isPinned && <MessagePinnedTag mine={mine} />}
+        {replyTo && (
+          <MessageReplyQuote
+            replyTo={replyTo}
+            mine={mine}
+            senderName={senderName}
+          />
+        )}
+        <MessageBody
+          content={content}
+          isImage={type === "image"}
+          mine={mine}
+          hasReply={!!replyTo}
+          themeGradient={themeGradient}
+          themeOnPrimary={themeOnPrimary}
+        />
         {editedAt && (
-          <Text className="!mt-0.5 !text-[11px] !text-[var(--color-text-muted)]">
+          <Text
+            className="!mt-0.5 !text-[11px]"
+            style={{ color: "var(--color-text-muted)" }}
+          >
             {t("edited")}
           </Text>
         )}
+        {id && onReact && (
+          <ReactionsBar
+            reactions={reactions}
+            mine={mine}
+            onToggle={(emoji) => onReact(id, emoji)}
+          />
+        )}
       </Flex>
-      {menu}
+      {!mine && actions}
     </Flex>
   );
 }

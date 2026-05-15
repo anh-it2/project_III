@@ -407,6 +407,15 @@
       "unsent": "Tin nhắn đã thu hồi",
       "edited": "đã chỉnh sửa",
       "pinnedLabel": "Đã ghim",
+      "reactions": {
+        "add": "Bày tỏ cảm xúc",
+        "like": "Thích",
+        "love": "Yêu thích",
+        "haha": "Haha",
+        "wow": "Wow",
+        "sad": "Buồn",
+        "angry": "Phẫn nộ"
+      },
       "replyingTo": "Đang trả lời",
       "photo": "📷 Ảnh",
       "imageAlt": "tệp đính kèm trò chuyện"

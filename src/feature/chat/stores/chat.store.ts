@@ -238,9 +238,21 @@ export const useChatStore = create<ChatState>()(
       },
 
       setAll: (conversationId, data) =>
-        set((state) => ({
-          settings: { ...state.settings, [conversationId]: data },
-        })),
+        set((state) => {
+          const cur = state.settings[conversationId];
+          return {
+            settings: {
+              ...state.settings,
+              [conversationId]: {
+                ...data,
+                // notification mute is a client-only preference; never let a
+                // server settings payload clobber the locally set value
+                muted: cur?.muted ?? data.muted,
+                mutedUntil: cur?.mutedUntil ?? data.mutedUntil,
+              },
+            },
+          };
+        }),
 
       setTheme: (conversationId, themeId) =>
         set((state) => {
