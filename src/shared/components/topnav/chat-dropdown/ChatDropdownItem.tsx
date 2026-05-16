@@ -1,6 +1,6 @@
 "use client";
 
-import { Flex, Typography } from "antd";
+import { Avatar, Flex, Typography } from "antd";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { ChatMenu } from "@/feature/chat/components/menu/ChatMenu";
 import { buildDmId } from "@/feature/chat/lib/conversation";
@@ -33,18 +33,23 @@ export function ChatDropdownItem({
       className="group !w-full !cursor-pointer !rounded-[10px] !px-3 !py-2 !transition-colors hover:!bg-[var(--color-bg-tertiary)]"
     >
       <div className="relative shrink-0">
-        <Flex
-          align="center"
-          justify="center"
-          className="!rounded-full"
+        <Avatar
+          size={52}
+          src={!isGroup && chat.avatar ? chat.avatar : undefined}
+          icon={
+            <Icon
+              name={isGroup ? "group" : "person"}
+              size={28}
+              color="#FFFFFF"
+            />
+          }
           style={{
-            width: 52,
-            height: 52,
-            background: gradientBg([...chat.gradient]),
+            background:
+              !isGroup && chat.avatar
+                ? undefined
+                : gradientBg([...chat.gradient]),
           }}
-        >
-          <Icon name={isGroup ? "group" : "person"} size={28} color="#FFFFFF" />
-        </Flex>
+        />
         {!isGroup && chat.online ? (
           <span
             className="absolute"

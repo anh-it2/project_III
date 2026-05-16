@@ -17,6 +17,31 @@ export function getPresenceSocket(): PresenceSocket {
   return getNamespaceSocket<PresenceSocket>("/presence", { userId, userName });
 }
 
+/** Self image URL lives in profile meta (localStorage); editable on the edit-profile page. */
+function readSelfAvatar(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const raw = window.localStorage.getItem("profile.meta.v1");
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw) as { avatarUrl?: string };
+    return parsed?.avatarUrl || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Publish the current user's image (and optionally name) to everyone.
+ * Call on connect and again whenever the avatar is changed on edit-profile —
+ * the handshake fires only once, so updates must travel as an event.
+ */
+export function publishPresenceProfile(avatar?: string) {
+  const socket = getPresenceSocket();
+  socket.emit("presence:update-profile", {
+    avatar: avatar ?? readSelfAvatar() ?? "",
+  });
+}
+
 let initialized = false;
 
 export function initPresence() {
@@ -36,9 +61,18 @@ export function initPresence() {
     usePresenceStore.getState().removeOnlineUser(id);
   });
 
+  socket.on("presence:user-updated", (u) => {
+    if (u.id === userId) return;
+    usePresenceStore.getState().updateUser(u);
+  });
+
   socket.emit("presence:get-online-users", (list) => {
     store.setOnlineUsers(list.filter((u) => u.id !== userId));
   });
+
+  // Broadcast our image once connected (re-sent on every reconnect too).
+  socket.on("connect", () => publishPresenceProfile());
+  if (socket.connected) publishPresenceProfile();
 }
 
 export function disposePresence() {

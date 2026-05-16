@@ -257,6 +257,8 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
                   online: e.type === "user" && e.online,
                   unread,
                   gradient: pickGradient(e.id),
+                  avatar:
+                    e.type === "user" ? e.contact.user.avatar : undefined,
                 }}
                 isGroup={e.type === "group"}
                 onClick={() =>

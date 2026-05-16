@@ -18,6 +18,7 @@ import { EditCoverPreview } from "./sections/EditCoverPreview";
 import { EditIdentitySection } from "./sections/EditIdentitySection";
 import { EditPageHeader } from "./EditPageHeader";
 import { useProfileMeta } from "./data/useProfileMeta";
+import { publishPresenceProfile } from "@/feature/presence/socket";
 
 const { Text } = Typography;
 
@@ -37,6 +38,7 @@ export function EditProfilePage() {
 
   async function onSubmit(values: EditProfileValues) {
     save(values);
+    publishPresenceProfile(values.avatarUrl);
     message.success("Profile updated");
     nav.push("/profile");
   }

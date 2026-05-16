@@ -6,6 +6,7 @@ export interface ChatPreview {
   unread?: boolean;
   online?: boolean;
   gradient: [string, string];
+  avatar?: string;
   kind?: "dm" | "group";
 }
 

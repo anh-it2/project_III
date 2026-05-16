@@ -79,6 +79,12 @@ export function MessageInput({
     if (replyTo) inputRef.current?.focus();
   }, [replyTo]);
 
+  // Autofocus when the chat box mounts (rAF waits for the open animation).
+  useEffect(() => {
+    const id = requestAnimationFrame(() => inputRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   async function handleGifPick(url: string) {
     setGifOpen(false);
     await onSend(url, "image");

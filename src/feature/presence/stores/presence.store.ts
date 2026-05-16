@@ -8,6 +8,7 @@ interface PresenceState {
   setOnlineUsers: (users: OnlineUserDto[]) => void;
   addOnlineUser: (user: OnlineUserDto) => void;
   removeOnlineUser: (userId: string) => void;
+  updateUser: (user: OnlineUserDto) => void;
   reset: () => void;
 }
 
@@ -15,6 +16,10 @@ function mergeKnown(prev: OnlineUserDto[], next: OnlineUserDto[]): OnlineUserDto
   const byId = new Map(prev.map((u) => [u.id, u]));
   for (const u of next) byId.set(u.id, u);
   return Array.from(byId.values());
+}
+
+function patch(list: OnlineUserDto[], user: OnlineUserDto): OnlineUserDto[] {
+  return list.map((u) => (u.id === user.id ? { ...u, ...user } : u));
 }
 
 export const usePresenceStore = create<PresenceState>()(
@@ -37,6 +42,11 @@ export const usePresenceStore = create<PresenceState>()(
       removeOnlineUser: (userId) =>
         set((s) => ({
           onlineUsers: s.onlineUsers.filter((u) => u.id !== userId),
+        })),
+      updateUser: (user) =>
+        set((s) => ({
+          onlineUsers: patch(s.onlineUsers, user),
+          knownUsers: mergeKnown(s.knownUsers, [user]),
         })),
       reset: () => set({ onlineUsers: [] }),
     }),
