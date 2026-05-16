@@ -15,6 +15,7 @@ import type {
 export { REACTIONS, REACTION_BY_ID } from "@/shared/data/reactions";
 
 export const CURRENT_USER: CurrentUser = {
+  id: "me",
   initial: "A",
   name: "Vũ Minh Anh",
   gradient: ["#7c3aed", "#ec4899"],

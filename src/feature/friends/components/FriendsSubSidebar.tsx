@@ -3,10 +3,7 @@
 import { Button, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/shared/components/Icon";
-import {
-  FRIEND_REQUESTS,
-  FRIEND_SUGGESTIONS,
-} from "@/feature/profile/data/mock";
+import { useIncomingRequests, useSuggestions } from "../hooks/useFriends";
 import { FriendsSubNavRow } from "./FriendsSubNavRow";
 
 const { Title } = Typography;
@@ -26,10 +23,12 @@ interface FriendsSubSidebarProps {
 
 export function FriendsSubSidebar({ view, onChange }: FriendsSubSidebarProps) {
   const t = useTranslations("Friends");
+  const incoming = useIncomingRequests();
+  const suggestions = useSuggestions();
   const items: Array<{ id: FriendsView; icon: string; count?: number }> = [
     { id: "home", icon: "home" },
-    { id: "requests", icon: "person_add", count: FRIEND_REQUESTS.length },
-    { id: "suggestions", icon: "group_add", count: FRIEND_SUGGESTIONS.length },
+    { id: "requests", icon: "person_add", count: incoming.length },
+    { id: "suggestions", icon: "group_add", count: suggestions.length },
     { id: "all", icon: "group" },
     { id: "birthdays", icon: "cake" },
     { id: "lists", icon: "format_list_bulleted" },

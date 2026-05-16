@@ -8,6 +8,9 @@ export const NOTIFICATION_ICON: Record<NotificationKind, string> = {
   follow: "person_add",
   mention: "alternate_email",
   share: "share",
+  friend_request: "group_add",
+  friend_accept: "how_to_reg",
+  friend_reject: "person_remove",
 };
 
 export const NOTIFICATION_ICON_COLOR: Record<NotificationKind, string> = {
@@ -16,6 +19,9 @@ export const NOTIFICATION_ICON_COLOR: Record<NotificationKind, string> = {
   follow: "#22c55e",
   mention: "#a855f7",
   share: "#f59e0b",
+  friend_request: "#3b82f6",
+  friend_accept: "#22c55e",
+  friend_reject: "#ef4444",
 };
 
 const ACTOR_GRADIENTS: [string, string][] = [
@@ -53,6 +59,12 @@ export function notificationText(
       return t("follow");
     case "mention":
       return t("mention");
+    case "friend_request":
+      return t("friendRequest");
+    case "friend_accept":
+      return t("friendAccept");
+    case "friend_reject":
+      return t("friendReject");
   }
 }
 

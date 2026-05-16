@@ -9,6 +9,8 @@ import { useMentionInput } from "@/feature/mention/hooks/useMentionInput";
 import { notifyMentions } from "@/feature/mention/lib/notify";
 import { Icon } from "@/shared/components/Icon";
 import { DarkModal } from "@/shared/components/modal/DarkModal";
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { useProfileMeta } from "@/feature/profile/components/edit/data/useProfileMeta";
 import { gradientBg } from "@/shared/utils/gradient";
 import { CURRENT_USER, FEELINGS } from "../../../../data/constants";
 import type { Feeling, FeedPostData } from "../../../../data/types";
@@ -37,6 +39,9 @@ export function PostComposerModal({
   const tPost = useTranslations("Feed.post");
   const tReel = useTranslations("Feed.reelViewer");
   const { message } = App.useApp();
+  const { meta, hydrated } = useProfileMeta();
+  const authUserId = useAuthStore((s) => s.userId);
+  const myId = authUserId || CURRENT_USER.id;
   const isEdit = !!initialPost;
   const [text, setText] = useState("");
   const [file, setFile] = useState<UploadFile | null>(null);
@@ -175,10 +180,13 @@ export function PostComposerModal({
     const trimmed = text.trim();
     onSubmit({
       id: newId,
+      ownerId: myId,
       author: {
+        id: myId,
         name: CURRENT_USER.name,
         initial: CURRENT_USER.initial,
         gradient: CURRENT_USER.gradient,
+        avatarUrl: hydrated ? meta.avatarUrl || undefined : undefined,
       },
       time: tReel("justNow"),
       createdAt: Date.now(),

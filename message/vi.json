@@ -356,7 +356,10 @@
       "commentWithPreview": "đã bình luận: \"{preview}\"",
       "share": "đã chia sẻ bài viết của bạn.",
       "follow": "đã bắt đầu theo dõi bạn.",
-      "mention": "đã nhắc đến bạn trong một bài viết."
+      "mention": "đã nhắc đến bạn trong một bài viết.",
+      "friendRequest": "đã gửi cho bạn lời mời kết bạn.",
+      "friendAccept": "đã chấp nhận lời mời kết bạn của bạn.",
+      "friendReject": "đã từ chối lời mời kết bạn của bạn."
     },
     "time": {
       "justNow": "vừa xong",
@@ -504,6 +507,10 @@
     "rightSidebar": {
       "birthdays": "Sinh nhật",
       "contacts": "Danh bạ",
+      "groupChat": "Nhóm chat",
+      "createGroup": "Tạo nhóm mới",
+      "noGroups": "Chưa có nhóm chat nào.",
+      "groupMembers": "{count} thành viên",
       "noContacts": "Chưa có liên hệ nào.",
       "noResults": "Không có liên hệ phù hợp.",
       "searchPlaceholder": "Tìm liên hệ",
@@ -755,7 +762,10 @@
       "addFriend": "Thêm bạn bè",
       "remove": "Gỡ",
       "message": "Nhắn tin",
-      "friends": "Bạn bè"
+      "friends": "Bạn bè",
+      "requested": "Đã gửi lời mời",
+      "cancel": "Hủy lời mời",
+      "unfriend": "Hủy kết bạn"
     }
   },
   "Profile": {

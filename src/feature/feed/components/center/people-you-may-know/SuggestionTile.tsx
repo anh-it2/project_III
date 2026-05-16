@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { FriendAvatar } from "@/feature/profile/components/friends-tab/shared/FriendAvatar";
 import type { FriendSuggestion } from "@/feature/profile/data/mock";
 import { Icon } from "@/shared/components/Icon";
+import { useNavigation } from "@/shared/hooks/useNavigation";
 
 const { Text } = Typography;
 
@@ -16,6 +17,8 @@ interface SuggestionTileProps {
 
 export function SuggestionTile({ suggestion, onAdd, onDismiss }: SuggestionTileProps) {
   const t = useTranslations("Feed.peopleYouMayKnow");
+  const nav = useNavigation();
+  const openProfile = () => nav.push(`/profile/${suggestion.id}`);
 
   return (
     <Flex
@@ -29,7 +32,14 @@ export function SuggestionTile({ suggestion, onAdd, onDismiss }: SuggestionTileP
       }}
     >
       <div className="!relative" style={{ width: "100%", height: 200 }}>
-        <FriendAvatar name={suggestion.name} size={168} square />
+        <div
+          onClick={openProfile}
+          className="!h-full !w-full !cursor-pointer"
+          role="link"
+          aria-label={suggestion.name}
+        >
+          <FriendAvatar name={suggestion.name} size={168} square />
+        </div>
         <Button
           type="text"
           shape="circle"
@@ -45,7 +55,8 @@ export function SuggestionTile({ suggestion, onAdd, onDismiss }: SuggestionTileP
       </div>
       <Flex vertical gap={2} className="!px-3 !pt-2">
         <Text
-          className="!truncate !text-[14px] !font-semibold !leading-tight"
+          onClick={openProfile}
+          className="!truncate !text-[14px] !font-semibold !leading-tight !cursor-pointer hover:!underline"
           style={{ color: "var(--color-text)" }}
         >
           {suggestion.name}

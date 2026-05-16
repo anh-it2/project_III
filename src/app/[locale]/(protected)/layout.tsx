@@ -4,6 +4,7 @@ import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { useGlobalChatUnread } from "@/feature/chat/hooks/useGlobalChatUnread";
 import { useGroups } from "@/feature/chat/hooks/useGroups";
 import { useReportPostListener } from "@/feature/admin/hooks/useReportPostListener";
+import { useFriendRequestsBridge } from "@/feature/friends/hooks/useFriendRequestsBridge";
 import { useRouter } from "@/i18n/navigation";
 import { ChatBoxes } from "@/shared/components/chatbox/ChatBoxes";
 import { LeftSidebarDrawer } from "@/shared/components/sidebar/LeftSidebarDrawer";
@@ -34,6 +35,7 @@ export default function ProtectedLayout({
   useGlobalChatUnread();
   useGroups();
   useReportPostListener();
+  useFriendRequestsBridge();
 
   if (!hydrated || !isLoggined) return null;
   return (

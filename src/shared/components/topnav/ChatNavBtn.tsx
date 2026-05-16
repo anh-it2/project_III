@@ -20,7 +20,12 @@ export function ChatNavBtn() {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
       if (!wrapRef.current) return;
-      if (!wrapRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as HTMLElement | null;
+      if (target && wrapRef.current.contains(target)) return;
+      // AntD Popover (New message compose) renders in a portal outside
+      // wrapRef; clicks inside it must not close the dropdown.
+      if (target?.closest?.(".ant-popover")) return;
+      setOpen(false);
     };
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);

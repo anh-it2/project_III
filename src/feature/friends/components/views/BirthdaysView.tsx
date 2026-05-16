@@ -2,11 +2,17 @@
 
 import { Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
-import { BIRTHDAYS, type BirthdayEntry } from "@/feature/profile/data/mock";
 import { Icon } from "@/shared/components/Icon";
 import { gradientStyle, initials } from "@/feature/chat/lib/avatar";
 
 const { Title, Text } = Typography;
+
+interface BirthdayEntry {
+  id: string;
+  name: string;
+  date?: string;
+  when: "today" | "tomorrow" | "this_week";
+}
 
 interface SectionProps {
   label: string;
@@ -67,9 +73,11 @@ function Section({ label, items }: SectionProps) {
 
 export function BirthdaysView() {
   const t = useTranslations("Friends");
-  const today = BIRTHDAYS.filter((b) => b.when === "today");
-  const tomorrow = BIRTHDAYS.filter((b) => b.when === "tomorrow");
-  const week = BIRTHDAYS.filter((b) => b.when === "this_week");
+  // No mock data and no real birthday source yet — sections stay empty.
+  const birthdays: BirthdayEntry[] = [];
+  const today = birthdays.filter((b) => b.when === "today");
+  const tomorrow = birthdays.filter((b) => b.when === "tomorrow");
+  const week = birthdays.filter((b) => b.when === "this_week");
 
   return (
     <Flex

@@ -1,9 +1,11 @@
 "use client";
 
-import { App, Button, Dropdown, Flex, Typography } from "antd";
+import { App, Avatar, Button, Dropdown, Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Icon } from "@/shared/components/Icon";
+import { useNavigation } from "@/shared/hooks/useNavigation";
+import { useProfileMeta } from "@/feature/profile/components/edit/data/useProfileMeta";
 import { ConfirmModal } from "@/shared/components/modal/ConfirmModal";
 import { relativeTime } from "@/shared/data/notifications";
 import type { FeedAuthor, Feeling } from "../../../../data/types";
@@ -55,7 +57,18 @@ export function PostHeader({
   const timeLabel =
     createdAt !== undefined ? relativeTime(tTime, createdAt) : time;
   const { message } = App.useApp();
+  const nav = useNavigation();
+  const { meta, hydrated } = useProfileMeta();
+  // Own posts reflect the live uploaded avatar; others use their own.
+  const avatarUrl =
+    author.avatarUrl ?? (isOwn && hydrated ? meta.avatarUrl : undefined);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const goToProfile = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    // own posts -> self profile; others -> their /profile/[id] when known
+    nav.push(isOwn || !author.id ? "/profile" : `/profile/${author.id}`);
+  };
 
   const handleConfirm = () => {
     setConfirmOpen(false);
@@ -91,22 +104,30 @@ export function PostHeader({
         className="!h-14 !w-full !px-4 !py-2"
       >
       <Flex align="center" gap={12}>
-        <Flex
-          align="center"
-          justify="center"
-          className="!h-10 !w-10 !shrink-0 !rounded-full"
-          style={{ background: gradientBg(author.gradient) }}
+        <Avatar
+          size={40}
+          src={avatarUrl || undefined}
+          onClick={goToProfile}
+          className="!shrink-0 !cursor-pointer"
+          style={{
+            background: avatarUrl ? undefined : gradientBg(author.gradient),
+            fontWeight: 700,
+          }}
         >
-          <Text className="!text-[15px] !font-bold !leading-none !text-white">
-            {author.initial}
-          </Text>
-        </Flex>
+          {author.initial}
+        </Avatar>
         <Flex vertical gap={2}>
           <Text
             className="!text-[15px] !font-semibold"
             style={{ color: "var(--color-text)" }}
           >
-            {author.name}
+            <Text
+              onClick={goToProfile}
+              className="!text-[15px] !font-semibold !cursor-pointer hover:!underline"
+              style={{ color: "var(--color-text)" }}
+            >
+              {author.name}
+            </Text>
             {isLive && (
               <Text className="!text-[15px]" style={{ color: "var(--color-text-secondary)", fontWeight: 400 }}>
                 {" "}{t("wasLive")}

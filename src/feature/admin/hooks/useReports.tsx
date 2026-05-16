@@ -67,7 +67,7 @@ export function useReports() {
       if (!initialFetchedRef.current) return;
 
       apiRef.current.open({
-        message: t("newReportTitle"),
+        title: t("newReportTitle"),
         description: t("newReportDesc", {
           name: r.reporterName,
           owner: r.postSnapshot.author.name,

@@ -7,6 +7,7 @@ import { Icon } from "@/shared/components/Icon";
 import { useNavigation } from "@/shared/hooks/useNavigation";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import { usePresenceStore } from "@/feature/presence/stores/presence.store";
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { pickGradient } from "@/feature/chat/lib/avatar";
 import { useChatStore } from "@/feature/chat/stores/chat.store";
 import type { GroupInfo } from "@/feature/chat/stores/chat.store.type";
@@ -29,11 +30,17 @@ interface ContactEntry {
   online: boolean;
 }
 
+/** One row in the unified list — a 1:1 user chat or a group chat. */
+type ListEntry =
+  | { type: "user"; id: string; name: string; online: boolean; contact: ContactEntry }
+  | { type: "group"; id: string; name: string; online: boolean; group: GroupInfo };
+
 export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownContentProps) {
   const t = useTranslations("Topnav.chat");
   const nav = useNavigation();
   const onlineUsers = usePresenceStore((s) => s.onlineUsers);
   const knownUsers = usePresenceStore((s) => s.knownUsers);
+  const selfId = useAuthStore((s) => s.userId);
   const groupsMap = useChatStore((s) => s.groups);
   const openChat = useChatBoxesStore((s) => s.openChat);
   const unreadMap = useChatRoomUnreadStore((s) => s.unread);
@@ -42,31 +49,6 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
   const markRead = useChatRoomUnreadStore((s) => s.markRead);
   const [tab, setTab] = useState<DropdownTabKey>("all");
   const [query, setQuery] = useState("");
-
-  const groups = useMemo<GroupInfo[]>(
-    () =>
-      Object.values(groupsMap).sort(
-        (a, b) =>
-          (lastActivity[b.conversationId] ?? 0) -
-            (lastActivity[a.conversationId] ?? 0) ||
-          b.createdAt - a.createdAt,
-      ),
-    [groupsMap, lastActivity],
-  );
-
-  const visibleGroups = useMemo(() => {
-    const byTab =
-      tab === "all"
-        ? groups
-        : groups.filter((g) =>
-            tab === "unread"
-              ? !!unreadMap[g.conversationId]
-              : !unreadMap[g.conversationId],
-          );
-    const q = query.trim().toLowerCase();
-    if (!q) return byTab;
-    return byTab.filter((g) => g.name.toLowerCase().includes(q));
-  }, [groups, unreadMap, tab, query]);
 
   function handleGroupClick(group: GroupInfo) {
     markRead(group.conversationId);
@@ -82,35 +64,6 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
     onClose();
   }
 
-  const contacts = useMemo<ContactEntry[]>(() => {
-    const onlineIds = new Set(onlineUsers.map((u) => u.id));
-    return knownUsers
-      .map((u) => ({ user: u, online: onlineIds.has(u.id) }))
-      .sort(
-        (a, b) =>
-          (lastActivity[b.user.id] ?? 0) - (lastActivity[a.user.id] ?? 0) ||
-          Number(b.online) - Number(a.online),
-      );
-  }, [onlineUsers, knownUsers, lastActivity]);
-
-  const visibleContacts = useMemo(() => {
-    const byTab =
-      tab === "all"
-        ? contacts
-        : contacts.filter((c) =>
-            tab === "unread" ? !!unreadMap[c.user.id] : !unreadMap[c.user.id],
-          );
-    const q = query.trim().toLowerCase();
-    if (!q) return byTab;
-    return byTab.filter((c) => c.user.name.toLowerCase().includes(q));
-  }, [contacts, unreadMap, tab, query]);
-
-  const tabLabels = {
-    all: t("tabs.all"),
-    unread: t("tabs.unread"),
-    read: t("tabs.read"),
-  };
-
   function handleItemClick(entry: ContactEntry) {
     markRead(entry.user.id);
     openChat({
@@ -123,6 +76,91 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
     });
     onClose();
   }
+
+  // Header's "new chat" picker still works off the plain contact list.
+  const contacts = useMemo<ContactEntry[]>(() => {
+    const onlineIds = new Set(onlineUsers.map((u) => u.id));
+    return knownUsers
+      .map((u) => ({ user: u, online: onlineIds.has(u.id) }))
+      .sort(
+        (a, b) =>
+          (lastActivity[b.user.id] ?? 0) - (lastActivity[a.user.id] ?? 0) ||
+          Number(b.online) - Number(a.online),
+      );
+  }, [onlineUsers, knownUsers, lastActivity]);
+
+  /**
+   * Unified, sorted chat list (users + groups in one stream). Tiers:
+   *  0. has a new message/reaction  -> by last activity (newest first)
+   *  1. user currently online
+   *  2. group with >=1 member online (other than me)
+   *  3. everything else (offline)   -> alphabetical
+   * Within tiers 1-3, ties break alphabetically by name.
+   */
+  const visibleEntries = useMemo<ListEntry[]>(() => {
+    const onlineIds = new Set(onlineUsers.map((u) => u.id));
+
+    const userEntries: ListEntry[] = knownUsers.map((u) => ({
+      type: "user",
+      id: u.id,
+      name: u.name,
+      online: onlineIds.has(u.id),
+      contact: { user: u, online: onlineIds.has(u.id) },
+    }));
+
+    const groupEntries: ListEntry[] = Object.values(groupsMap).map((g) => ({
+      type: "group",
+      id: g.conversationId,
+      name: g.name,
+      online: g.memberIds.some((id) => id !== selfId && onlineIds.has(id)),
+      group: g,
+    }));
+
+    const all = [...userEntries, ...groupEntries];
+
+    const q = query.trim().toLowerCase();
+    const filtered = all.filter((e) => {
+      if (tab === "unread" && !unreadMap[e.id]) return false;
+      if (tab === "read" && unreadMap[e.id]) return false;
+      if (q && !e.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
+
+    const tier = (e: ListEntry) => {
+      if (unreadMap[e.id]) return 0;
+      if (e.type === "user" && e.online) return 1;
+      if (e.type === "group" && e.online) return 2;
+      return 3;
+    };
+
+    return filtered.sort((a, b) => {
+      const ta = tier(a);
+      const tb = tier(b);
+      if (ta !== tb) return ta - tb;
+      if (ta === 0) {
+        return (
+          (lastActivity[b.id] ?? 0) - (lastActivity[a.id] ?? 0) ||
+          a.name.localeCompare(b.name)
+        );
+      }
+      return a.name.localeCompare(b.name);
+    });
+  }, [
+    knownUsers,
+    onlineUsers,
+    groupsMap,
+    selfId,
+    unreadMap,
+    lastActivity,
+    tab,
+    query,
+  ]);
+
+  const tabLabels = {
+    all: t("tabs.all"),
+    unread: t("tabs.unread"),
+    read: t("tabs.read"),
+  };
 
   function goSeeAll() {
     nav.push("/chat");
@@ -175,31 +213,7 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
           overflowY: "auto",
         }}
       >
-        {visibleGroups.map((g) => {
-          const unread = !!unreadMap[g.conversationId];
-          const lastMessage = unread
-            ? kindMap[g.conversationId] === "reaction"
-              ? t("newReaction")
-              : t("newMessage")
-            : t("memberCount", { count: g.memberIds.length });
-          return (
-            <ChatDropdownItem
-              key={g.conversationId}
-              chat={{
-                id: g.conversationId,
-                name: g.name,
-                lastMessage,
-                time: "",
-                online: false,
-                unread,
-                gradient: pickGradient(g.conversationId),
-              }}
-              isGroup
-              onClick={() => handleGroupClick(g)}
-            />
-          );
-        })}
-        {visibleContacts.length === 0 && visibleGroups.length === 0 ? (
+        {visibleEntries.length === 0 ? (
           <div style={{ padding: "24px 12px", textAlign: "center" }}>
             <Text
               className="!text-[13px]"
@@ -215,28 +229,41 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
             </Text>
           </div>
         ) : (
-          visibleContacts.map((c) => {
-            const unread = !!unreadMap[c.user.id];
-            const lastMessage = unread
-              ? kindMap[c.user.id] === "reaction"
-                ? t("newReaction")
-                : t("newMessage")
-              : c.online
-                ? t("activeNow")
-                : t("offline");
+          visibleEntries.map((e) => {
+            const unread = !!unreadMap[e.id];
+            const reaction = kindMap[e.id] === "reaction";
+            const lastMessage =
+              e.type === "group"
+                ? unread
+                  ? reaction
+                    ? t("newReaction")
+                    : t("newMessage")
+                  : t("memberCount", { count: e.group.memberIds.length })
+                : unread
+                  ? reaction
+                    ? t("newReaction")
+                    : t("newMessage")
+                  : e.online
+                    ? t("activeNow")
+                    : t("offline");
             return (
               <ChatDropdownItem
-                key={c.user.id}
+                key={e.id}
                 chat={{
-                  id: c.user.id,
-                  name: c.user.name,
+                  id: e.id,
+                  name: e.name,
                   lastMessage,
                   time: "",
-                  online: c.online,
+                  online: e.type === "user" && e.online,
                   unread,
-                  gradient: pickGradient(c.user.id),
+                  gradient: pickGradient(e.id),
                 }}
-                onClick={() => handleItemClick(c)}
+                isGroup={e.type === "group"}
+                onClick={() =>
+                  e.type === "group"
+                    ? handleGroupClick(e.group)
+                    : handleItemClick(e.contact)
+                }
               />
             );
           })

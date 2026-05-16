@@ -6,6 +6,7 @@ import { TrendingSection } from "@/feature/hashtag/components/TrendingSection";
 import { useLayoutFlagsStore } from "@/shared/stores/layoutFlags.store";
 import { BirthdaysSection } from "./BirthdaysSection";
 import { ContactsSection } from "./ContactsSection";
+import { GroupChatSection } from "./GroupChatSection";
 import { SponsoredSection } from "./SponsoredSection";
 
 export function RightSidebar() {
@@ -32,6 +33,8 @@ export function RightSidebar() {
       <BirthdaysSection />
       <div className="!h-px !w-full" style={{ background: "var(--color-border)" }} />
       <ContactsSection />
+      <div className="!h-px !w-full" style={{ background: "var(--color-border)" }} />
+      <GroupChatSection />
     </Flex>
   );
 }

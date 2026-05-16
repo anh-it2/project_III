@@ -4,7 +4,9 @@ import { Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { useNotifications } from "@/feature/notification/hooks/useNotifications";
+import { useNotificationNavigate } from "@/feature/notification/hooks/useNotificationNavigate";
 import { useNotificationStore } from "@/feature/notification/stores/notification.store";
+import type { Notification } from "@/feature/notification/types";
 import { DropdownTabs, type DropdownTabKey } from "../DropdownTabs";
 import { NotificationDropdownFooter } from "./NotificationDropdownFooter";
 import { NotificationDropdownHeader } from "./NotificationDropdownHeader";
@@ -21,6 +23,7 @@ export function NotificationDropdownContent({
 }: NotificationDropdownContentProps) {
   const t = useTranslations("Topnav.notifications");
   const { readOne, readAll } = useNotifications();
+  const navigateNotification = useNotificationNavigate();
   const notifications = useNotificationStore((s) => s.notifications);
   const [tab, setTab] = useState<DropdownTabKey>("all");
 
@@ -35,9 +38,10 @@ export function NotificationDropdownContent({
     read: t("tabs.read"),
   };
 
-  function handleItemClick(id: string) {
-    readOne(id);
+  function handleItemClick(n: Notification) {
+    readOne(n.id);
     onClose();
+    navigateNotification(n);
   }
 
   function goSeeAll() {
@@ -90,7 +94,7 @@ export function NotificationDropdownContent({
             <NotificationDropdownItem
               key={n.id}
               notification={n}
-              onClick={() => handleItemClick(n.id)}
+              onClick={() => handleItemClick(n)}
             />
           ))
         )}

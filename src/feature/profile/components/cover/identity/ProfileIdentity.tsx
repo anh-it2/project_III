@@ -4,6 +4,7 @@ import { Flex, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { Icon } from "../../Icon";
 import { PROFILE } from "../../../data/mock";
+import { useProfileView } from "../../../context/ProfileViewContext";
 import { useProfileMeta } from "../../edit/data/useProfileMeta";
 import styles from "./ProfileIdentity.module.scss";
 
@@ -11,10 +12,23 @@ const { Text } = Typography;
 
 export function ProfileIdentity() {
   const t = useTranslations("Profile.cover");
+  const view = useProfileView();
   const { meta, hydrated } = useProfileMeta();
-  const name = hydrated && meta.name ? meta.name : PROFILE.name;
-  const bio = hydrated && meta.bio ? meta.bio : PROFILE.bio;
-  const location = hydrated && meta.location ? meta.location : PROFILE.location;
+  const name = !view.isSelf
+    ? view.name
+    : hydrated && meta.name
+      ? meta.name
+      : PROFILE.name;
+  const bio = !view.isSelf
+    ? view.bio
+    : hydrated && meta.bio
+      ? meta.bio
+      : PROFILE.bio;
+  const location = !view.isSelf
+    ? view.location
+    : hydrated && meta.location
+      ? meta.location
+      : PROFILE.location;
 
   return (
     <Flex vertical align="center" gap={10} className="!w-full">

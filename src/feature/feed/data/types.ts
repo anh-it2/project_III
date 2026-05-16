@@ -37,6 +37,7 @@ export interface FeedAuthor {
   name: string;
   initial: string;
   gradient: [string, string];
+  avatarUrl?: string;
 }
 
 export interface Feeling {
@@ -87,6 +88,8 @@ export interface ContactRowData {
 }
 
 export interface CurrentUser {
+  /** stable id used to bind created posts to the logged-in user */
+  id: string;
   initial: string;
   name: string;
   gradient: [string, string];

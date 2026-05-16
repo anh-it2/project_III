@@ -9,6 +9,8 @@ interface FriendCardProps {
   name: string;
   meta?: string;
   secondaryMeta?: string;
+  /** open this person's profile (avatar + name become clickable) */
+  onOpen?: () => void;
   primaryLabel?: string;
   primaryDisabled?: boolean;
   onPrimary?: () => void;
@@ -22,6 +24,7 @@ export function FriendCard({
   name,
   meta,
   secondaryMeta,
+  onOpen,
   primaryLabel,
   primaryDisabled,
   onPrimary,
@@ -30,6 +33,7 @@ export function FriendCard({
   onSecondary,
   status,
 }: FriendCardProps) {
+  const openable = !!onOpen;
   return (
     <Flex
       vertical
@@ -42,7 +46,8 @@ export function FriendCard({
       <Flex
         align="center"
         justify="center"
-        className="!relative !w-full"
+        onClick={onOpen}
+        className={`!relative !w-full ${openable ? "!cursor-pointer" : ""}`}
         style={{ aspectRatio: "1 / 1", ...gradientStyle(name) }}
       >
         <Text
@@ -54,7 +59,8 @@ export function FriendCard({
       </Flex>
       <Flex vertical gap={4} className="!w-full !px-3 !pt-3">
         <Text
-          className="!truncate !text-[17px] !font-semibold !leading-tight"
+          onClick={onOpen}
+          className={`!truncate !text-[17px] !font-semibold !leading-tight ${openable ? "!cursor-pointer hover:!underline" : ""}`}
           style={{ color: "var(--color-text)" }}
         >
           {name}

@@ -1,15 +1,23 @@
 "use client";
 
-import { Flex } from "antd";
+import { Flex, Typography } from "antd";
 import Image from "next/image";
 import { Icon } from "../../Icon";
 import { gradientBg } from "../../../data/mock";
+import { useProfileView } from "../../../context/ProfileViewContext";
 import { useProfileMeta } from "../../edit/data/useProfileMeta";
 
+const { Text } = Typography;
+
 export function ProfileAvatar() {
+  const view = useProfileView();
   const { meta, hydrated } = useProfileMeta();
-  const avatarUrl = hydrated ? meta.avatarUrl : "";
+  const avatarUrl = view.isSelf && hydrated ? meta.avatarUrl : "";
   const hasAvatar = !!avatarUrl;
+  const ringGradient =
+    !view.isSelf && view.gradient
+      ? gradientBg(view.gradient)
+      : gradientBg(["#4096ff", "#a855f7", "#ec4899"]);
 
   return (
     <Flex
@@ -17,7 +25,7 @@ export function ProfileAvatar() {
       justify="center"
       className="!h-[104px] !w-[104px] !rounded-full sm:!h-[120px] sm:!w-[120px] md:!h-[144px] md:!w-[144px]"
       style={{
-        background: gradientBg(["#4096ff", "#a855f7", "#ec4899"]),
+        background: ringGradient,
         boxShadow: "0 4px 24px #a855f740",
       }}
     >
@@ -39,6 +47,17 @@ export function ProfileAvatar() {
             sizes="(min-width: 768px) 136px, (min-width: 640px) 112px, 96px"
             style={{ objectFit: "cover" }}
           />
+        ) : !view.isSelf && view.initial ? (
+          <Flex
+            align="center"
+            justify="center"
+            className="!h-full !w-full"
+            style={{ background: ringGradient }}
+          >
+            <Text className="!text-5xl !font-extrabold !leading-none !text-white">
+              {view.initial}
+            </Text>
+          </Flex>
         ) : (
           <Icon name="person" size={56} color="var(--color-text-muted)" />
         )}

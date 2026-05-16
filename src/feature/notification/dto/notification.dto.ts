@@ -1,6 +1,14 @@
 //server send to client
 
-export type NotificationKind = "like" | "comment" | "share" | "follow" | "mention";
+export type NotificationKind =
+  | "like"
+  | "comment"
+  | "share"
+  | "follow"
+  | "mention"
+  | "friend_request"
+  | "friend_accept"
+  | "friend_reject";
 
 export interface NotificationDTO {
   id: string;

@@ -356,7 +356,10 @@
       "commentWithPreview": "commented: \"{preview}\"",
       "share": "shared your post.",
       "follow": "started following you.",
-      "mention": "mentioned you in a post."
+      "mention": "mentioned you in a post.",
+      "friendRequest": "sent you a friend request.",
+      "friendAccept": "accepted your friend request.",
+      "friendReject": "declined your friend request."
     },
     "time": {
       "justNow": "just now",
@@ -504,6 +507,10 @@
     "rightSidebar": {
       "birthdays": "Birthdays",
       "contacts": "Contacts",
+      "groupChat": "Group chat",
+      "createGroup": "Create new group",
+      "noGroups": "No group chats yet.",
+      "groupMembers": "{count} members",
       "noContacts": "No contacts yet.",
       "noResults": "No contacts match.",
       "searchPlaceholder": "Search contacts",
@@ -755,7 +762,10 @@
       "addFriend": "Add friend",
       "remove": "Remove",
       "message": "Message",
-      "friends": "Friends"
+      "friends": "Friends",
+      "requested": "Requested",
+      "cancel": "Cancel request",
+      "unfriend": "Unfriend"
     }
   },
   "Profile": {

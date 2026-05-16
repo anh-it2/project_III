@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { App } from "antd";
-import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { getNotificationSocket } from "../socket";
 import { useNotificationStore } from "../stores/notification.store";
@@ -15,12 +14,9 @@ import {
   NotificationListResponseDTO,
 } from "../dto/notification.dto";
 import { setFirstUserId, clearFirstUserId } from "@/shared/lib/firstUser";
-import {
-  NOTIFICATION_ICON,
-  NOTIFICATION_ICON_COLOR,
-  notificationText,
-} from "@/shared/data/notifications";
-import { Icon } from "@/shared/components/Icon";
+import { NotificationItemContent } from "@/shared/components/notification/NotificationItemContent";
+import { useNotificationNavigate } from "./useNotificationNavigate";
+import type { Notification } from "../types";
 
 /**
  * Mount once at top-level (e.g. NotificationNavBtn). Attaches socket listeners,
@@ -28,7 +24,6 @@ import { Icon } from "@/shared/components/Icon";
  * and exposes emit/read actions. Requires antd `App` wrapper in the tree.
  */
 export function useNotifications() {
-  const tTpl = useTranslations("Notification.template");
   const isLoggined = useAuthStore((s) => s.isLoggined);
   const socket = getNotificationSocket();
   const [isConnected, setIsConnected] = useState<boolean>(
@@ -40,6 +35,24 @@ export function useNotifications() {
   const { notification } = App.useApp();
   const apiRef = useRef(notification);
   apiRef.current = notification;
+
+  // Clicking a toast: mark read (+ multi-tab sync), close it, then route
+  // the same way the dropdown row does. Kept in a ref so the push-event
+  // effect never re-subscribes when nav identity changes.
+  const navigateNotification = useNotificationNavigate();
+  const toastClickRef = useRef<(n: Notification) => void>(() => {});
+  toastClickRef.current = (n: Notification) => {
+    if (socket && isConnected) {
+      markRead(n.id);
+      socket.emit(
+        "notification:read",
+        { notificationId: n.id },
+        (_ack: NotificationActionAck) => {},
+      );
+    }
+    apiRef.current.destroy(n.id);
+    navigateNotification(n);
+  };
 
   // first render hides past notifications. Suppress toast until initial list resolves.
   const initialFetchedRef = useRef(false);
@@ -85,24 +98,15 @@ export function useNotifications() {
       if (!initialFetchedRef.current) return;
 
       apiRef.current.open({
-        title: n.actorName,
-        description: notificationText(tTpl, n.kind, n.preview),
-        icon: (
-          <span
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: "50%",
-              background: NOTIFICATION_ICON_COLOR[n.kind],
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Icon name={NOTIFICATION_ICON[n.kind]} size={18} color="#FFFFFF" />
-          </span>
-        ),
         key: n.id,
+        title: (
+          <div
+            className="!cursor-pointer"
+            onClick={() => toastClickRef.current(n)}
+          >
+            <NotificationItemContent notification={n} />
+          </div>
+        ),
       });
     };
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { Flex } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { TopNav } from "@/shared/components/topnav/TopNav";
 import { FriendsSubSidebar, type FriendsView } from "./FriendsSubSidebar";
 import { AllFriendsView } from "./views/AllFriendsView";
@@ -11,8 +12,31 @@ import { ListsView } from "./views/ListsView";
 import { RequestsView } from "./views/RequestsView";
 import { SuggestionsView } from "./views/SuggestionsView";
 
+const FRIENDS_VIEWS: readonly FriendsView[] = [
+  "home",
+  "requests",
+  "suggestions",
+  "all",
+  "birthdays",
+  "lists",
+];
+
+function isFriendsView(v: string | null): v is FriendsView {
+  return v !== null && (FRIENDS_VIEWS as readonly string[]).includes(v);
+}
+
 export function FriendsPage() {
-  const [view, setView] = useState<FriendsView>("home");
+  const params = useSearchParams();
+  const paramView = params.get("view");
+  const [view, setView] = useState<FriendsView>(
+    isFriendsView(paramView) ? paramView : "home",
+  );
+
+  // Keep the active view in sync when arriving via a deep link
+  // (e.g. clicking a friend-request notification -> ?view=requests).
+  useEffect(() => {
+    if (isFriendsView(paramView)) setView(paramView);
+  }, [paramView]);
 
   return (
     <Flex

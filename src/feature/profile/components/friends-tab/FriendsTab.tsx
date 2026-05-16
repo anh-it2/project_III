@@ -6,11 +6,10 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { RECENT_CHATS } from "@/shared/data/chats";
 import {
-  BIRTHDAYS,
-  FRIENDS,
-  FRIEND_REQUESTS,
-  FRIEND_SUGGESTIONS,
-} from "../../data/mock";
+  useIncomingRequests,
+  useSuggestions,
+} from "@/feature/friends/hooks/useFriends";
+import { BIRTHDAYS, FRIENDS } from "../../data/mock";
 import { useOnlineNameSet } from "../../hooks/useFriendOnline";
 import { BirthdayItem } from "./cards/BirthdayItem";
 import { FriendCard } from "./cards/FriendCard";
@@ -30,6 +29,14 @@ export function FriendsTab() {
   const [query, setQuery] = useState("");
 
   const onlineNames = useOnlineNameSet();
+  const incoming = useIncomingRequests();
+  const suggestions = useSuggestions();
+  const requests = incoming.map((r) => ({
+    id: r.id,
+    name: r.name,
+    mutualFriends: r.mutualFriends,
+    time: r.requestedAt ?? "",
+  }));
 
   const isOnline = (name: string, mockOnline?: boolean) =>
     Boolean(mockOnline) || onlineNames.has(norm(name));
@@ -81,7 +88,7 @@ export function FriendsTab() {
           active={filter}
           onChange={setFilter}
           onlineCount={onlineCount}
-          requestCount={FRIEND_REQUESTS.length}
+          requestCount={requests.length}
         />
       </Flex>
 
@@ -108,15 +115,15 @@ export function FriendsTab() {
         </section>
       ) : null}
 
-      {showRequests && FRIEND_REQUESTS.length > 0 ? (
+      {showRequests && requests.length > 0 ? (
         <section className="!w-full">
           <SectionHeader
             title={t("sections.requests")}
-            count={FRIEND_REQUESTS.length}
+            count={requests.length}
             action={seeAll}
           />
           <div className="!grid !w-full !grid-cols-1 !gap-3 sm:!grid-cols-2 sm:!gap-4 md:!grid-cols-3 xl:!grid-cols-4 2xl:!grid-cols-5">
-            {FRIEND_REQUESTS.map((r) => (
+            {requests.map((r) => (
               <RequestCard key={r.id} request={r} online={isOnline(r.name)} />
             ))}
           </div>
@@ -138,15 +145,15 @@ export function FriendsTab() {
         </section>
       ) : null}
 
-      {showSuggestions && FRIEND_SUGGESTIONS.length > 0 ? (
+      {showSuggestions && suggestions.length > 0 ? (
         <section className="!w-full">
           <SectionHeader
             title={t("sections.suggestions")}
-            count={FRIEND_SUGGESTIONS.length}
+            count={suggestions.length}
             action={seeAll}
           />
           <div className="!grid !w-full !grid-cols-1 !gap-3 sm:!grid-cols-2 sm:!gap-4 md:!grid-cols-3 xl:!grid-cols-4 2xl:!grid-cols-5">
-            {FRIEND_SUGGESTIONS.map((s) => (
+            {suggestions.map((s) => (
               <SuggestionCard key={s.id} suggestion={s} />
             ))}
           </div>

@@ -3,8 +3,11 @@
 import { Flex } from "antd";
 import { useMemo } from "react";
 import { Composer } from "@/feature/feed/components/center/composer/Composer";
+import { CURRENT_USER } from "@/feature/feed/data/constants";
 import type { FeedPostData } from "@/feature/feed/data/types";
 import { useUserPosts } from "@/feature/feed/data/useUserPosts";
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { useProfileView } from "../../context/ProfileViewContext";
 import { POSTS, type Post } from "../../data/mock";
 import { PostCard } from "./post/PostCard";
 
@@ -17,6 +20,7 @@ function feedToProfilePost(p: FeedPostData): Post {
     : "";
   return {
     id: p.id,
+    ownerId: p.ownerId ?? p.author.id,
     author: { name: p.author.name, gradient: p.author.gradient },
     time: p.time,
     text: p.text + feelingSuffix + sharedSuffix,
@@ -30,10 +34,18 @@ function feedToProfilePost(p: FeedPostData): Post {
 
 export function MainFeed() {
   const { posts: userPosts, addPost } = useUserPosts();
+  const view = useProfileView();
+  const authUserId = useAuthStore((s) => s.userId);
+  const myId = authUserId || CURRENT_USER.id;
+  // whose profile this is: self => my id, other => their id
+  const ownerId = view.isSelf ? myId : view.personId;
 
   const allPosts = useMemo<Post[]>(
-    () => [...userPosts.map(feedToProfilePost), ...POSTS],
-    [userPosts]
+    () =>
+      [...userPosts.map(feedToProfilePost), ...POSTS].filter(
+        (p) => p.ownerId === ownerId,
+      ),
+    [userPosts, ownerId],
   );
 
   const handleCreate = (post: FeedPostData) => {
@@ -42,7 +54,7 @@ export function MainFeed() {
 
   return (
     <Flex vertical gap={20} className="!flex-1">
-      <Composer onCreatePost={handleCreate} />
+      {view.isSelf ? <Composer onCreatePost={handleCreate} /> : null}
       {allPosts.map((p) => (
         <PostCard key={p.id} post={p} />
       ))}

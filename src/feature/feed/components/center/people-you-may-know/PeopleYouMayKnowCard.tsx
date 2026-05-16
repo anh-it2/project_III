@@ -3,7 +3,10 @@
 import { App, Button, Dropdown, Flex, Typography, type MenuProps } from "antd";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FRIEND_SUGGESTIONS } from "@/feature/profile/data/mock";
+import {
+  useFriendActions,
+  useSuggestions,
+} from "@/feature/friends/hooks/useFriends";
 import { Icon } from "@/shared/components/Icon";
 import styles from "./PeopleYouMayKnowCard.module.scss";
 import { SuggestionTile } from "./SuggestionTile";
@@ -20,7 +23,9 @@ export function PeopleYouMayKnowCard() {
   const [canRight, setCanRight] = useState(false);
   const [cardHidden, setCardHidden] = useState(false);
 
-  const items = FRIEND_SUGGESTIONS.filter(
+  const suggestions = useSuggestions();
+  const { sendRequest } = useFriendActions();
+  const items = suggestions.filter(
     (s) => !hiddenIds.has(s.id) && !addedIds.has(s.id)
   );
 
@@ -52,8 +57,11 @@ export function PeopleYouMayKnowCard() {
     });
   };
 
-  const handleAdd = (id: string) => {
+  const handleAdd = async (id: string) => {
     setAddedIds((prev) => new Set(prev).add(id));
+    // Route through the friends service so the request is persisted AND a
+    // friend_request notification is emitted to the recipient.
+    await sendRequest(id);
     message.success(t("added"));
   };
 
