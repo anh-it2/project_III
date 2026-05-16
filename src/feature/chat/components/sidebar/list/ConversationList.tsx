@@ -4,7 +4,10 @@ import { Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
+import { usePresenceStore } from "@/feature/presence/stores/presence.store";
+import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
 import type { GroupInfo } from "../../../stores/chat.store.type";
+import { buildChatEntries, sortChatEntries } from "../../../lib/conversationSort";
 import { useSidebarFilterStore } from "../../../stores/sidebar-filter.store";
 import type { SelectedConversation } from "../../../types/conversation";
 import { ConversationItem } from "./ConversationItem";
@@ -39,6 +42,8 @@ export function ConversationList({
 }: ConversationListProps) {
   const t = useTranslations("Chat.sidebar");
   const filter = useSidebarFilterStore((s) => s.active);
+  const onlineUsers = usePresenceStore((s) => s.onlineUsers);
+  const lastActivity = useChatRoomUnreadStore((s) => s.lastActivity);
 
   const { visibleGroups, visibleContacts } = useMemo(() => {
     switch (filter) {
@@ -56,6 +61,15 @@ export function ConversationList({
         return { visibleGroups: groups, visibleContacts: contacts };
     }
   }, [filter, groups, contacts, unreadMap]);
+
+  const sortedEntries = useMemo(() => {
+    const onlineUserIds = new Set(onlineUsers.map((u) => u.id));
+    const entries = buildChatEntries(visibleContacts, visibleGroups, {
+      onlineUserIds,
+      myId,
+    });
+    return sortChatEntries(entries, { unread: unreadMap ?? {}, lastActivity });
+  }, [visibleContacts, visibleGroups, onlineUsers, unreadMap, lastActivity, myId]);
 
   if (contacts.length === 0 && groups.length === 0) {
     return (
@@ -83,33 +97,34 @@ export function ConversationList({
 
   return (
     <div className="flex-1 overflow-y-auto px-2 pb-2">
-      {visibleGroups.map((g) => (
-        <div key={g.conversationId} className="mb-0.5">
-          <ConversationItem
-            kind="group"
-            group={g}
-            active={selectedId === g.conversationId}
-            unread={!!unreadMap?.[g.conversationId]}
-            myId={myId}
-            myName={myName}
-            onClick={() => onSelect({ kind: "group", group: g })}
-          />
-        </div>
-      ))}
-      {visibleContacts.map((c) => (
-        <div key={c.user.id} className="mb-0.5">
-          <ConversationItem
-            kind="dm"
-            user={c.user}
-            active={selectedId === c.user.id}
-            online={c.online}
-            unread={!!unreadMap?.[c.user.id]}
-            myId={myId}
-            myName={myName}
-            onClick={() => onSelect({ kind: "dm", user: c.user })}
-          />
-        </div>
-      ))}
+      {sortedEntries.map((e) =>
+        e.isGroup ? (
+          <div key={e.id} className="mb-0.5">
+            <ConversationItem
+              kind="group"
+              group={e.group}
+              active={selectedId === e.id}
+              unread={!!unreadMap?.[e.id]}
+              myId={myId}
+              myName={myName}
+              onClick={() => onSelect({ kind: "group", group: e.group })}
+            />
+          </div>
+        ) : (
+          <div key={e.id} className="mb-0.5">
+            <ConversationItem
+              kind="dm"
+              user={e.user}
+              active={selectedId === e.id}
+              online={e.online}
+              unread={!!unreadMap?.[e.id]}
+              myId={myId}
+              myName={myName}
+              onClick={() => onSelect({ kind: "dm", user: e.user })}
+            />
+          </div>
+        ),
+      )}
     </div>
   );
 }

@@ -2,21 +2,22 @@
 
 import { Flex } from "antd";
 import { useTranslations } from "next-intl";
-import { FRIENDS } from "../../../data/mock";
+import { useFriendsList } from "@/feature/friends/hooks/useFriends";
 import { CardSectionHeader } from "../card/CardSectionHeader";
 import { CardWrapper } from "../card/CardWrapper";
 import { FriendItem } from "./FriendItem";
 
 export function FriendsCard() {
   const t = useTranslations("Profile.sidebar");
-  const row1 = FRIENDS.slice(0, 3);
-  const row2 = FRIENDS.slice(3, 6);
+  const friends = useFriendsList();
+  const row1 = friends.slice(0, 3);
+  const row2 = friends.slice(3, 6);
 
   return (
     <CardWrapper gap={16}>
       <CardSectionHeader
         title={t("friends")}
-        subtitle={t("friendsCount")}
+        subtitle={t("friendsCount", { count: friends.length })}
         action={t("seeAll")}
       />
       <Flex vertical gap={12} className="!w-full">

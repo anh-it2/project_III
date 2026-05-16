@@ -4,16 +4,15 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Empty, Flex, Input } from "antd";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { RECENT_CHATS } from "@/shared/data/chats";
 import {
+  useFriendsList,
   useIncomingRequests,
   useSuggestions,
 } from "@/feature/friends/hooks/useFriends";
-import { BIRTHDAYS, FRIENDS } from "../../data/mock";
+import type { BirthdayEntry } from "../../data/mock";
 import { useOnlineNameSet } from "../../hooks/useFriendOnline";
 import { BirthdayItem } from "./cards/BirthdayItem";
 import { FriendCard } from "./cards/FriendCard";
-import { OnlineFriendCard } from "./cards/OnlineFriendCard";
 import { RequestCard } from "./cards/RequestCard";
 import { SuggestionCard } from "./cards/SuggestionCard";
 import { FilterChips, type FriendsFilter } from "./shared/FilterChips";
@@ -29,6 +28,7 @@ export function FriendsTab() {
   const [query, setQuery] = useState("");
 
   const onlineNames = useOnlineNameSet();
+  const friends = useFriendsList();
   const incoming = useIncomingRequests();
   const suggestions = useSuggestions();
   const requests = incoming.map((r) => ({
@@ -38,14 +38,18 @@ export function FriendsTab() {
     time: r.requestedAt ?? "",
   }));
 
-  const isOnline = (name: string, mockOnline?: boolean) =>
-    Boolean(mockOnline) || onlineNames.has(norm(name));
+  const isOnline = (name: string) => onlineNames.has(norm(name));
 
   const q = norm(query);
-  const filteredFriends = FRIENDS.filter((f) => !q || norm(f.name).includes(q));
-  const onlineChatsAll = RECENT_CHATS.filter((c) => c.online);
-  const onlineChats = onlineChatsAll.filter((c) => !q || norm(c.name).includes(q));
-  const onlineCount = onlineChatsAll.length;
+  const filteredFriends = friends.filter((f) => !q || norm(f.name).includes(q));
+  const onlineFriendsAll = friends.filter((f) => isOnline(f.name));
+  const onlineFriends = onlineFriendsAll.filter(
+    (f) => !q || norm(f.name).includes(q),
+  );
+  const onlineCount = onlineFriendsAll.length;
+
+  // No real birthday source yet — empty until a backend provides it.
+  const birthdays: BirthdayEntry[] = [];
 
   const seeAll = t("actions.seeAll");
 
@@ -96,10 +100,10 @@ export function FriendsTab() {
         <section className="!w-full">
           <SectionHeader
             title={t("sections.online")}
-            count={onlineChats.length}
+            count={onlineFriends.length}
             action={seeAll}
           />
-          {onlineChats.length === 0 ? (
+          {onlineFriends.length === 0 ? (
             <Empty
               description={
                 <span style={{ color: "var(--color-text-muted)" }}>{t("empty.noOnline")}</span>
@@ -107,8 +111,8 @@ export function FriendsTab() {
             />
           ) : (
             <div className="!grid !w-full !grid-cols-1 !gap-3 sm:!gap-4 md:!grid-cols-2 xl:!grid-cols-3">
-              {onlineChats.map((c) => (
-                <OnlineFriendCard key={c.id} chat={c} />
+              {onlineFriends.map((f) => (
+                <FriendCard key={f.id} friend={f} online />
               ))}
             </div>
           )}
@@ -130,18 +134,26 @@ export function FriendsTab() {
         </section>
       ) : null}
 
-      {showBirthdays && BIRTHDAYS.length > 0 ? (
+      {showBirthdays && (birthdays.length > 0 || filter === "birthdays") ? (
         <section className="!w-full">
           <SectionHeader
             title={t("sections.birthdays")}
-            count={BIRTHDAYS.length}
+            count={birthdays.length}
             action={seeAll}
           />
-          <div className="!grid !w-full !grid-cols-1 !gap-3 sm:!grid-cols-2 sm:!gap-4 xl:!grid-cols-3">
-            {BIRTHDAYS.map((b) => (
-              <BirthdayItem key={b.id} entry={b} online={isOnline(b.name)} />
-            ))}
-          </div>
+          {birthdays.length === 0 ? (
+            <Empty
+              description={
+                <span style={{ color: "var(--color-text-muted)" }}>{t("empty.noFriends")}</span>
+              }
+            />
+          ) : (
+            <div className="!grid !w-full !grid-cols-1 !gap-3 sm:!grid-cols-2 sm:!gap-4 xl:!grid-cols-3">
+              {birthdays.map((b) => (
+                <BirthdayItem key={b.id} entry={b} online={isOnline(b.name)} />
+              ))}
+            </div>
+          )}
         </section>
       ) : null}
 
@@ -172,11 +184,7 @@ export function FriendsTab() {
           ) : (
             <div className="!grid !w-full !grid-cols-1 !gap-3 sm:!grid-cols-2 sm:!gap-4 md:!grid-cols-3 xl:!grid-cols-4 2xl:!grid-cols-5">
               {filteredFriends.map((f) => (
-                <FriendCard
-                  key={f.id}
-                  friend={f}
-                  online={isOnline(f.name, f.mockOnline)}
-                />
+                <FriendCard key={f.id} friend={f} online={isOnline(f.name)} />
               ))}
             </div>
           )}

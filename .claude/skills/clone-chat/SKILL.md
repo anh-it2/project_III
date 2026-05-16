@@ -47,6 +47,8 @@ Conversation id: `buildDmId(a,b)` (`client lib/conversation.ts`) sorts ids so bo
 
 ## 3. Client state (Zustand)
 
+> **Persist convention (project-wide):** `persist` stores use **only** `{ name, storage: createJSONStorage(() => localStorage), partialize }` — **no `version`, no `migrate`**. Don't add migration logic. Stale persisted shape is cleared by clearing the localStorage key (or a manual reset), never by a `migrate` fn. Applies to every zustand `persist` store in the repo (`chat.store`, `auth-state`, `friends-state`, etc.).
+
 - **`stores/chat.store.ts`** — `persist` to localStorage. `optimisticMessages[conv][]`, `typingUsers[conv]`, `readCursors[conv]`, `settings[conv]`, `blockedUsers`, `blockedByUsers`, `pinned[conv]`, `groups[conv]`. Methods: `addOptimisticMessage`, `reconcileAck(tempId,server)`, `updateStatus`, `markReadUpTo`, `set/clearTyping`, `pin/unpinMessage`, `setTheme/Emoji/Nickname`, `setBlocked/BlockedBy`, `upsert/removeGroup`, `isBlocked`, `isMuted`.
 - **`src/shared/stores/chatRoomUnread.store.ts`** — topnav badge + dropdown. `unread`, `kind` (`message|reaction`), `lastActivity` (recency sort), `activePeerId`. `markUnread(peerId,kind?)` sets all three; `markRead`/`setActivePeer` clear `unread`+`kind` but keep `lastActivity`. Badge = `Object.values(unread).filter(Boolean).length` (`ChatNavBtn.tsx`).
 - Keying gotcha: DM unread keyed by **other user's id** (message → `senderId`, reaction → `userId`=reactor); dropdown contacts keyed by `user.id`. Group keyed by `conversationId`. Misalign → badge/sort breaks.

@@ -1,12 +1,14 @@
 import type { EditProfileValues } from "./edit-profile.schema";
 
+// No mock identity. A fresh account starts empty; the logged-in user's
+// name is seeded from the auth store (see useProfileMeta).
 export const EDIT_PROFILE_DEFAULTS: EditProfileValues = {
-  name: "Sarah Anderson",
-  bio: "Product Designer at Meta",
-  location: "San Francisco, CA",
-  work: "Product Designer at Meta",
-  education: "Stanford University",
-  relationship: "Single",
+  name: "",
+  bio: "",
+  location: "",
+  work: "",
+  education: "",
+  relationship: "",
   avatarUrl: "",
   coverUrl: "",
 };

@@ -134,6 +134,7 @@ function ActiveChat({
         onReact={reactMessage}
       />
       <MessageInput
+        key={conversationId}
         recipientName={displayName}
         onSend={async (content, type) => {
           const ctx = replyTo ?? undefined;

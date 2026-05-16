@@ -8,7 +8,7 @@ import type { FeedPostData } from "@/feature/feed/data/types";
 import { useUserPosts } from "@/feature/feed/data/useUserPosts";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { useProfileView } from "../../context/ProfileViewContext";
-import { POSTS, type Post } from "../../data/mock";
+import { type Post } from "../../data/mock";
 import { PostCard } from "./post/PostCard";
 
 function feedToProfilePost(p: FeedPostData): Post {
@@ -42,9 +42,7 @@ export function MainFeed() {
 
   const allPosts = useMemo<Post[]>(
     () =>
-      [...userPosts.map(feedToProfilePost), ...POSTS].filter(
-        (p) => p.ownerId === ownerId,
-      ),
+      userPosts.map(feedToProfilePost).filter((p) => p.ownerId === ownerId),
     [userPosts, ownerId],
   );
 

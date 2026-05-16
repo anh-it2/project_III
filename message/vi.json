@@ -788,7 +788,7 @@
       "editAbout": "Chỉnh sửa giới thiệu",
       "bio": "Thiết kế trải nghiệm số có ý nghĩa. Đam mê thiết kế lấy người dùng làm trung tâm, khả năng tiếp cận và xây dựng sản phẩm gắn kết mọi người.",
       "friends": "Bạn bè",
-      "friendsCount": "4.832 bạn bè",
+      "friendsCount": "{count, plural, =0 {Chưa có bạn bè} other {# bạn bè}}",
       "seeAll": "Xem tất cả",
       "photos": "Ảnh",
       "photosCount": "{count, plural, =0 {Chưa có ảnh} other {# ảnh}}",

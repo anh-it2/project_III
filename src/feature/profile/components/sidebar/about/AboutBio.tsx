@@ -1,12 +1,11 @@
 "use client";
 
 import { Typography } from "antd";
-import { useTranslations } from "next-intl";
 
 const { Paragraph } = Typography;
 
-export function AboutBio() {
-  const t = useTranslations("Profile.sidebar");
+export function AboutBio({ text }: { text?: string }) {
+  if (!text) return null;
   return (
     <Paragraph
       className="!m-0 !w-full"
@@ -16,7 +15,7 @@ export function AboutBio() {
         lineHeight: 1.65,
       }}
     >
-      {t("bio")}
+      {text}
     </Paragraph>
   );
 }

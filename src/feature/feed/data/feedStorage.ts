@@ -1,8 +1,14 @@
 "use client";
 
+import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { scopedKey } from "@/feature/auth/lib/scopedKey";
 import type { FeedPostData, ReelData, StoryCardData } from "./types";
 
-const FEED_STORAGE_KEY = "feed";
+// Per-account: a user's posts/reels/stories must not show on another
+// account. Read the current auth id at call time (non-React access).
+function feedStorageKey(): string {
+  return scopedKey("feed", useAuthStore.getState().userId);
+}
 
 interface FeedStorageShape {
   reels?: ReelData[];
@@ -13,7 +19,7 @@ interface FeedStorageShape {
 function readAll(): FeedStorageShape {
   if (typeof window === "undefined") return {};
   try {
-    const raw = window.localStorage.getItem(FEED_STORAGE_KEY);
+    const raw = window.localStorage.getItem(feedStorageKey());
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === "object" ? (parsed as FeedStorageShape) : {};
@@ -25,7 +31,7 @@ function readAll(): FeedStorageShape {
 function writeAll(next: FeedStorageShape) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(FEED_STORAGE_KEY, JSON.stringify(next));
+    window.localStorage.setItem(feedStorageKey(), JSON.stringify(next));
   } catch {
     /* quota errors ignored */
   }

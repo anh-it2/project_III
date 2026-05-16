@@ -17,13 +17,6 @@ export interface ProfileUser {
   location: string;
 }
 
-export interface Highlight {
-  id: string;
-  label: string;
-  icon: string;
-  gradient: [string, string] | [string, string, string];
-}
-
 export interface StatItem {
   id: string;
   value: string;
@@ -98,15 +91,6 @@ export const PROFILE: ProfileUser = {
   bio: "Product Designer at Meta",
   location: "San Francisco, CA",
 };
-
-export const HIGHLIGHTS: Highlight[] = [
-  { id: "h1", label: "Travel", icon: "flight", gradient: ["#4096ff", "#a855f7", "#ec4899"] },
-  { id: "h2", label: "Design", icon: "palette", gradient: ["#f59e0b", "#ef4444"] },
-  { id: "h3", label: "Food", icon: "restaurant", gradient: ["#22c55e", "#06b6d4"] },
-  { id: "h4", label: "Fitness", icon: "fitness_center", gradient: ["#8b5cf6", "#ec4899"] },
-  { id: "h5", label: "Music", icon: "music_note", gradient: ["#f97316", "#eab308"] },
-  { id: "h6", label: "Photos", icon: "photo_camera", gradient: ["#06b6d4", "#3b82f6"] },
-];
 
 export const STATS: StatItem[] = [
   { id: "s1", value: "1,247", label: "Posts", gradient: ["#4096ff", "#a855f7"] },
@@ -559,28 +543,6 @@ export const ABOUT_CATEGORIES: AboutCategoryDef[] = [
   },
 ];
 
-export const ABOUT_ITEMS: AboutItem[] = [
-  { id: "a1", icon: "work", text: "Product Designer at Meta", gradient: ["#4096ff", "#a855f7"] },
-  { id: "a2", icon: "school", text: "Stanford University", gradient: ["#a855f7", "#ec4899"] },
-  { id: "a3", icon: "location_on", text: "San Francisco, California", gradient: ["#f59e0b", "#f97316"] },
-  { id: "a4", icon: "favorite", text: "Single", gradient: ["#ef4444", "#ec4899"] },
-  { id: "a5", icon: "calendar_month", text: "Joined March 2019", muted: true },
-];
-
-export const FRIENDS: Friend[] = [
-  { id: "f1", name: "Alex Chen", mutualFriends: 24, location: "San Francisco, CA", mockOnline: true },
-  { id: "f2", name: "Mia Lopez", mutualFriends: 18, location: "New York, NY", mockOnline: true },
-  { id: "f3", name: "James Wu", mutualFriends: 31, location: "Seattle, WA" },
-  { id: "f4", name: "Emma Park", mutualFriends: 12, location: "Los Angeles, CA" },
-  { id: "f5", name: "David Kim", mutualFriends: 9, location: "Austin, TX" },
-  { id: "f6", name: "Lily Zhang", mutualFriends: 27, location: "Boston, MA" },
-  { id: "f7", name: "Mai Linh", mutualFriends: 14, location: "Hà Nội, VN", mockOnline: true },
-  { id: "f8", name: "Tuấn Anh", mutualFriends: 22, location: "Hồ Chí Minh, VN", mockOnline: true },
-  { id: "f9", name: "Hà My", mutualFriends: 7, location: "Đà Nẵng, VN", mockOnline: true },
-  { id: "f10", name: "Lan Phương", mutualFriends: 19, location: "Hà Nội, VN", mockOnline: true },
-  { id: "f11", name: "Phương Thảo", mutualFriends: 11, location: "Hồ Chí Minh, VN", mockOnline: true },
-  { id: "f12", name: "Sophia Rivera", mutualFriends: 5, location: "Miami, FL" },
-];
 
 export const FRIEND_REQUESTS: FriendRequest[] = [
   { id: "r1", name: "Noah Patel", mutualFriends: 8, time: "2d" },
@@ -593,12 +555,6 @@ export const FRIEND_SUGGESTIONS: FriendSuggestion[] = [
   { id: "s2", name: "Lucas Silva", mutualFriends: 4, reason: "From San Francisco" },
   { id: "s3", name: "Isabella Rossi", mutualFriends: 9, reason: "Stanford University" },
   { id: "s4", name: "Minh Khoa", mutualFriends: 2, reason: "Friend of Mai Linh" },
-];
-
-export const BIRTHDAYS: BirthdayEntry[] = [
-  { id: "b1", name: "Emma Park", when: "today" },
-  { id: "b2", name: "James Wu", when: "tomorrow", date: "May 13" },
-  { id: "b3", name: "Sophia Rivera", when: "this_week", date: "May 15" },
 ];
 
 export const PHOTOS: PhotoTile[] = [

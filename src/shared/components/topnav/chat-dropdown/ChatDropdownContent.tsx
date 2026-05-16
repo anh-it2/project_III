@@ -9,6 +9,10 @@ import type { OnlineUserDto } from "@/feature/presence/dto/presence.dto";
 import { usePresenceStore } from "@/feature/presence/stores/presence.store";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
 import { pickGradient } from "@/feature/chat/lib/avatar";
+import {
+  buildChatEntries,
+  sortChatEntries,
+} from "@/feature/chat/lib/conversationSort";
 import { useChatStore } from "@/feature/chat/stores/chat.store";
 import type { GroupInfo } from "@/feature/chat/stores/chat.store.type";
 import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
@@ -30,10 +34,6 @@ interface ContactEntry {
   online: boolean;
 }
 
-/** One row in the unified list — a 1:1 user chat or a group chat. */
-type ListEntry =
-  | { type: "user"; id: string; name: string; online: boolean; contact: ContactEntry }
-  | { type: "group"; id: string; name: string; online: boolean; group: GroupInfo };
 
 export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownContentProps) {
   const t = useTranslations("Topnav.chat");
@@ -89,62 +89,24 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
       );
   }, [onlineUsers, knownUsers, lastActivity]);
 
-  /**
-   * Unified, sorted chat list (users + groups in one stream). Tiers:
-   *  0. has a new message/reaction  -> by last activity (newest first)
-   *  1. user currently online
-   *  2. group with >=1 member online (other than me)
-   *  3. everything else (offline)   -> alphabetical
-   * Within tiers 1-3, ties break alphabetically by name.
-   */
-  const visibleEntries = useMemo<ListEntry[]>(() => {
-    const onlineIds = new Set(onlineUsers.map((u) => u.id));
-
-    const userEntries: ListEntry[] = knownUsers.map((u) => ({
-      type: "user",
-      id: u.id,
-      name: u.name,
-      online: onlineIds.has(u.id),
-      contact: { user: u, online: onlineIds.has(u.id) },
-    }));
-
-    const groupEntries: ListEntry[] = Object.values(groupsMap).map((g) => ({
-      type: "group",
-      id: g.conversationId,
-      name: g.name,
-      online: g.memberIds.some((id) => id !== selfId && onlineIds.has(id)),
-      group: g,
-    }));
-
-    const all = [...userEntries, ...groupEntries];
+  // Unified, sorted chat list (users + groups) — shared with the chat page.
+  const visibleEntries = useMemo(() => {
+    const onlineUserIds = new Set(onlineUsers.map((u) => u.id));
+    const entries = buildChatEntries(
+      knownUsers.map((u) => ({ user: u, online: onlineUserIds.has(u.id) })),
+      Object.values(groupsMap),
+      { onlineUserIds, myId: selfId },
+    );
 
     const q = query.trim().toLowerCase();
-    const filtered = all.filter((e) => {
+    const filtered = entries.filter((e) => {
       if (tab === "unread" && !unreadMap[e.id]) return false;
       if (tab === "read" && unreadMap[e.id]) return false;
       if (q && !e.name.toLowerCase().includes(q)) return false;
       return true;
     });
 
-    const tier = (e: ListEntry) => {
-      if (unreadMap[e.id]) return 0;
-      if (e.type === "user" && e.online) return 1;
-      if (e.type === "group" && e.online) return 2;
-      return 3;
-    };
-
-    return filtered.sort((a, b) => {
-      const ta = tier(a);
-      const tb = tier(b);
-      if (ta !== tb) return ta - tb;
-      if (ta === 0) {
-        return (
-          (lastActivity[b.id] ?? 0) - (lastActivity[a.id] ?? 0) ||
-          a.name.localeCompare(b.name)
-        );
-      }
-      return a.name.localeCompare(b.name);
-    });
+    return sortChatEntries(filtered, { unread: unreadMap, lastActivity });
   }, [
     knownUsers,
     onlineUsers,
@@ -233,7 +195,7 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
             const unread = !!unreadMap[e.id];
             const reaction = kindMap[e.id] === "reaction";
             const lastMessage =
-              e.type === "group"
+              e.isGroup
                 ? unread
                   ? reaction
                     ? t("newReaction")
@@ -254,17 +216,16 @@ export function ChatDropdownContent({ onClose, onCreateGroup }: ChatDropdownCont
                   name: e.name,
                   lastMessage,
                   time: "",
-                  online: e.type === "user" && e.online,
+                  online: !e.isGroup && e.online,
                   unread,
                   gradient: pickGradient(e.id),
-                  avatar:
-                    e.type === "user" ? e.contact.user.avatar : undefined,
+                  avatar: e.isGroup ? undefined : e.user.avatar,
                 }}
-                isGroup={e.type === "group"}
+                isGroup={e.isGroup}
                 onClick={() =>
-                  e.type === "group"
+                  e.isGroup
                     ? handleGroupClick(e.group)
-                    : handleItemClick(e.contact)
+                    : handleItemClick({ user: e.user, online: e.online })
                 }
               />
             );
