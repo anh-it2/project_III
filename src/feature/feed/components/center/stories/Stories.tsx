@@ -114,6 +114,7 @@ export function Stories() {
         }}
       />
       <ReelComposerModal
+        mode="story"
         open={composerOpen}
         onClose={() => setComposerOpen(false)}
         onSubmit={handleCreateStory}

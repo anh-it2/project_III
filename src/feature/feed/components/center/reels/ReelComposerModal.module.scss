@@ -13,4 +13,60 @@
     align-items: center !important;
     justify-content: center !important;
   }
+
+  // The dropzone IS the phone screen: a clear dashed affordance over a
+  // subtle brand-tinted surface, theme-aware in light + dark.
+  :global(.ant-upload.ant-upload-drag) {
+    border: 2px dashed var(--color-border) !important;
+    border-radius: 24px !important;
+    background:
+      radial-gradient(
+        120% 90% at 50% 0%,
+        color-mix(in srgb, var(--color-primary) 12%, transparent) 0%,
+        transparent 60%
+      ),
+      var(--color-bg-tertiary) !important;
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+  }
+
+  // Hover / drag-over: invite the drop with a primary outline + tint.
+  :global(.ant-upload.ant-upload-drag:hover),
+  :global(.ant-upload.ant-upload-drag.ant-upload-drag-hover) {
+    border-color: var(--color-primary) !important;
+    background:
+      radial-gradient(
+        120% 90% at 50% 0%,
+        color-mix(in srgb, var(--color-primary) 22%, transparent) 0%,
+        transparent 65%
+      ),
+      var(--color-primary-bg) !important;
+  }
+}
+
+// Music track row hover — only when not the selected track (selected keeps
+// its inline brand tint). !important beats the non-important inline bg.
+.trackRow:hover:not(.trackRowSelected) {
+  background: var(--color-bg-tertiary) !important;
+}
+
+// Upload (Video / Ảnh) buttons — pop on hover: lift, scale, brighter
+// gradient, stronger glow. !important overrides antd Button's own
+// transition + the non-important inline box-shadow.
+.uploadBtn {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease !important;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.05) !important;
+    filter: brightness(1.08) saturate(1.12) !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.97) !important;
+  }
 }

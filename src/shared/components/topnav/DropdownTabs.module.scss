@@ -11,29 +11,47 @@
     transition:
       background 0.15s ease,
       color 0.15s ease;
+  }
 
-    &:hover:not(.ant-segmented-item-selected) {
-      color: var(--color-text) !important;
-      background: transparent !important;
-    }
+  :global(.ant-segmented-item:hover:not(.ant-segmented-item-selected)) {
+    color: var(--color-text) !important;
   }
 
   :global(.ant-segmented-item-label) {
     padding: 4px 14px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.4;
   }
 
-  :global(.ant-segmented-item-selected) {
-    background: var(--color-primary-bg, rgba(64, 150, 255, 0.18)) !important;
-    color: var(--color-primary, #4096ff) !important;
-    box-shadow: none !important;
-  }
-
+  // Sliding pill bg (shown while item-selected class is dropped mid-motion)
   :global(.ant-segmented-thumb) {
-    background: var(--color-primary-bg, rgba(64, 150, 255, 0.18)) !important;
+    background: var(--color-primary) !important;
     border-radius: 999px !important;
     box-shadow: none !important;
+  }
+}
+
+// Active tab — driven by React state via the option className, NOT antd's
+// motion-mutated .ant-segmented-item-selected. Stable through thumb motion
+// and hover. Higher specificity (.tabs scope) + !important beats antd's
+// low-specificity :where() tokens, including the :hover::after overlay.
+.tabs .activeItem:global(.ant-segmented-item) {
+  background: var(--color-primary) !important;
+  color: var(--color-on-primary) !important;
+  box-shadow: none !important;
+
+  :global(.ant-segmented-item-label) {
+    font-weight: 700;
+  }
+
+  &:hover {
+    color: var(--color-on-primary) !important;
+  }
+
+  // Neutralize antd's hover overlay so it can't wash out the primary bg.
+  &:hover::after,
+  &::after {
+    background: transparent !important;
   }
 }

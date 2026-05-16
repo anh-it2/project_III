@@ -3,43 +3,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { FriendStatus, PersonDTO } from "../dto/friends.dto";
-
-interface FriendsState {
-  /** id -> person catalog (name, mutuals, etc.) */
-  people: Record<string, PersonDTO>;
-  /** id -> my relationship to them */
-  status: Record<string, FriendStatus>;
-  /** notification ids of friend-requests already materialized (dedupe) */
-  processedRequests: Record<string, true>;
-
-  /** Internal mutators — call these from the service adapter only. */
-  _upsertPerson: (person: PersonDTO) => void;
-  _setStatus: (id: string, status: FriendStatus) => void;
-  /**
-   * Materialize an incoming friend request that arrived as a
-   * `friend_request` notification. Idempotent per notification id (so the
-   * notification:list replay on every reconnect can't resurrect a request
-   * the user already accepted/rejected). Only creates the edge when there
-   * is no existing relationship.
-   */
-  _ingestFriendRequest: (
-    notificationId: string,
-    actorId: string,
-    actorName: string,
-  ) => void;
-  /**
-   * Reconcile the sender side when the recipient resolves the request the
-   * other way: a `friend_accept`/`friend_reject` notification arrives back.
-   * "accepted" -> the edge becomes "friends"; "rejected" -> a still-pending
-   * "requested" edge is cleared to "none". Idempotent per notification id.
-   */
-  _ingestFriendResolution: (
-    notificationId: string,
-    actorId: string,
-    actorName: string,
-    outcome: "accepted" | "rejected",
-  ) => void;
-}
+import type { FriendsState } from "./friends.store.types";
 
 export const useFriendsStore = create<FriendsState>()(
   persist(
@@ -80,21 +44,33 @@ export const useFriendsStore = create<FriendsState>()(
 
       _ingestFriendResolution: (notificationId, actorId, actorName, outcome) =>
         set((st) => {
-          if (st.processedRequests[notificationId]) return st;
+          const seen = !!st.processedRequests[notificationId];
           const processedRequests = {
             ...st.processedRequests,
             [notificationId]: true as const,
           };
           const cur = st.status[actorId] ?? "none";
+
           if (outcome === "rejected") {
-            // Only clear a still-pending request; never undo a friendship.
-            if (cur !== "requested") return { processedRequests };
+            // Clearing a still-pending request is fully idempotent and can
+            // never undo a friendship (guarded by cur === "requested"), so
+            // the per-id dedupe must NOT gate it: a stale/replayed
+            // processedRequests entry (persisted store, no version/migrate)
+            // or a reused notification id would otherwise strand the sender
+            // forever on a disabled "Requested" button. Apply whenever the
+            // edge is still "requested", even if this id was seen before.
+            if (cur !== "requested") {
+              return seen ? st : { processedRequests };
+            }
             return {
               processedRequests,
               status: { ...st.status, [actorId]: "none" },
             };
           }
-          // accepted -> become friends (idempotent if already friends).
+
+          // accepted -> become friends. Keep strict per-id idempotence here:
+          // re-running must not resurrect a friendship the user later undid.
+          if (seen) return st;
           const person: PersonDTO = st.people[actorId] ?? {
             id: actorId,
             name: actorName,

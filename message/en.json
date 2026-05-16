@@ -685,6 +685,15 @@
       "errorCannotPlay": "Cannot play track",
       "success": "Reel posted"
     },
+    "storyComposer": {
+      "title": "Create story",
+      "subtitle": "Share a moment with your friends",
+      "uploadTitle": "Upload your story",
+      "captionPlaceholder": "Add a caption to your story...",
+      "info": "Stories disappear automatically after 24 hours",
+      "submit": "Post story",
+      "success": "Story posted"
+    },
     "reelViewer": {
       "title": "Reels",
       "follow": "Follow",

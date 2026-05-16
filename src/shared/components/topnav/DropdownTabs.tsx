@@ -12,17 +12,22 @@ interface DropdownTabsProps {
 }
 
 export function DropdownTabs({ value, onChange, labels }: DropdownTabsProps) {
+  const order: DropdownTabKey[] = ["all", "unread", "read"];
+
   return (
     <div className={`${styles.tabs} !w-full !px-4 !pb-2`}>
       <Segmented<DropdownTabKey>
         value={value}
         onChange={onChange}
         block
-        options={[
-          { label: labels.all, value: "all" },
-          { label: labels.unread, value: "unread" },
-          { label: labels.read, value: "read" },
-        ]}
+        options={order.map((key) => ({
+          label: labels[key],
+          value: key,
+          // Stable, React-state-driven active class. Independent of antd's
+          // motion-driven .ant-segmented-item-selected (which is dropped
+          // mid-thumb-animation), so the active style never flickers.
+          className: key === value ? styles.activeItem : undefined,
+        }))}
       />
     </div>
   );

@@ -685,6 +685,15 @@
       "errorCannotPlay": "Không thể phát bài hát",
       "success": "Đã đăng Reel"
     },
+    "storyComposer": {
+      "title": "Tạo tin",
+      "subtitle": "Chia sẻ khoảnh khắc với bạn bè",
+      "uploadTitle": "Tải lên tin của bạn",
+      "captionPlaceholder": "Thêm chú thích cho tin của bạn...",
+      "info": "Tin sẽ tự động biến mất sau 24 giờ",
+      "submit": "Đăng tin",
+      "success": "Đã đăng tin"
+    },
     "reelViewer": {
       "title": "Reels",
       "follow": "Theo dõi",
