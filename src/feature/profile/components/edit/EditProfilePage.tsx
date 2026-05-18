@@ -37,8 +37,18 @@ export function EditProfilePage() {
   }, [hydrated, meta, methods]);
 
   async function onSubmit(values: EditProfileValues) {
-    save(values);
-    publishPresenceProfile(values.avatarUrl);
+    try {
+      // 1. Persist to social-platform-be (DB = source of truth).
+      await save(values);
+    } catch (err) {
+      message.error(
+        err instanceof Error ? err.message : "Could not save profile",
+      );
+      return;
+    }
+    // 2. Only after the write succeeds, announce to everyone online so
+    //    their views update in realtime (variant 1a).
+    publishPresenceProfile(values.avatarUrl, values.name);
     message.success("Profile updated");
     nav.push("/profile");
   }

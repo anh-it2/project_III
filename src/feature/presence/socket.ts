@@ -32,13 +32,16 @@ function readSelfAvatar(): string | undefined {
 
 /**
  * Publish the current user's image (and optionally name) to everyone.
- * Call on connect and again whenever the avatar is changed on edit-profile —
- * the handshake fires only once, so updates must travel as an event.
+ * Call on connect and again whenever the profile is saved on edit-profile —
+ * the handshake fires only once, so updates must travel as an event. `name`
+ * is sent only when provided (a post-save announce); the connect-time call
+ * passes avatar only and the server keeps the handshake name.
  */
-export function publishPresenceProfile(avatar?: string) {
+export function publishPresenceProfile(avatar?: string, name?: string) {
   const socket = getPresenceSocket();
   socket.emit("presence:update-profile", {
     avatar: avatar ?? readSelfAvatar() ?? "",
+    ...(name ? { name } : {}),
   });
 }
 

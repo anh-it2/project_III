@@ -81,6 +81,18 @@ export function ChatRoom() {
     }
   }, [selected, groupsMap]);
 
+  // keep selected.user (DM) in sync with presence updates — same pattern as
+  // the group sync above. `presence:user-updated` swaps a fresh user object
+  // into knownUsers; the snapshot taken at select time would otherwise keep
+  // the chat box header/message list showing the peer's old name/avatar.
+  useEffect(() => {
+    if (selected?.kind !== "dm") return;
+    const fresh = knownUsers.find((u) => u.id === selected.user.id);
+    if (fresh && fresh !== selected.user) {
+      setSelected({ kind: "dm", user: fresh });
+    }
+  }, [selected, knownUsers]);
+
   function handleLogout() {
     // Hook clears cookie + session; ProtectedLayout redirects to /login.
     logout.mutate();
