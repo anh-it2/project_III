@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Icon } from "@/shared/components/Icon";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { useLogout } from "@/feature/auth/hooks/useLogout";
 import { useProfileMeta } from "@/feature/profile/components/edit/data/useProfileMeta";
 import { useNavigation } from "@/shared/hooks/useNavigation";
 import { gradientBg } from "@/shared/utils/gradient";
@@ -25,7 +26,7 @@ export function UserDropdownContent({ onClose }: UserDropdownContentProps) {
   const { message } = App.useApp();
   const router = useNavigation();
   const userName = useAuthStore((s) => s.userName);
-  const removeLogginedUser = useAuthStore((s) => s.removeLogginedUser);
+  const logout = useLogout();
   const { meta, hydrated } = useProfileMeta();
   const [panel, setPanel] = useState<Panel>("main");
 
@@ -35,10 +36,12 @@ export function UserDropdownContent({ onClose }: UserDropdownContentProps) {
   const initial = (displayName?.trim()[0] ?? CURRENT_USER.initial).toUpperCase();
 
   function handleLogout() {
-    removeLogginedUser();
-    onClose();
+    // Fire-and-forget: the hook clears the cookie + local session in its
+    // own onSettled, and ProtectedLayout redirects to /login once the
+    // session is gone. Both survive this popover unmounting on close.
+    logout.mutate();
     message.success(t("loggedOut"));
-    router.push("/login");
+    onClose();
   }
 
   function go(path: string) {

@@ -42,40 +42,61 @@ export function publishPresenceProfile(avatar?: string) {
   });
 }
 
-let initialized = false;
+// Re-callable on purpose: a module-level "initialized" latch goes stale
+// across HMR and the login/logout lifecycle (new code never rebinds,
+// listeners double-fire on the cached socket). We instead clear our own
+// handlers and rebind every call.
+let cleanup: (() => void) | null = null;
 
 export function initPresence() {
-  if (initialized) return;
-  initialized = true;
+  disposePresence();
 
   const { userId } = useAuthStore.getState();
   const socket = getPresenceSocket();
-  const store = usePresenceStore.getState();
 
-  socket.on("presence:user-joined", (u) => {
-    if (u.id === userId) return;
-    usePresenceStore.getState().addOnlineUser(u);
-  });
-
-  socket.on("presence:user-left", (id) => {
+  const onJoined: PresenceServerToClientEvents["presence:user-joined"] = (
+    u,
+  ) => {
+    if (u.id !== userId) usePresenceStore.getState().addOnlineUser(u);
+  };
+  const onLeft: PresenceServerToClientEvents["presence:user-left"] = (id) =>
     usePresenceStore.getState().removeOnlineUser(id);
-  });
+  const onUpdated: PresenceServerToClientEvents["presence:user-updated"] = (
+    u,
+  ) => {
+    if (u.id !== userId) usePresenceStore.getState().updateUser(u);
+  };
 
-  socket.on("presence:user-updated", (u) => {
-    if (u.id === userId) return;
-    usePresenceStore.getState().updateUser(u);
-  });
+  // The server only broadcasts `user-joined` to *other* sockets, so the
+  // snapshot ack is the only way to learn who was already online. Request
+  // it *after* the namespace connects, and again on every reconnect —
+  // emitting it pre-connect buffers the packet and its ack can be dropped,
+  // which left a later-joining user blind to earlier ones.
+  const onConnect = () => {
+    socket.emit("presence:get-online-users", (list) => {
+      usePresenceStore
+        .getState()
+        .setOnlineUsers(list.filter((u) => u.id !== userId));
+    });
+    publishPresenceProfile();
+  };
 
-  socket.emit("presence:get-online-users", (list) => {
-    store.setOnlineUsers(list.filter((u) => u.id !== userId));
-  });
+  socket.on("connect", onConnect);
+  socket.on("presence:user-joined", onJoined);
+  socket.on("presence:user-left", onLeft);
+  socket.on("presence:user-updated", onUpdated);
+  if (socket.connected) onConnect();
 
-  // Broadcast our image once connected (re-sent on every reconnect too).
-  socket.on("connect", () => publishPresenceProfile());
-  if (socket.connected) publishPresenceProfile();
+  cleanup = () => {
+    socket.off("presence:user-joined", onJoined);
+    socket.off("presence:user-left", onLeft);
+    socket.off("presence:user-updated", onUpdated);
+    socket.off("connect", onConnect);
+  };
 }
 
 export function disposePresence() {
-  initialized = false;
+  cleanup?.();
+  cleanup = null;
   usePresenceStore.getState().reset();
 }

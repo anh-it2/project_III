@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
+import { useLogout } from "@/feature/auth/hooks/useLogout";
 import { usePresenceStore } from "@/feature/presence/stores/presence.store";
-import { useRouter } from "@/i18n/navigation";
 import { useChatBoxesStore } from "@/shared/stores/chatBoxes.store";
 import { useChatRoomUnreadStore } from "@/shared/stores/chatRoomUnread.store";
 import { useChatStore } from "../stores/chat.store";
@@ -14,8 +14,8 @@ import { ChatRightPanel } from "./right/panels/ChatRightPanel";
 import { ChatSidebar } from "./sidebar/ChatSidebar";
 
 export function ChatRoom() {
-  const router = useRouter();
-  const { userName, removeLogginedUser } = useAuthStore();
+  const userName = useAuthStore((s) => s.userName);
+  const logout = useLogout();
   const onlineUsers = usePresenceStore((s) => s.onlineUsers);
   const knownUsers = usePresenceStore((s) => s.knownUsers);
   const groupsMap = useChatStore((s) => s.groups);
@@ -82,8 +82,8 @@ export function ChatRoom() {
   }, [selected, groupsMap]);
 
   function handleLogout() {
-    removeLogginedUser();
-    router.push("/login");
+    // Hook clears cookie + session; ProtectedLayout redirects to /login.
+    logout.mutate();
   }
 
   const hasSelection = !!selected;

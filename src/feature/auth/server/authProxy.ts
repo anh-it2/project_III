@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 /** httpOnly cookie holding the BE JWT. Never readable from JS. */
 export const AUTH_COOKIE = "token";
@@ -68,6 +68,51 @@ export async function forwardAuth(
     maxAge: COOKIE_MAX_AGE,
   });
   return res;
+}
+
+/**
+ * Validates the auth cookie against social-platform-be (`GET /users/me`)
+ * and returns the public user. Used to bootstrap the client session from
+ * the httpOnly cookie when the persisted store is empty (fresh browser,
+ * cleared storage, post-deploy). 401 → no/invalid session.
+ */
+export async function fetchMe(req: NextRequest): Promise<NextResponse> {
+  const token = req.cookies.get(AUTH_COOKIE)?.value;
+  if (!token) {
+    return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
+  }
+
+  const beRes = await fetch(`${API_BASE_URL}/users/me`, {
+    headers: { authorization: `Bearer ${token}` },
+    cache: "no-store",
+  }).catch(() => null);
+  if (!beRes) {
+    return NextResponse.json(
+      { message: "Cannot reach authentication server" },
+      { status: 502 },
+    );
+  }
+
+  const body = (await beRes.json().catch(() => null)) as BackendEnvelope | null;
+  if (!body) {
+    return NextResponse.json(
+      { message: "Invalid response from authentication server" },
+      { status: 502 },
+    );
+  }
+
+  if (!beRes.ok || !body.success || !body.data) {
+    // Token rejected by BE → drop the stale cookie so the middleware
+    // stops treating the request as authed.
+    const res = NextResponse.json(
+      { message: body.message || "Not authenticated" },
+      { status: beRes.status === 200 ? 502 : beRes.status || 401 },
+    );
+    if (beRes.status === 401) clearAuthCookie(res);
+    return res;
+  }
+
+  return NextResponse.json({ user: body.data }, { status: 200 });
 }
 
 /** Clears the auth cookie. */
