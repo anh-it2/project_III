@@ -5,14 +5,24 @@ description: Styling conventions for this Next.js + Tailwind 4 + Ant Design proj
 
 # clone-style — Project styling rules
 
-Apply these rules to **every** UI change. Order matters: try Tailwind first, then SCSS module, never raw `<style>`.
+Apply these rules to **every** UI change. Order matters: try Tailwind first, then SCSS module, never raw `<style>`, and never inline `style` for a value that is static.
 
 ## 1. Styling priority
 
-1. **Tailwind utility classes** — default for layout, spacing, sizing, flex, grid, typography, simple hover.
+1. **Tailwind utility classes** — default for layout, spacing, sizing, flex, grid, typography, simple hover. This includes **static CSS-variable values**: write `className="bg-[var(--color-bg-secondary)] text-[var(--color-text)]"`, not `style={{ background: "var(--color-bg-secondary)" }}`. For props with no idiomatic utility use Tailwind's arbitrary-property form `[border-color:var(--color-border)]`, `[white-space:pre-wrap]` (spaces → `_`).
 2. **CSS Modules (`.module.scss`)** — only when Tailwind cannot express it (deep antd `:global(.ant-...)` selectors, complex `&:hover` chains, keyframes, `:has()` cascades).
-3. **Inline `style={{ ... }}`** — only for *dynamic* values that depend on JS (gradient computed at runtime, computed dimensions, theme-driven colors via CSS vars).
+3. **Inline `style={{ ... }}`** — **only** for values that depend on JS at runtime (gradient computed from data, measured/computed dimensions, a CSS var whose name is chosen by a prop/state). If every value is a string/number literal it is static → it must be a Tailwind class, not inline `style`.
 4. **Never** use a raw `<style>{`...`}</style>` JSX tag. If global CSS is required, put it in `globals.css` or a `.module.scss` file.
+
+### Global stylesheet — `src/app/globals.css`
+
+The global entry is **`src/app/globals.css`** (plain CSS), imported once in `src/app/[locale]/layout.tsx`. It holds the Tailwind entry, `:root` / `.dark` CSS-variable definitions, `@theme inline`, antd global overrides, keyframes. First line is:
+
+```css
+@import "tailwindcss";
+```
+
+Keep this file `.css` — do **not** rename it to `.scss`. Tailwind v4 is a CSS-first build tool; routing the global entry through sass-loader (`.scss`) makes sass run before `@tailwindcss/postcss` and breaks the Tailwind directives (`@import "tailwindcss"`, `@custom-variant`, `@theme inline`) — Dart Sass `@import` deprecation, then "Parsing CSS source code failed". Component-scoped styles still use `*.module.scss`; only the global entry stays `.css`.
 
 ## 2. Colors must use CSS variables
 
@@ -33,11 +43,17 @@ The project supports light + dark themes via CSS custom properties defined in `s
 | `--color-success` / `--color-warning` / `--color-error` | Status colors |
 
 ```tsx
-// good
+// good — static var values as Tailwind classes
+<div className="bg-[var(--color-bg-secondary)] text-[var(--color-text)]" />
+
+// bad — static value as inline style (see §1.3)
 <div style={{ background: "var(--color-bg-secondary)", color: "var(--color-text)" }} />
 
 // bad — locks color to one theme
 <div style={{ background: "#fafbfc", color: "#1a1a2e" }} />
+
+// ok — inline style only because the var name is chosen at runtime
+<div style={{ background: `var(--color-${tone})` }} />
 ```
 
 Brand-specific gradients/decorations that must look the same in both themes (logo, avatar gradients) may use literal colors via `gradientBg([...])`.
@@ -205,6 +221,8 @@ Antd `Dropdown` anchors to its trigger. On narrow viewports, panels anchored to 
 
 - [ ] No hardcoded colors for theme surfaces — used `var(--color-*)`.
 - [ ] No `<style>{...}</style>` JSX tags introduced. SCSS module if Tailwind insufficient.
+- [ ] No inline `style` for static values — only runtime-dynamic ones. Static var values are Tailwind classes (`bg-[var(--color-*)]` / arbitrary-property form).
+- [ ] Global entry stays `src/app/globals.css` (`.css`, not `.scss`) with `@import "tailwindcss";`.
 - [ ] Antd component used where one exists.
 - [ ] Form fields go through shared `RHF*` wrappers — created a new wrapper if a kind was missing instead of inlining antd.
 - [ ] Required fields show `*`, invalid state turns label/border red, inline error appears, and a form-level banner shows after a failed submit.

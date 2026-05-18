@@ -1,6 +1,8 @@
-/* Sass leaves any @import ending in .css as a plain CSS @import (no sass
-   @import deprecation); @tailwindcss/postcss then inlines it. */
-@import "tailwindcss/index.css";
+@import "tailwindcss";
+
+/* Docs (.md) are not source files. They contain example class tokens like
+   bg-[var(--color-*)] that Tailwind would otherwise compile into invalid CSS. */
+@source not "../../**/*.md";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
