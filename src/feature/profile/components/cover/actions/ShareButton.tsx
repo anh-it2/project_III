@@ -7,6 +7,7 @@ import { useProfileMeta } from "../../edit/data/useProfileMeta";
 import { ShareDropdownItem } from "@/shared/components/post/share-dropdown/ShareDropdownItem";
 import { SendToChatModal } from "@/shared/components/post/share-dropdown/SendToChatModal";
 import shareStyles from "@/shared/components/post/share-dropdown/ShareDropdown.module.scss";
+import { COVER_GLASS, COVER_GLASS_FG } from "./coverGlass";
 import { Icon } from "../../Icon";
 
 const { Text } = Typography;
@@ -80,10 +81,10 @@ export function ShareButton() {
       >
         <Button
           type="text"
-          className="!h-9 !rounded-3xl !px-4 md:!h-10 md:!px-6 bg-[rgba(255,255,255,0.18)] [border:1px_solid_rgba(255,255,255,0.35)] [backdrop-filter:blur(12px)] [-webkit-backdrop-filter:blur(12px)]"  >
+          className={`${COVER_GLASS} !h-9 !rounded-3xl !px-4 md:!h-10 md:!px-6`}  >
           <Flex align="center" gap={8}>
-            <Icon name="share" size={18} color="#ffffff" />
-            <Text className="!text-sm !font-semibold text-[#ffffff]" >
+            <Icon name="share" size={18} color={COVER_GLASS_FG} />
+            <Text className="!text-sm !font-semibold !text-[var(--cover-glass-fg)]">
               {t("share")}
             </Text>
           </Flex>

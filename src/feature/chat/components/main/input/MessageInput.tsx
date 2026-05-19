@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from "react";
 import { MentionPicker } from "@/feature/mention/components/MentionPicker";
 import { useSearchMentionUsers } from "@/feature/mention/data/users";
 import { useMentionInput } from "@/feature/mention/hooks/useMentionInput";
-import { CHAT_IMAGE_MAX_BYTES, uploadChatImage } from "../../../lib/upload";
+import { uploadPostMediaService } from "@/feature/feed/services/uploadPostMedia.service";
 import type { ReplyContext } from "../../../types";
 import { EmojiPicker } from "./EmojiPicker";
 import { GifPicker } from "./GifPicker";
@@ -45,6 +45,10 @@ const PILL_BTN =
 
 const PILL_BTN_COMPACT =
   "!h-8 !w-8 !rounded-full !bg-[#f0f2f5] !text-[var(--color-primary)] hover:!bg-[#e4e6eb] dark:!bg-[#1f1f1f] dark:hover:!bg-[#262626]";
+
+// Matches the post composer/comment image-persist limit. The image is now
+// uploaded to the BE (→ short hosted URL) instead of inlined as base64.
+const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 
 export function MessageInput({
   recipientName,
@@ -116,13 +120,13 @@ export function MessageInput({
       message.error(t("input.errorImageType"));
       return false;
     }
-    if (file.size > CHAT_IMAGE_MAX_BYTES) {
+    if (file.size > IMAGE_MAX_BYTES) {
       message.error(t("input.errorImageTooLarge"));
       return false;
     }
     try {
       setUploading(true);
-      const url = await uploadChatImage(file);
+      const url = await uploadPostMediaService(file);
       await onSend(url, "image");
     } catch {
       message.error(t("input.errorUploadFailed"));

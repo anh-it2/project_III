@@ -95,6 +95,26 @@
   --color-border: #e5e7eb;
   --color-border-light: #f0f0f0;
 
+  /* Cover action buttons — frosted glass over the fixed cover gradient.
+     A new theme overrides these to restyle the whole cover action row. */
+  --cover-glass-bg: rgba(255, 255, 255, 0.14);
+  --cover-glass-bg-hover: rgba(255, 255, 255, 0.22);
+  --cover-glass-border: rgba(255, 255, 255, 0.22);
+  --cover-glass-border-hover: rgba(255, 255, 255, 0.34);
+  --cover-glass-fg: #ffffff;
+  --cover-glass-primary-bg: linear-gradient(
+    135deg,
+    rgba(64, 150, 255, 0.42),
+    rgba(168, 85, 247, 0.34)
+  );
+  --cover-glass-primary-bg-hover: linear-gradient(
+    135deg,
+    rgba(64, 150, 255, 0.55),
+    rgba(168, 85, 247, 0.46)
+  );
+  --cover-glass-primary-border: rgba(180, 200, 255, 0.5);
+  --cover-glass-primary-border-hover: rgba(200, 215, 255, 0.62);
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
@@ -142,6 +162,25 @@
 
   --color-border: #2e2e2e;
   --color-border-light: #252525;
+
+  /* Cover glass — same defaults; overridable per theme. */
+  --cover-glass-bg: rgba(255, 255, 255, 0.14);
+  --cover-glass-bg-hover: rgba(255, 255, 255, 0.22);
+  --cover-glass-border: rgba(255, 255, 255, 0.22);
+  --cover-glass-border-hover: rgba(255, 255, 255, 0.34);
+  --cover-glass-fg: #ffffff;
+  --cover-glass-primary-bg: linear-gradient(
+    135deg,
+    rgba(64, 150, 255, 0.42),
+    rgba(168, 85, 247, 0.34)
+  );
+  --cover-glass-primary-bg-hover: linear-gradient(
+    135deg,
+    rgba(64, 150, 255, 0.55),
+    rgba(168, 85, 247, 0.46)
+  );
+  --cover-glass-primary-border: rgba(180, 200, 255, 0.5);
+  --cover-glass-primary-border-hover: rgba(200, 215, 255, 0.62);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);

@@ -793,7 +793,12 @@
     },
     "actions": {
       "editProfile": "Edit Profile",
-      "share": "Share"
+      "share": "Share",
+      "message": "Message",
+      "more": "More",
+      "block": "Block",
+      "report": "Report",
+      "reported": "Reported"
     },
     "share": {
       "copyLinkDesc": "Copy this profile's link",

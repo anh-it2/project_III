@@ -793,7 +793,12 @@
     },
     "actions": {
       "editProfile": "Chỉnh sửa hồ sơ",
-      "share": "Chia sẻ"
+      "share": "Chia sẻ",
+      "message": "Nhắn tin",
+      "more": "Thêm",
+      "block": "Chặn",
+      "report": "Báo cáo",
+      "reported": "Đã báo cáo"
     },
     "share": {
       "copyLinkDesc": "Sao chép liên kết hồ sơ này",

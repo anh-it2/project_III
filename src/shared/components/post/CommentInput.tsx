@@ -2,15 +2,19 @@
 
 import { App, Button, Flex, Image as AntImage, Input, Popover, Upload } from "antd";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EmojiPicker } from "@/feature/chat/components/main/input/EmojiPicker";
 import { GifPicker } from "@/feature/chat/components/main/input/GifPicker";
-import { CHAT_IMAGE_MAX_BYTES, uploadChatImage } from "@/feature/chat/lib/upload";
+import { uploadPostMediaService } from "@/feature/feed/services/uploadPostMedia.service";
 import { MentionPicker } from "@/feature/mention/components/MentionPicker";
 import { useMentionInput } from "@/feature/mention/hooks/useMentionInput";
 import type { CommentInputPayload } from "../../data/reactions";
 import { Icon } from "../Icon";
 import { PostAvatar } from "./PostAvatar";
+
+// Matches the post composer's image-persist limit (the BE caps comment
+// imageUrl at 2048 chars, so the file must become a short hosted URL).
+const IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 
 interface CommentInputProps {
   onSubmit: (payload: CommentInputPayload) => void;
@@ -27,19 +31,58 @@ export function CommentInput({
   const tChat = useTranslations("Chat");
   const { message } = App.useApp();
   const [value, setValue] = useState("");
+  // Preview only: a blob: object URL for a freshly picked file, or a remote
+  // URL for a picked GIF. Never the value persisted for a file (mirrors the
+  // post composer — the file is uploaded to the BE on send, not on pick).
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [emojiOpen, setEmojiOpen] = useState(false);
   const [gifOpen, setGifOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  // Raw picked file, uploaded to the BE only on send (no orphan uploads if
+  // the draft is abandoned). null = no new file (empty, or a GIF URL).
+  const rawFileRef = useRef<File | null>(null);
   const mention = useMentionInput({ value, onChange: setValue });
 
   const canSend = !!(value.trim() || imageUrl);
 
-  function handleSend() {
-    if (!canSend) return;
-    onSubmit({ text: value.trim(), imageUrl: imageUrl ?? undefined });
-    setValue("");
+  // Revoke a leftover blob: preview if the input unmounts mid-draft.
+  useEffect(() => {
+    return () => {
+      if (imageUrl?.startsWith("blob:")) URL.revokeObjectURL(imageUrl);
+    };
+  }, [imageUrl]);
+
+  function clearImage() {
+    if (imageUrl?.startsWith("blob:")) URL.revokeObjectURL(imageUrl);
+    rawFileRef.current = null;
     setImageUrl(null);
+  }
+
+  async function handleSend() {
+    if (!canSend || uploading) return;
+    setUploading(true);
+    try {
+      // Resolve the final image URL the same way the post composer does:
+      // a freshly picked file is uploaded to the BE now (→ short hosted
+      // URL); a GIF is already a hosted URL; a blob: preview is never sent.
+      let finalUrl: string | undefined =
+        imageUrl && !imageUrl.startsWith("blob:") ? imageUrl : undefined;
+      if (rawFileRef.current) {
+        finalUrl = await uploadPostMediaService(rawFileRef.current);
+      }
+      onSubmit({ text: value.trim(), imageUrl: finalUrl });
+      if (imageUrl?.startsWith("blob:")) URL.revokeObjectURL(imageUrl);
+      rawFileRef.current = null;
+      setValue("");
+      setImageUrl(null);
+    } catch (e) {
+      // Upload failed — keep the draft so nothing is lost.
+      message.error(
+        e instanceof Error ? e.message : tChat("input.errorUploadFailed"),
+      );
+    } finally {
+      setUploading(false);
+    }
   }
 
   function handleEmojiPick(emoji: string) {
@@ -48,27 +91,24 @@ export function CommentInput({
 
   function handleGifPick(url: string) {
     setGifOpen(false);
+    if (imageUrl?.startsWith("blob:")) URL.revokeObjectURL(imageUrl);
+    rawFileRef.current = null;
     setImageUrl(url);
   }
 
-  async function handleImage(file: File) {
+  function handleImage(file: File) {
     if (!file.type.startsWith("image/")) {
       message.error(tChat("input.errorImageType"));
       return false;
     }
-    if (file.size > CHAT_IMAGE_MAX_BYTES) {
+    if (file.size > IMAGE_MAX_BYTES) {
       message.error(tChat("input.errorImageTooLarge"));
       return false;
     }
-    try {
-      setUploading(true);
-      const url = await uploadChatImage(file);
-      setImageUrl(url);
-    } catch {
-      message.error(tChat("input.errorUploadFailed"));
-    } finally {
-      setUploading(false);
-    }
+    // Keep the raw file; preview from an object URL. Upload happens on send.
+    if (imageUrl?.startsWith("blob:")) URL.revokeObjectURL(imageUrl);
+    rawFileRef.current = file;
+    setImageUrl(URL.createObjectURL(file));
     return false;
   }
 
@@ -146,7 +186,6 @@ export function CommentInput({
             <Button
               type="text"
               size="small"
-              loading={uploading}
               className="!h-7 !w-7 !p-0"
               aria-label="image"
             >
@@ -181,7 +220,8 @@ export function CommentInput({
             type="text"
             size="small"
             onClick={handleSend}
-            disabled={!canSend}
+            disabled={!canSend || uploading}
+            loading={uploading}
             className="!flex !h-7 !w-7 !items-center !justify-center !p-0"
             aria-label={t("send")}
           >
@@ -204,7 +244,7 @@ export function CommentInput({
             <Button
               type="text"
               size="small"
-              onClick={() => setImageUrl(null)}
+              onClick={clearImage}
               className="!absolute !top-1 !right-1 !h-6 !w-6 !p-0 !rounded-full bg-[rgba(0,0,0,0.6)]"  aria-label="remove"
             >
               <Icon name="close" size={14} color="#fff" />

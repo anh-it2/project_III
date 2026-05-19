@@ -22,3 +22,17 @@ export interface ProfileResponseDTO {
 export interface ProfileErrorDTO {
   message: string;
 }
+
+// Public (non-self) user — social-platform-be GET /users/:id → PublicUser.
+// Used to resolve another person's display name when viewing their profile
+// and they aren't already in the friends store.
+export interface PublicUserDTO {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
+export interface PublicUserResponseDTO {
+  user: PublicUserDTO;
+}
