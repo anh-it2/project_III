@@ -60,8 +60,8 @@ export function ShareDropdownContent({ onSelect }: ShareDropdownContentProps) {
   return (
     <Flex
       vertical
-      className="!w-[min(340px,calc(100vw-16px))] bg-[var(--color-bg-secondary)] [border:1px_solid_var(--color-border)] rounded-[16px] [box-shadow:0_12px_32px_rgba(0,0,0,0.45)] [overflow:hidden]"  >
-      <Flex className="[padding:14px_16px_10px_16px] [border-bottom:1px_solid_var(--color-border-light)]"
+      className="!p-2 !w-[min(340px,calc(100vw-16px))] bg-[var(--color-bg-secondary)] [border:1px_solid_var(--color-border)] rounded-[16px] [box-shadow:0_12px_32px_rgba(0,0,0,0.45)] [overflow:hidden]"  >
+      <Flex className="[padding:4px_8px_8px_8px] [border-bottom:1px_solid_var(--color-border-light)]"
         align="center"
         justify="space-between"  >
         <Text
@@ -70,7 +70,7 @@ export function ShareDropdownContent({ onSelect }: ShareDropdownContentProps) {
         </Text>
       </Flex>
 
-      <Flex className="p-[8px]" vertical gap={2} >
+      <Flex vertical gap={2} >
         {rows.map((r) => (
           <ShareDropdownItem
             key={r.action}
@@ -85,7 +85,7 @@ export function ShareDropdownContent({ onSelect }: ShareDropdownContentProps) {
 
       <div className="h-[1px] bg-[var(--color-border-light)] [margin:0_12px]"  />
 
-      <Flex className="p-[8px]" vertical gap={2} >
+      <Flex vertical gap={2} >
         <ShareDropdownItem
           icon="link"
           gradient={["#6B7280", "#4B5563"]}

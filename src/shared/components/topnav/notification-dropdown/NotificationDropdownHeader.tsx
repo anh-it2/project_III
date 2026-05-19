@@ -18,7 +18,7 @@ export function NotificationDropdownHeader({
     <Flex
       align="center"
       justify="space-between"
-      className="!w-full [padding:12px_16px_8px_16px]"  >
+      className="!w-full !p-2 !px-4"  >
       <Text className="!text-xl !font-bold text-[var(--color-text)]" >
         {t("header")}
       </Text>

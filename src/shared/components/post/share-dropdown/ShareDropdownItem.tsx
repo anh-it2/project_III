@@ -27,18 +27,18 @@ export function ShareDropdownItem({
       align="center"
       gap={12}
       onClick={onClick}
-      className={`${styles.row} !w-full [padding:10px_12px] rounded-[12px] [cursor:pointer]`}  >
+      className={`${styles.row} !w-full [padding:8px_10px] rounded-[12px] [cursor:pointer]`}  >
       <Flex
         align="center"
         justify="center"
         className="!rounded-full !shrink-0"
         style={{
-          width: 44,
-          height: 44,
+          width: 36,
+          height: 36,
           background: gradientBg([...gradient]),
         }}
       >
-        <Icon name={icon} size={22} color="#FFFFFF" />
+        <Icon name={icon} size={20} color="#FFFFFF" />
       </Flex>
       <Flex vertical gap={2} className="!min-w-0 !flex-1">
         <Text

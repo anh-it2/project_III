@@ -201,6 +201,7 @@ export function FeedPost({
         likes={post.likes}
         comments={commentCount}
         shares={shareCount}
+        onCommentsClick={() => setShowComments((v) => !v)}
       />
       <PostActions
         postId={post.id}

@@ -76,7 +76,7 @@ export function CommentInput({
     <Flex gap={8} className="!w-full">
       <PostAvatar size={32} gradient={authorGradient} initial={authorInitial} />
       <Flex vertical gap={6} className="!flex-1 !min-w-0">
-        <Flex className="bg-[var(--color-bg-tertiary)] rounded-[18px] [padding:0_4px_0_12px] min-h-[36px]"
+        <Flex className="bg-[var(--color-bg-tertiary)] rounded-[18px] [padding:0_16px] min-h-[36px]"
           align="center"
           gap={4}  >
           <div className="!relative !flex-1">

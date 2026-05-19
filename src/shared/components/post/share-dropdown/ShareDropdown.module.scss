@@ -1,4 +1,6 @@
 .shareDropdownRoot {
+  padding-top: 8px;
+
   :global(.ant-dropdown-menu) {
     background: transparent !important;
     box-shadow: none !important;

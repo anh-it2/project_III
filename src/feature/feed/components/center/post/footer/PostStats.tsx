@@ -14,6 +14,7 @@ interface PostStatsProps {
   likes: string;
   comments: number;
   shares: number;
+  onCommentsClick?: () => void;
 }
 
 export function PostStats({
@@ -22,6 +23,7 @@ export function PostStats({
   likes,
   comments,
   shares,
+  onCommentsClick,
 }: PostStatsProps) {
   const t = useTranslations("Feed.post");
   const current = reaction ? REACTION_BY_ID[reaction] : null;
@@ -58,7 +60,27 @@ export function PostStats({
         ) : null}
       </Flex>
       <Text className="!text-sm text-[var(--color-text-secondary)]" >
-        {comments} {t("comments")} &nbsp;·&nbsp; {shares} {t("shares")}
+        <span
+          role={onCommentsClick ? "button" : undefined}
+          tabIndex={onCommentsClick ? 0 : undefined}
+          onClick={onCommentsClick}
+          onKeyDown={
+            onCommentsClick
+              ? (e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onCommentsClick();
+                  }
+                }
+              : undefined
+          }
+          className={
+            onCommentsClick ? "cursor-pointer hover:underline" : undefined
+          }
+        >
+          {comments} {t("comments")}
+        </span>
+        &nbsp;·&nbsp; {shares} {t("shares")}
       </Text>
     </Flex>
   );
