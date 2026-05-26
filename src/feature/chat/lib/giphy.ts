@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const API = "https://api.giphy.com/v1/gifs";
 const KEY = process.env.NEXT_PUBLIC_GIPHY_API_KEY ?? "";
 
@@ -32,12 +34,14 @@ function mapGif(g: RawGif): GiphyGif {
 
 export async function fetchTrendingGifs(limit = 24): Promise<GiphyGif[]> {
   if (!KEY) return [];
-  const res = await fetch(
-    `${API}/trending?api_key=${KEY}&limit=${limit}&rating=pg-13`,
-  );
-  if (!res.ok) throw new Error("Giphy trending failed");
-  const json = (await res.json()) as { data: RawGif[] };
-  return json.data.map(mapGif);
+  try {
+    const res = await axios.get<{ data: RawGif[] }>(`${API}/trending`, {
+      params: { api_key: KEY, limit, rating: "pg-13" },
+    });
+    return res.data.data.map(mapGif);
+  } catch {
+    throw new Error("Giphy trending failed");
+  }
 }
 
 export async function searchGifs(
@@ -45,12 +49,14 @@ export async function searchGifs(
   limit = 24,
 ): Promise<GiphyGif[]> {
   if (!KEY || !query.trim()) return [];
-  const res = await fetch(
-    `${API}/search?api_key=${KEY}&q=${encodeURIComponent(query)}&limit=${limit}&rating=pg-13`,
-  );
-  if (!res.ok) throw new Error("Giphy search failed");
-  const json = (await res.json()) as { data: RawGif[] };
-  return json.data.map(mapGif);
+  try {
+    const res = await axios.get<{ data: RawGif[] }>(`${API}/search`, {
+      params: { api_key: KEY, q: query, limit, rating: "pg-13" },
+    });
+    return res.data.data.map(mapGif);
+  } catch {
+    throw new Error("Giphy search failed");
+  }
 }
 
 export const HAS_GIPHY_KEY = Boolean(KEY);

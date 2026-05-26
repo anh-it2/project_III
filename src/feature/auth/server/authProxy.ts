@@ -1,3 +1,4 @@
+import axios from "axios";
 import { NextResponse, type NextRequest } from "next/server";
 import { API_BASE_URL } from "@/shared/lib/apiBaseUrl";
 
@@ -23,42 +24,38 @@ export async function forwardAuth(
   bePath: "/auth/login" | "/auth/register",
   payload: unknown,
 ): Promise<NextResponse> {
-  let beRes: Response;
+  let status: number;
+  let body: BackendEnvelope;
   try {
-    beRes = await fetch(`${API_BASE_URL}${bePath}`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(payload),
-      cache: "no-store",
-    });
-  } catch {
+    const beRes = await axios.post<BackendEnvelope>(
+      `${API_BASE_URL}${bePath}`,
+      payload,
+      { headers: { "content-type": "application/json" } },
+    );
+    status = beRes.status;
+    body = beRes.data;
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response) {
+      const errBody = err.response.data as BackendEnvelope | undefined;
+      return NextResponse.json(
+        { message: errBody?.message || "Authentication failed" },
+        { status: err.response.status },
+      );
+    }
     return NextResponse.json(
       { message: "Cannot reach authentication server" },
       { status: 502 },
     );
   }
 
-  let body: BackendEnvelope;
-  try {
-    body = (await beRes.json()) as BackendEnvelope;
-  } catch {
+  if (!body?.success || !body.data) {
     return NextResponse.json(
-      { message: "Invalid response from authentication server" },
+      { message: body?.message || "Authentication failed" },
       { status: 502 },
     );
   }
 
-  if (!beRes.ok || !body.success || !body.data) {
-    return NextResponse.json(
-      { message: body.message || "Authentication failed" },
-      { status: beRes.status === 200 ? 502 : beRes.status },
-    );
-  }
-
-  const res = NextResponse.json(
-    { user: body.data.user },
-    { status: beRes.status },
-  );
+  const res = NextResponse.json({ user: body.data.user }, { status });
   res.cookies.set(AUTH_COOKIE, body.data.token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -81,37 +78,36 @@ export async function fetchMe(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ message: "Not authenticated" }, { status: 401 });
   }
 
-  const beRes = await fetch(`${API_BASE_URL}/users/me`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  }).catch(() => null);
-  if (!beRes) {
+  try {
+    const beRes = await axios.get<BackendEnvelope>(
+      `${API_BASE_URL}/users/me`,
+      { headers: { authorization: `Bearer ${token}` } },
+    );
+    const body = beRes.data;
+    if (!body?.success || !body.data) {
+      return NextResponse.json(
+        { message: body?.message || "Not authenticated" },
+        { status: 502 },
+      );
+    }
+    return NextResponse.json({ user: body.data }, { status: 200 });
+  } catch (err) {
+    if (axios.isAxiosError(err) && err.response) {
+      const errBody = err.response.data as BackendEnvelope | undefined;
+      // Token rejected by BE → drop the stale cookie so the middleware
+      // stops treating the request as authed.
+      const res = NextResponse.json(
+        { message: errBody?.message || "Not authenticated" },
+        { status: err.response.status || 401 },
+      );
+      if (err.response.status === 401) clearAuthCookie(res);
+      return res;
+    }
     return NextResponse.json(
       { message: "Cannot reach authentication server" },
       { status: 502 },
     );
   }
-
-  const body = (await beRes.json().catch(() => null)) as BackendEnvelope | null;
-  if (!body) {
-    return NextResponse.json(
-      { message: "Invalid response from authentication server" },
-      { status: 502 },
-    );
-  }
-
-  if (!beRes.ok || !body.success || !body.data) {
-    // Token rejected by BE → drop the stale cookie so the middleware
-    // stops treating the request as authed.
-    const res = NextResponse.json(
-      { message: body.message || "Not authenticated" },
-      { status: beRes.status === 200 ? 502 : beRes.status || 401 },
-    );
-    if (beRes.status === 401) clearAuthCookie(res);
-    return res;
-  }
-
-  return NextResponse.json({ user: body.data }, { status: 200 });
 }
 
 /** Clears the auth cookie. */
