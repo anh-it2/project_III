@@ -116,6 +116,7 @@ export interface ReelData {
   mediaUrl: string;
   musicId?: string;
   caption?: string;
+  author?: FeedAuthor;
 }
 
 export interface RecommendedReel {
