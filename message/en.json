@@ -691,6 +691,7 @@
       "modeImage": "Photo mode",
       "errorFileTooBig": "File too big (max 100MB)",
       "warningUploadFirst": "Upload video or image first",
+      "errorUploadFailed": "Failed to upload media. Please try again.",
       "errorCannotPlay": "Cannot play track",
       "success": "Reel posted"
     },
@@ -726,6 +727,7 @@
       "enableCamera": "Enable camera",
       "errorNotSupported": "Camera not supported in this browser",
       "errorDenied": "Camera access denied",
+      "errorUploadFailed": "Failed to upload broadcast. Please try again.",
       "successCamera": "Camera enabled",
       "successStarted": "Broadcast started",
       "successEnded": "Broadcast ended and saved",

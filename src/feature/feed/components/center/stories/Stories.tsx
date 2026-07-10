@@ -4,7 +4,6 @@ import { Button, Flex } from "antd";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/shared/components/Icon";
-import { STORIES } from "../../../data/constants";
 import type { ReelData } from "../../../data/types";
 import { useUserStories } from "../../../data/useUserStories";
 import { useCurrentUserIdentity } from "../../../hooks/useCurrentUserIdentity";
@@ -46,9 +45,11 @@ export function Stories() {
     el.scrollBy({ left: dir * Math.max(280, el.clientWidth * 0.8), behavior: "smooth" });
   };
 
-  const handleCreateStory = (reel: ReelData) => {
+  const handleCreateStory = async (reel: ReelData) => {
     const author = reel.author ?? currentUser;
-    addStory({
+    // addStory sends the create body to the BE and throws on failure, which
+    // the composer catches to surface an error and keep itself open.
+    await addStory({
       id: `us-${reel.id}`,
       initial: author.initial,
       name: author.name,
@@ -76,9 +77,6 @@ export function Stories() {
       >
         <CreateStoryCard onClick={() => setComposerOpen(true)} />
         {userStories.map((s) => (
-          <StoryCard key={s.id} story={s} />
-        ))}
-        {STORIES.map((s) => (
           <StoryCard key={s.id} story={s} />
         ))}
       </Flex>

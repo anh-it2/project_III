@@ -1,57 +1,61 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { StoryCardData } from "./types";
-import { readFeedSlice, writeFeedSlice } from "./feedStorage";
+import {
+  createStoryService,
+  listStoriesService,
+} from "../services/story.service";
 
-let state: StoryCardData[] | null = null;
-const listeners = new Set<() => void>();
+const STORIES_QUERY_KEY = ["stories"] as const;
 
-function ensureLoaded() {
-  if (state !== null) return;
-  if (typeof window === "undefined") {
-    state = [];
-    return;
-  }
-  state = readFeedSlice("userStories") as StoryCardData[];
-}
-
-function emit() {
-  for (const l of listeners) l();
-}
-
-function subscribe(cb: () => void) {
-  listeners.add(cb);
-  return () => {
-    listeners.delete(cb);
-  };
-}
-
-function getSnapshot(): StoryCardData[] {
-  ensureLoaded();
-  return state as StoryCardData[];
-}
-
-function getServerSnapshot(): StoryCardData[] {
-  return [];
-}
-
+/**
+ * Stories are BE-backed (social-platform-be /posts/stories → MinIO media).
+ * Nothing is persisted in localStorage anymore. The list polls every 15s so
+ * other users' fresh stories appear, and drops server-side once past 24h.
+ */
 export function useUserStories() {
-  const stories = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const qc = useQueryClient();
 
-  const addStory = useCallback((story: StoryCardData) => {
-    ensureLoaded();
-    state = [story, ...(state as StoryCardData[])];
-    writeFeedSlice("userStories", state);
-    emit();
-  }, []);
+  const { data, isLoading } = useQuery({
+    queryKey: STORIES_QUERY_KEY,
+    queryFn: listStoriesService,
+    staleTime: 30_000,
+    refetchOnWindowFocus: true,
+    refetchInterval: 15_000,
+  });
 
-  const removeStory = useCallback((id: string) => {
-    ensureLoaded();
-    state = (state as StoryCardData[]).filter((s) => s.id !== id);
-    writeFeedSlice("userStories", state);
-    emit();
-  }, []);
+  const stories = data ?? [];
 
-  return { stories, hydrated: true, addStory, removeStory };
+  // Takes the composer's draft card but only sends the create body; the row
+  // the BE returns (real id + author from the JWT) is what enters the cache.
+  const addStory = useCallback(
+    async (story: StoryCardData): Promise<boolean> => {
+      if (!story.mediaUrl || !story.mediaType) return false;
+      const created = await createStoryService({
+        mediaUrl: story.mediaUrl,
+        mediaType: story.mediaType,
+        caption: story.caption,
+        musicId: story.musicId,
+      });
+      qc.setQueryData<StoryCardData[]>(STORIES_QUERY_KEY, (current = []) => [
+        created,
+        ...current.filter((i) => i.id !== created.id),
+      ]);
+      return true;
+    },
+    [qc],
+  );
+
+  const removeStory = useCallback(
+    (id: string) => {
+      qc.setQueryData<StoryCardData[]>(STORIES_QUERY_KEY, (current = []) =>
+        current.filter((s) => s.id !== id),
+      );
+    },
+    [qc],
+  );
+
+  return { stories, hydrated: !isLoading, addStory, removeStory };
 }

@@ -8,8 +8,33 @@ import {
   type Envelope,
 } from "@/shared/lib/beProxy";
 import type { CommentDTO, PostDTO } from "../dto/post.dto";
+import type { CreateStoryBody, StoryDTO } from "../dto/story.dto";
 
 const RESOURCE = "post";
+
+/** GET /posts/stories — active (non-expired) stories, newest first. */
+export function listStories(req: NextRequest): Promise<NextResponse> {
+  return callBackend<StoryDTO[], { stories: StoryDTO[] }>({
+    req,
+    method: "get",
+    path: "/posts/stories",
+    shape: (stories) => ({ stories }),
+    resource: RESOURCE,
+  });
+}
+
+/** POST /posts/stories — create a story from an already-uploaded media URL. */
+export async function createStory(req: NextRequest): Promise<NextResponse> {
+  const payload = (await req.json().catch(() => ({}))) as CreateStoryBody;
+  return callBackend<StoryDTO, { story: StoryDTO }>({
+    req,
+    method: "post",
+    path: "/posts/stories",
+    shape: (story) => ({ story }),
+    payload,
+    resource: RESOURCE,
+  });
+}
 
 /** GET /posts (forwards ?mine=1 / ?authorId= to the BE). */
 export function listPosts(req: NextRequest): Promise<NextResponse> {

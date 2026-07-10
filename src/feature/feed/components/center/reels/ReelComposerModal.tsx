@@ -10,6 +10,7 @@ import { gradientBg } from "@/shared/utils/gradient";
 import { MUSIC_TRACKS } from "../../../data/constants";
 import type { MusicTrack, ReelData } from "../../../data/types";
 import { useCurrentUserIdentity } from "../../../hooks/useCurrentUserIdentity";
+import { uploadPostMediaService } from "../../../services/media/uploadPostMedia.service";
 import styles from "./ReelComposerModal.module.scss";
 
 const { Text, Title } = Typography;
@@ -17,7 +18,7 @@ const { Text, Title } = Typography;
 interface ReelComposerModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (reel: ReelData) => void;
+  onSubmit: (reel: ReelData) => void | Promise<void>;
   /**
    * Which surface this composer feeds. The UI is shared between the Story
    * rail ("Tạo tin") and the Reels rail ("Tạo reel"); only the copy differs.
@@ -90,6 +91,7 @@ export function ReelComposerModal({
   const [musicId, setMusicId] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
   const [search, setSearch] = useState("");
+  const [uploading, setUploading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const submittedRef = useRef(false);
   const rawFileRef = useRef<File | null>(null);
@@ -115,6 +117,7 @@ export function ReelComposerModal({
     setMusicId(null);
     setCaption("");
     setSearch("");
+    setUploading(false);
     audioRef.current?.pause();
     audioRef.current = null;
     setPlayingId(null);
@@ -186,30 +189,39 @@ export function ReelComposerModal({
     audioRef.current?.pause();
     setPlayingId(null);
 
+    // Upload the picked file to MinIO (via the BE) and persist the hosted URL.
+    // The media is never inlined as base64 / stored locally anymore.
     let persistedUrl = mediaUrl;
     const raw = rawFileRef.current;
     if (raw) {
+      setUploading(true);
       try {
-        persistedUrl = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject(reader.error);
-          reader.readAsDataURL(raw);
-        });
+        persistedUrl = await uploadPostMediaService(raw);
       } catch {
-        // fallback to blob URL — reel works in-session, won't persist
+        setUploading(false);
+        message.error(t("errorUploadFailed"));
+        return;
       }
+      setUploading(false);
     }
 
+    // Persist via the caller (story create → BE, or reel store). Keep the
+    // modal open on failure so the user can retry rather than see a false
+    // success toast.
+    try {
+      await onSubmit({
+        id: `r-${Date.now()}`,
+        mediaType,
+        mediaUrl: persistedUrl,
+        musicId: musicId ?? undefined,
+        caption: caption.trim() || undefined,
+        author: currentUser,
+      });
+    } catch (err) {
+      message.error(err instanceof Error ? err.message : t("errorUploadFailed"));
+      return;
+    }
     submittedRef.current = true;
-    onSubmit({
-      id: `r-${Date.now()}`,
-      mediaType,
-      mediaUrl: persistedUrl,
-      musicId: musicId ?? undefined,
-      caption: caption.trim() || undefined,
-      author: currentUser,
-    });
     message.success(tc("success"));
     onClose();
   };
@@ -671,7 +683,8 @@ export function ReelComposerModal({
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!mediaUrl}
+              disabled={!mediaUrl || uploading}
+              loading={uploading}
               className="!h-9 !rounded-full !px-6 !font-semibold !border-0 !shadow-none disabled:!opacity-50 disabled:!cursor-not-allowed"
               style={{
                 background: mediaUrl

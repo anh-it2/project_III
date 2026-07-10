@@ -8,6 +8,7 @@ import { Icon } from "@/shared/components/Icon";
 import { gradientBg } from "@/shared/utils/gradient";
 import { CURRENT_USER } from "../../../../data/constants";
 import type { FeedPostData } from "../../../../data/types";
+import { uploadPostMediaService } from "../../../../services/media/uploadPostMedia.service";
 
 const { Text, Title } = Typography;
 
@@ -36,7 +37,7 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
   const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [viewers, setViewers] = useState(0);
-  const [snapshot, setSnapshot] = useState<string | null>(null);
+  const [publishing, setPublishing] = useState(false);
 
   const stopStream = () => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -79,7 +80,7 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
       setError(null);
       setElapsed(0);
       setViewers(0);
-      setSnapshot(null);
+      setPublishing(false);
       chunksRef.current = [];
     }
   }, [open]);
@@ -146,7 +147,8 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
     message.success(t("successStarted"));
   };
 
-  const finalizeRecording = (): Promise<string | undefined> => {
+  // Returns the recorded blob (uploaded to MinIO by the caller) — never base64.
+  const finalizeRecording = (): Promise<Blob | undefined> => {
     return new Promise((resolve) => {
       const rec = recorderRef.current;
       if (!rec || rec.state === "inactive") {
@@ -155,7 +157,7 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
       }
       let settled = false;
       let stopFired = false;
-      const settle = (val: string | undefined) => {
+      const settle = (val: Blob | undefined) => {
         if (settled) return;
         settled = true;
         resolve(val);
@@ -167,12 +169,7 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
           settle(undefined);
           return;
         }
-        const blob = new Blob(chunks, { type: rec.mimeType || "video/webm" });
-        const reader = new FileReader();
-        reader.onload = () =>
-          settle(typeof reader.result === "string" ? reader.result : undefined);
-        reader.onerror = () => settle(undefined);
-        reader.readAsDataURL(blob);
+        settle(new Blob(chunks, { type: rec.mimeType || "video/webm" }));
       };
       try {
         if (typeof rec.requestData === "function") {
@@ -186,35 +183,67 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
       } catch {
         settle(undefined);
       }
-      // safety: only fire if onstop never fires (browser bug). 10s gives FileReader time to encode large blobs.
+      // safety: only fire if onstop never fires (browser bug).
       setTimeout(() => {
         if (!stopFired) settle(undefined);
       }, 10000);
     });
   };
 
-  const captureFrame = (): string | null => {
-    const video = videoRef.current;
-    if (!video) return null;
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth || 1280;
-    canvas.height = video.videoHeight || 720;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return null;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    try {
-      return canvas.toDataURL("image/jpeg", 0.8);
-    } catch {
-      return null;
-    }
+  // Poster frame as a JPEG blob (uploaded to MinIO), not a base64 data URL.
+  const captureFrame = (): Promise<Blob | null> => {
+    return new Promise((resolve) => {
+      const video = videoRef.current;
+      if (!video) return resolve(null);
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth || 1280;
+      canvas.height = video.videoHeight || 720;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return resolve(null);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      try {
+        canvas.toBlob((b) => resolve(b), "image/jpeg", 0.8);
+      } catch {
+        resolve(null);
+      }
+    });
   };
 
   const endLive = async () => {
-    const frame = captureFrame();
-    setSnapshot(frame);
     stopTimer();
-    const videoUrl = await finalizeRecording();
+    setPublishing(true);
+    // Grab the poster + recorded video, then upload both to MinIO. Nothing is
+    // inlined as base64 anymore.
+    const [frameBlob, videoBlob] = await Promise.all([
+      captureFrame(),
+      finalizeRecording(),
+    ]);
     stopStream();
+
+    let imageUrl: string | undefined;
+    let videoUrl: string | undefined;
+    try {
+      if (frameBlob) {
+        imageUrl = await uploadPostMediaService(
+          new File([frameBlob], `live-${Date.now()}.jpg`, { type: "image/jpeg" }),
+        );
+      }
+      if (videoBlob) {
+        const ext = videoBlob.type.includes("mp4") ? "mp4" : "webm";
+        videoUrl = await uploadPostMediaService(
+          new File([videoBlob], `live-${Date.now()}.${ext}`, {
+            type: videoBlob.type || "video/webm",
+          }),
+        );
+      }
+    } catch (err) {
+      setPublishing(false);
+      message.error(err instanceof Error ? err.message : t("errorUploadFailed"));
+      onClose();
+      return;
+    }
+
+    setPublishing(false);
     onSubmit({
       id: `fp-live-${Date.now()}`,
       author: {
@@ -225,7 +254,7 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
       time: tReel("justNow"),
       createdAt: Date.now(),
       text: title.trim() || t("wasLiveTitle"),
-      imageUrl: frame ?? undefined,
+      imageUrl,
       videoUrl,
       isLive: true,
       likes: String(viewers),
@@ -285,7 +314,7 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
           aspectRatio: "16 / 9",
         }}
       >
-        {phase === "idle" && !snapshot && (
+        {phase === "idle" && (
           <Flex
             vertical
             align="center"
@@ -426,6 +455,8 @@ export function LiveBroadcastModal({ open, onClose, onSubmit }: LiveBroadcastMod
             <Button
               danger
               onClick={endLive}
+              loading={publishing}
+              disabled={publishing}
               icon={<Icon className="bg-[#f02849] [border:none]" name="stop_circle" size={16} color="#fff" />}
               className="!font-bold !px-6 !text-white"  >
               {t("endLive")}
