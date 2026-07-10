@@ -43,7 +43,7 @@ export function ConfirmModal({
         <Icon name="close" size={20} color="var(--color-text-secondary)" />
       }
     >
-      <Flex className="[padding:24px_28px_24px_28px]" vertical gap={16} >
+      <Flex className="[padding:24px_28px_24px_28px] !p-2" vertical gap={16} >
         <Flex align="center" gap={12}>
           <Flex
             align="center"
