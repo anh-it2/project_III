@@ -35,7 +35,7 @@ export function ThemeModal({ open, conversationId, onClose }: ThemeModalProps) {
       <Flex className="[padding:24px_28px]" vertical gap={12} >
         <Title
           level={5}
-          className="!m-0 !leading-tight text-[var(--color-text)]"  >
+          className="!m-0 !pr-10 !leading-tight text-[var(--color-text)]"  >
           {t("title")}
         </Title>
         <Text

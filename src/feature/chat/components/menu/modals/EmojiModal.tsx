@@ -36,7 +36,7 @@ export function EmojiModal({ open, conversationId, onClose }: EmojiModalProps) {
       <Flex className="[padding:24px_28px]" vertical gap={12} >
         <Title
           level={5}
-          className="!m-0 !leading-tight text-[var(--color-text)]"  >
+          className="!m-0 !pr-10 !leading-tight text-[var(--color-text)]"  >
           {t("title")}
         </Title>
         <Text
@@ -50,7 +50,7 @@ export function EmojiModal({ open, conversationId, onClose }: EmojiModalProps) {
           </Text>
           <span className="text-[28px]">{current}</span>
         </Flex>
-        <div className="!mt-1">
+        <div className="!mt-1 !max-w-full !overflow-x-auto">
           <EmojiPicker
             onPick={(emoji) => {
               setEmoji(emoji);

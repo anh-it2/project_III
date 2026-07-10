@@ -65,7 +65,7 @@ export function ConfirmModal({
           </Flex>
           <Title
             level={5}
-            className="!m-0 !leading-tight text-[var(--color-text)]"  >
+            className="!m-0 !pr-10 !leading-tight text-[var(--color-text)]">
             {title}
           </Title>
         </Flex>

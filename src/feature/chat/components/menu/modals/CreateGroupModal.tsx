@@ -115,7 +115,7 @@ export function CreateGroupModal({
       <Flex className="[padding:24px_28px]" vertical gap={16} >
         <Title
           level={5}
-          className="!m-0 !leading-tight text-[var(--color-text)]"  >
+          className="!m-0 !pr-10 !leading-tight text-[var(--color-text)]"  >
           {t("title")}
         </Title>
         <FormProvider {...methods}>

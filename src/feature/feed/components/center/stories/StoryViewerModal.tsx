@@ -115,10 +115,13 @@ export function StoryViewerModal({ open, onClose, story }: StoryViewerModalProps
             </Text>
           </Flex>
           <Button
+            type="text"
             shape="circle"
             onClick={onClose}
             aria-label={t("close")}
-            icon={<Icon className="bg-[rgba(0,0,0,0.5)] [border:none] w-[32px] h-[32px] min-w-[32px] p-[0px] [display:inline-flex] [align-items:center] [justify-content:center]" name="close" size={16} color="#fff" />}  />
+            className="!flex !h-8 !w-8 !min-w-8 !shrink-0 !items-center !justify-center !border-0 !bg-[rgba(0,0,0,0.5)] !p-0 hover:!bg-[rgba(0,0,0,0.7)]"
+            icon={<Icon name="close" size={18} color="#fff" />}
+          />
         </Flex>
 
         <Flex

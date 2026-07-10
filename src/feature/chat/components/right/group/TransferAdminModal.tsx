@@ -69,7 +69,7 @@ export function TransferAdminModal({
       closeIcon={<Icon name="close" size={20} color="var(--color-text-secondary)" />}
     >
       <Flex className="[padding:24px_28px]" vertical gap={16} >
-        <Title level={5} className="!m-0 text-[var(--color-text)]" >
+        <Title level={5} className="!m-0 !pr-10 text-[var(--color-text)]" >
           {t("title")}
         </Title>
         <Text className="!text-[13px] !text-[var(--color-text-muted)]">
