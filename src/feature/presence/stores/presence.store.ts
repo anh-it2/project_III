@@ -6,6 +6,7 @@ interface PresenceState {
   onlineUsers: OnlineUserDto[];
   knownUsers: OnlineUserDto[];
   setOnlineUsers: (users: OnlineUserDto[]) => void;
+  addKnownUsers: (users: OnlineUserDto[]) => void;
   addOnlineUser: (user: OnlineUserDto) => void;
   removeOnlineUser: (userId: string) => void;
   updateUser: (user: OnlineUserDto) => void;
@@ -32,6 +33,10 @@ export const usePresenceStore = create<PresenceState>()(
           onlineUsers: users,
           knownUsers: mergeKnown(s.knownUsers, users),
         })),
+      // Seed the roster (e.g. from the BE user list) without marking anyone
+      // online — presence events still own the online/offline dot.
+      addKnownUsers: (users) =>
+        set((s) => ({ knownUsers: mergeKnown(s.knownUsers, users) })),
       addOnlineUser: (user) =>
         set((s) => ({
           onlineUsers: s.onlineUsers.some((u) => u.id === user.id)

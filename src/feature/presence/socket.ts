@@ -6,6 +6,26 @@ import {
 import { getNamespaceSocket } from "@/socket/client/manager";
 import { useAuthStore } from "../auth/stores/auth.store";
 import { usePresenceStore } from "./stores/presence.store";
+import { listUsersService } from "./services/listUsers.service";
+
+/**
+ * Seed the roster from the BE user list so a freshly-registered account
+ * sees everyone (offline until presence flips them online), not just peers
+ * who happen to be live right now. Merges into `knownUsers` without
+ * touching the online set — presence events own the online/offline dot.
+ */
+export async function seedKnownUsers() {
+  const { userId } = useAuthStore.getState();
+  if (!userId) return;
+  try {
+    const users = await listUsersService();
+    usePresenceStore
+      .getState()
+      .addKnownUsers(users.filter((u) => u.id !== userId));
+  } catch {
+    // Roster is best-effort; live presence still populates the list.
+  }
+}
 
 export type PresenceSocket = Socket<
   PresenceServerToClientEvents,
@@ -112,6 +132,10 @@ export function initPresence() {
   socket.on("presence:user-updated", onUpdated);
   socket.on("presence:online-users", onSnapshot);
   if (socket.connected) onConnect();
+
+  // Seed the full roster once per login (independent of socket connect) so
+  // offline users appear too, not just live peers.
+  seedKnownUsers();
 
   cleanup = () => {
     socket.off("presence:user-joined", onJoined);
