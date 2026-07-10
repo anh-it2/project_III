@@ -21,6 +21,7 @@ export interface PublicUserDTO {
   id: string;
   name: string;
   email: string;
+  role: string;
   createdAt: string;
 }
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import { useAuthStore } from "@/feature/auth/stores/auth.store";
-import { isAdminUserName } from "@/feature/admin/lib/isAdmin";
+import { isAdminRole } from "@/feature/admin/lib/isAdmin";
 import { useRouter } from "@/i18n/navigation";
 
 function useAuthHydrated() {
@@ -19,10 +19,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const userName = useAuthStore((s) => s.userName);
+  const role = useAuthStore((s) => s.role);
   const isLoggined = useAuthStore((s) => s.isLoggined);
   const hydrated = useAuthHydrated();
-  const isAdmin = isAdminUserName(userName);
+  const isAdmin = isAdminRole(role);
 
   useEffect(() => {
     if (hydrated && isLoggined && !isAdmin) router.replace("/");

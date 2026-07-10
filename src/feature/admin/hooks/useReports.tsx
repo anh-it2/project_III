@@ -8,7 +8,7 @@ import { Icon } from "@/shared/components/Icon";
 import { getReportSocket } from "../socket";
 import { useReportStore } from "../stores/report.store";
 import { toReport, toReports } from "../dto/report.mapper";
-import { isAdminUserName } from "../lib/isAdmin";
+import { isAdminRole } from "../lib/isAdmin";
 import type {
   ReportActionAck,
   ReportDTO,
@@ -19,8 +19,8 @@ import type {
 export function useReports() {
   const t = useTranslations("Admin");
   const isLoggined = useAuthStore((s) => s.isLoggined);
-  const userName = useAuthStore((s) => s.userName);
-  const isAdmin = isAdminUserName(userName);
+  const role = useAuthStore((s) => s.role);
+  const isAdmin = isAdminRole(role);
 
   const socket = isAdmin ? getReportSocket() : null;
   const [isConnected, setIsConnected] = useState<boolean>(

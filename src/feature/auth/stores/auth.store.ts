@@ -14,14 +14,15 @@ export const useAuthStore = create<AuthState>()(
       userId: "",
       userName: "",
       email: "",
+      role: "",
       isLoggined: false,
 
-      saveLoginnedUser: ({ userId, userName, email }): void => {
-        set({ userId, userName, email, isLoggined: true });
+      saveLoginnedUser: ({ userId, userName, email, role }): void => {
+        set({ userId, userName, email, role, isLoggined: true });
       },
 
       removeLogginedUser: (): void => {
-        set({ userId: "", userName: "", email: "", isLoggined: false });
+        set({ userId: "", userName: "", email: "", role: "", isLoggined: false });
       },
     }),
     {

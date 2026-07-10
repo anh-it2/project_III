@@ -5,6 +5,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  role: string;
   createdAt: string;
 }
 
@@ -27,11 +28,13 @@ export interface AuthState {
   userId: string;
   userName: string;
   email: string;
+  role: string;
   isLoggined: boolean;
   saveLoginnedUser: (user: {
     userId: string;
     userName: string;
     email: string;
+    role: string;
   }) => void;
   removeLogginedUser: () => void;
 }
