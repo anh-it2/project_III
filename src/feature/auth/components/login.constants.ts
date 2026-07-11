@@ -32,6 +32,9 @@ export const HERO_DOT_POSITIONS: Array<{ left: number; top: number }> = [
 export const HERO_GRADIENT_CLASS =
   "bg-[linear-gradient(160deg,#1a1a4e_0%,#2d1b69_30%,#1877f2_70%,#42a5f5_100%)]";
 
+export const BRAND_MARK_CLASS =
+  "flex h-12 w-12 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#2d1b69_0%,#1877f2_60%,#42a5f5_100%)] shadow-[0_6px_16px_rgba(45,27,105,0.45)]";
+
 export const SIGN_IN_BUTTON_CLASS = [
   "!h-12 !rounded-[10px] !border-none !text-base !font-semibold !text-white",
   "!bg-[linear-gradient(90deg,#0d5bc4_0%,#1877f2_100%)]",

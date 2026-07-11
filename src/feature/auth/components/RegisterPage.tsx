@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/shared/components/ThemeToggle";
 import {
   HERO_AVATAR_CLASSES,
   HERO_DOT_POSITIONS,
+  BRAND_MARK_CLASS,
   HERO_GRADIENT_CLASS,
   HERO_LINE_CLASSES,
   HERO_STAT_VALUES,
@@ -63,10 +64,8 @@ export function RegisterPage() {
 
         <div className="relative z-10 flex max-w-[600px] flex-col gap-8 px-20 pt-[200px]">
           <div className="flex items-center gap-[14px]">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white">
-              <span className="text-[30px] font-extrabold text-[#1877f2]">
-                O
-              </span>
+            <div className={BRAND_MARK_CLASS}>
+              <span className="text-[26px] font-extrabold text-white">O</span>
             </div>
             <span className="text-[36px] font-bold text-white">
               {tHero("brand")}
