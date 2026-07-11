@@ -65,7 +65,7 @@ export function RegisterPage() {
           <div className="flex items-center gap-[14px]">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white">
               <span className="text-[30px] font-extrabold text-[#1877f2]">
-                f
+                O
               </span>
             </div>
             <span className="text-[36px] font-bold text-white">
@@ -126,10 +126,6 @@ export function RegisterPage() {
             <RegisterForm />
           </div>
         </div>
-
-        <Paragraph className="!m-0 px-10 pt-6 text-center !text-[13px] !text-[var(--color-text-placeholder)]">
-          {t("footer")}
-        </Paragraph>
       </div>
     </div>
   );
