@@ -1,15 +1,13 @@
 "use client";
 
 import {
-  AppleFilled,
-  GoogleOutlined,
   IdcardOutlined,
   LockOutlined,
   MailOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { App, Button, Divider, Typography } from "antd";
+import { App, Button, Typography } from "antd";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -168,31 +166,6 @@ export function RegisterForm() {
           >
             {t("submit")}
           </Button>
-
-          <Divider plain className="!m-0">
-            <span className="text-[13px] text-[var(--color-text-placeholder)]">
-              {t("divider")}
-            </span>
-          </Divider>
-
-          <div className="flex gap-3">
-            <Button
-              size="large"
-              block
-              icon={<GoogleOutlined />}
-              className="!h-12 !rounded-[10px] !font-medium"
-            >
-              {t("google")}
-            </Button>
-            <Button
-              size="large"
-              block
-              icon={<AppleFilled />}
-              className="!h-12 !rounded-[10px] !font-medium"
-            >
-              {t("apple")}
-            </Button>
-          </div>
         </div>
 
         <div className="flex items-center justify-center gap-1.5">
